@@ -1,15 +1,18 @@
 package me.jlurena.ritscheduler.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class RelatedAttributes {
 
     public static final String type = "relatedAttributes";
-    private String[] ACCS;
+    @JsonProperty("ACCS")
+    private String[] accs;
 
-    public String[] getACCS() {
-        return ACCS;
+    public String[] getAccs() {
+        return accs;
     }
 
-    public void setACCS(String[] ACCS) {
-        this.ACCS = ACCS;
+    public void setAccs(String[] accs) {
+        this.accs = accs;
     }
 }

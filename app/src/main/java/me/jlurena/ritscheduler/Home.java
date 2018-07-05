@@ -18,5 +18,11 @@ public class Home extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        NetworkManager.getInstance(this).queryCourses("CSCI 250", "2181", new ResponseListener<List<Course>>() {
+            @Override
+            public void getResult(List<Course> object, int statusCode, VolleyError error) {
+                Log.d("HOME", object.get(0).toMap().toString());
+            }
+        });
     }
 }

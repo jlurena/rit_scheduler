@@ -1,9 +1,11 @@
 package me.jlurena.ritscheduler.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * models.Course.java
@@ -59,9 +61,15 @@ public class Course implements BaseModel {
     private String[] associatedClasses;
     private ReservedSeat[] reservedCap;
 
-    public String getSubject() {
-        return subject;
+    public String getComboSection() {
+        return comboSection;
     }
+
+    public void setComboSection(String comboSection) {
+        this.comboSection = comboSection;
+    }
+
+    private String comboSection;
 
     @Override
     public boolean equals(Object o) {
@@ -70,63 +78,16 @@ public class Course implements BaseModel {
 
         Course course = (Course) o;
 
-        return courseId.equals(course.courseId);
+        return this.courseId.equals(course.courseId);
     }
 
     @Override
     public int hashCode() {
-        return courseId.hashCode();
+        return notes.hashCode();
     }
 
-    @Override
-    public String toString() {
-        return "Course{" +
-                "subject='" + subject + '\'' +
-                ", enrollStatus='" + enrollStatus + '\'' +
-                ", classType='" + classType + '\'' +
-                ", component='" + component + '\'' +
-                ", instructorMode='" + instructorMode + '\'' +
-                ", campus='" + campus + '\'' +
-                ", startingTerm='" + startingTerm + '\'' +
-                ", academicGroupShort='" + academicGroupShort + '\'' +
-                ", academicCareer='" + academicCareer + '\'' +
-                ", attributeValues=" + Arrays.toString(attributeValues) +
-                ", courseTitleLong='" + courseTitleLong + '\'' +
-                ", catalogNumber='" + catalogNumber + '\'' +
-                ", attributeDescriptions=" + Arrays.toString(attributeDescriptions) +
-                ", waitCap=" + waitCap +
-                ", classNumber='" + classNumber + '\'' +
-                ", sessionCode='" + sessionCode + '\'' +
-                ", attributes=" + Arrays.toString(attributes) +
-                ", waitTotal=" + waitTotal +
-                ", enrollmentCap=" + enrollmentCap +
-                ", ppSearchId='" + ppSearchId + '\'' +
-                ", academicTitle='" + academicTitle + '\'' +
-                ", location='" + location + '\'' +
-                ", enrollmentTotal=" + enrollmentTotal +
-                ", section='" + section + '\'' +
-                ", courseDescription='" + courseDescription + '\'' +
-                ", academicGroup='" + academicGroup + '\'' +
-                ", unitsMaximum=" + unitsMaximum +
-                ", unitsMinimum=" + unitsMinimum +
-                ", gradingBasis='" + gradingBasis + '\'' +
-                ", associatedClassNumber='" + associatedClassNumber + '\'' +
-                ", autoEnrollSect1='" + autoEnrollSect1 + '\'' +
-                ", getAutoEnrollSect2='" + autoEnrollSect2 + '\'' +
-                ", courseId='" + courseId + '\'' +
-                ", printTopic='" + printTopic + '\'' +
-                ", courseTopicId='" + courseTopicId + '\'' +
-                ", courseTopic='" + courseTopic + '\'' +
-                ", associatedComponents=" + Arrays.toString(associatedComponents) +
-                ", relatedAttributes=" + relatedAttributes +
-                ", meetings=" + meetings +
-                ", preReqDescriptions=" + Arrays.toString(preReqDescriptions) +
-                ", preReqDescrsShort=" + Arrays.toString(preReqDescrsShort) +
-                ", preReqDescrsLong=" + Arrays.toString(preReqDescrsLong) +
-                ", notes='" + notes + '\'' +
-                ", associatedClasses=" + Arrays.toString(associatedClasses) +
-                ", reservedCap=" + Arrays.toString(reservedCap) +
-                '}';
+    public String getSubject() {
+        return subject;
     }
 
     public void setSubject(String subject) {
@@ -201,8 +162,8 @@ public class Course implements BaseModel {
         return attributeValues;
     }
 
-    public void setAttributeValues(String[] academicValues) {
-        this.attributeValues = academicValues;
+    public void setAttributeValues(String[] attributeValues) {
+        this.attributeValues = attributeValues;
     }
 
     public String getCourseTitleLong() {
@@ -494,5 +455,10 @@ public class Course implements BaseModel {
     public Map<String, Object> toMap() {
         //noinspection unchecked
         return new ObjectMapper().convertValue(this, Map.class);
+    }
+
+    @Override
+    public String getId() {
+        return this.courseId;
     }
 }

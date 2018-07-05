@@ -13,6 +13,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
@@ -61,8 +62,8 @@ public class NetworkManager {
             public void onResponse(JSONObject response) {
                 try {
                     responseListener.getResult(CourseSerializer.toCourseResults(response), 200, null);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                } catch (JSONException | IOException e) {
+                    Log.e(TAG, "Error parsing response", e);
                 }
             }
         }, new Response.ErrorListener() {

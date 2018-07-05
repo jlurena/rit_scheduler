@@ -7,14 +7,27 @@ package me.jlurena.ritscheduler.models;
 
 public class ReservedSeat {
 
-    public class ReservedSeatDetails {
+    public static class ReservedSeatDetails {
         public static final String TYPE = "reservedSeatDetails";
         private String description;
         private String total;
         private String id;
         private int intCap;
         private String cap;
-        private String startDate;
+        /**
+         * Start date in milliseconds.
+         */
+        private long startDate;
+
+        public String getStart() {
+            return start;
+        }
+
+        public void setStart(String start) {
+            this.start = start;
+        }
+
+        private String start;
 
         public String getDescription() {
             return description;
@@ -56,11 +69,11 @@ public class ReservedSeat {
             this.cap = cap;
         }
 
-        public String getStartDate() {
+        public long getStartDate() {
             return startDate;
         }
 
-        public void setStartDate(String startDate) {
+        public void setStartDate(long startDate) {
             this.startDate = startDate;
         }
     }

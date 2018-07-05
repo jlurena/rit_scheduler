@@ -1,20 +1,13 @@
 package me.jlurena.ritscheduler.serializers;
 
-import android.util.Log;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import me.jlurena.ritscheduler.models.Course;
@@ -26,17 +19,12 @@ import me.jlurena.ritscheduler.models.Course;
 public class CourseSerializer {
     public static final String SEARCHRESULTS = "searchResults";
 
-    public static Course toCourse(JSONObject json) {
-        Gson gson = new Gson();
-        return gson.fromJson(json.toString(), Course.class);
-    }
-
-    public static List<Course> toCourseResults(JSONObject json) throws JSONException {
+    public static List<Course> toCourseResults(JSONObject json) throws IOException, JSONException {
         ArrayList<Course> courses = new ArrayList<>();
-        Gson gson = new Gson();
+        ObjectMapper objectMapper = new ObjectMapper();
         JSONArray coursesJsonResults = json.getJSONArray(SEARCHRESULTS);
         for (int i = 0; i < coursesJsonResults.length(); i++) {
-            courses.add(gson.fromJson(coursesJsonResults.get(i).toString(), Course.class));
+            courses.add(objectMapper.readValue(coursesJsonResults.get(i).toString(), Course.class));
         }
 
         return courses;

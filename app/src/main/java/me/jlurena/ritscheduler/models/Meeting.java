@@ -1,5 +1,7 @@
 package me.jlurena.ritscheduler.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * models.Meeting.java
  * Represents meeting times of a course.
@@ -14,7 +16,28 @@ public class Meeting {
     private String[] locationsShort;
     private String[] times;
     private String[] dates;
+    @JsonProperty("daytimes")
     private String[] dayTimes;
+
+    public String[] getInstructorEmails() {
+        return instructorEmails;
+    }
+
+    public void setInstructorEmails(String[] instructorEmails) {
+        this.instructorEmails = instructorEmails;
+    }
+
+    private String[] instructorEmails;
+
+    public String[] getInstructors() {
+        return instructors;
+    }
+
+    public void setInstructors(String[] instructors) {
+        this.instructors = instructors;
+    }
+
+    private String[] instructors;
 
     public String[] getDays() {
         return days;

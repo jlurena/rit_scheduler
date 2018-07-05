@@ -11,6 +11,7 @@ import com.couchbase.lite.MutableDocument;
 import java.io.File;
 import java.util.Map;
 
+import me.jlurena.ritscheduler.models.BaseModel;
 import me.jlurena.ritscheduler.models.Course;
 
 public class DataManager {
@@ -19,6 +20,7 @@ public class DataManager {
     private static DataManager dataManager;
     private static String TAG = "DataManager";
     private static String DB_NAME = "ritscheduler";
+    private static String TYPE_KEY = "type";
 
     private DataManager(Context context) {
         DatabaseConfiguration config = new DatabaseConfiguration(context);
@@ -36,8 +38,10 @@ public class DataManager {
         return dataManager;
     }
 
-    public boolean addCourseDocument(Course course) {
-        MutableDocument document = new MutableDocument(course.getCourseId());
+    public boolean addCourseDocument(BaseModel model) {
+        MutableDocument document = new MutableDocument(model.getId());
+        document.setString(TYPE_KEY, model.getType());
+        document.setData(model.toMap());
 
         return false;
     }
