@@ -3,28 +3,30 @@ package me.jlurena.ritscheduler.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Map;
-import java.util.UUID;
 
-public interface BaseModel {
-
-    @JsonIgnore
-    /**
-     * Type name of model.
-     * @return The type name.
-     */
-    String getType();
+public abstract class BaseModel {
 
     @JsonIgnore
+    public final String modelType;
+    @JsonIgnore
+    protected String modelId;
+
+    public BaseModel(String modelType) {
+        this.modelType = modelType;
+    }
+
     /**
-     * Convert model object into a map.
+     * Convert this model object into a representative map.
+     *
      * @return A map representing this model.
      */
-    Map<String, Object> toMap();
+    public abstract Map<String, Object> toMap();
 
-    @JsonIgnore
-    /**
-     * Get the id of this model.
-     * @return The id.
-     */
-    String getId();
+    public String getModelId() {
+        return modelId;
+    }
+
+    public void setModelId(String modelId) {
+        this.modelId = modelId;
+    }
 }

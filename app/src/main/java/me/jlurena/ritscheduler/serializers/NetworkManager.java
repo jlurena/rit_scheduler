@@ -21,23 +21,13 @@ import java.util.List;
 import me.jlurena.ritscheduler.models.Course;
 
 public class NetworkManager {
+    public static final String QUERY_URL = "https://tigercenter.rit.edu/tigerCenterSearch/api/search?map=";
     private static final String TAG = "NetworkManager";
     private static NetworkManager instance = null;
-
-    public static final String QUERY_URL = "https://tigercenter.rit.edu/tigerCenterSearch/api/search?map=";
-
     private RequestQueue requestQueue;
 
     private NetworkManager(Context context) {
         requestQueue = Volley.newRequestQueue(context.getApplicationContext());
-    }
-
-    public RequestQueue getRequestQueue() {
-        return requestQueue;
-    }
-
-    public void setRequestQueue(RequestQueue requestQueue) {
-        this.requestQueue = requestQueue;
     }
 
     public static synchronized NetworkManager getInstance(Context context) {
@@ -51,6 +41,14 @@ public class NetworkManager {
             throw new IllegalStateException(NetworkManager.class.getSimpleName() + " is not initialized");
         }
         return instance;
+    }
+
+    public RequestQueue getRequestQueue() {
+        return requestQueue;
+    }
+
+    public void setRequestQueue(RequestQueue requestQueue) {
+        this.requestQueue = requestQueue;
     }
 
     public void queryCourses(String query, String term, final ResponseListener<List<Course>> responseListener) {

@@ -1,19 +1,19 @@
 package me.jlurena.ritscheduler.models;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.Arrays;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * models.Course.java
  * Represents a course.
  */
 
-public class Course implements BaseModel {
+public class Course extends BaseModel {
 
+    @JsonIgnore
     public static final String TYPE = "course";
     private String subject;
     private String enrollStatus;
@@ -47,6 +47,7 @@ public class Course implements BaseModel {
     private String associatedClassNumber;
     private String autoEnrollSect1;
     private String autoEnrollSect2;
+    @JsonAlias("model_id")
     private String courseId;
     private String printTopic;
     private String courseTopicId;
@@ -60,6 +61,11 @@ public class Course implements BaseModel {
     private String notes;
     private String[] associatedClasses;
     private ReservedSeat[] reservedCap;
+    private String comboSection;
+
+    public Course() {
+        super(TYPE);
+    }
 
     public String getComboSection() {
         return comboSection;
@@ -68,8 +74,6 @@ public class Course implements BaseModel {
     public void setComboSection(String comboSection) {
         this.comboSection = comboSection;
     }
-
-    private String comboSection;
 
     @Override
     public boolean equals(Object o) {
@@ -348,6 +352,7 @@ public class Course implements BaseModel {
 
     public void setCourseId(String courseId) {
         this.courseId = courseId;
+        super.setModelId(courseId);
     }
 
     public String getPrintTopic() {
@@ -447,18 +452,8 @@ public class Course implements BaseModel {
     }
 
     @Override
-    public String getType() {
-        return TYPE;
-    }
-
-    @Override
     public Map<String, Object> toMap() {
         //noinspection unchecked
         return new ObjectMapper().convertValue(this, Map.class);
-    }
-
-    @Override
-    public String getId() {
-        return this.courseId;
     }
 }

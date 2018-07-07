@@ -18,6 +18,8 @@ public class Meeting {
     private String[] dates;
     @JsonProperty("daytimes")
     private String[] dayTimes;
+    private String[] instructorEmails;
+    private String[] instructors;
 
     public String[] getInstructorEmails() {
         return instructorEmails;
@@ -27,8 +29,6 @@ public class Meeting {
         this.instructorEmails = instructorEmails;
     }
 
-    private String[] instructorEmails;
-
     public String[] getInstructors() {
         return instructors;
     }
@@ -36,8 +36,6 @@ public class Meeting {
     public void setInstructors(String[] instructors) {
         this.instructors = instructors;
     }
-
-    private String[] instructors;
 
     public String[] getDays() {
         return days;
