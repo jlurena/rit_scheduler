@@ -1,4 +1,4 @@
-package me.jlurena.ritscheduler.serializers;
+package me.jlurena.ritscheduler.networking;
 
 import android.content.Context;
 import android.util.Log;
@@ -20,22 +20,42 @@ import java.util.List;
 
 import me.jlurena.ritscheduler.models.Course;
 
+/**
+ * Manages network tasks including API calls.
+ */
 public class NetworkManager {
-    public static final String QUERY_URL = "https://tigercenter.rit.edu/tigerCenterSearch/api/search?map=";
+
     private static final String TAG = "NetworkManager";
     private static NetworkManager instance = null;
-    private RequestQueue requestQueue;
+    private final RequestQueue requestQueue;
 
+    /**
+     * Instantiate a NetworkManager with the application's context.
+     *
+     * @param context Application's context.
+     */
     private NetworkManager(Context context) {
         requestQueue = Volley.newRequestQueue(context.getApplicationContext());
     }
 
+    /**
+     * Get instance of NetworkManager.
+     *
+     * @param context Application's context.
+     * @return The instance of NetworkManager.
+     */
     public static synchronized NetworkManager getInstance(Context context) {
         if (instance == null)
             instance = new NetworkManager(context);
         return instance;
     }
 
+    /**
+     * Get the existing instance of NetworkManager.
+     *
+     * @return The NetworkManager instance.
+     * @throws IllegalStateException When a NetworkManager instance has not yet been instantiated.
+     */
     public static synchronized NetworkManager getInstance() {
         if (null == instance) {
             throw new IllegalStateException(NetworkManager.class.getSimpleName() + " is not initialized");
@@ -43,17 +63,25 @@ public class NetworkManager {
         return instance;
     }
 
+    /**
+     * Getter of the RequestQueue.
+     *
+     * @return The RequestQueue.
+     */
     public RequestQueue getRequestQueue() {
         return requestQueue;
     }
 
-    public void setRequestQueue(RequestQueue requestQueue) {
-        this.requestQueue = requestQueue;
-    }
-
+    /**
+     * Sends GET request query call to TigerCenter API to search for a Course.
+     *
+     * @param query Query term.
+     * @param term Term as a coded numerical String.
+     * @param responseListener ResponseListener callback after response from API is received.
+     */
     public void queryCourses(String query, String term, final ResponseListener<List<Course>> responseListener) {
 
-        String url = buildUrl(query, term);
+        String url = buildUrl(CourseSerializer.QUERY_URL, CourseSerializer.buildCourseQueryParameter(query, term));
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
@@ -75,11 +103,18 @@ public class NetworkManager {
         requestQueue.add(request);
     }
 
-    private String buildUrl(String query, String term) {
+    /**
+     * Builds and encodes a URL.
+     *
+     * @param queryUrl URL path.
+     * @param parameters Parameters of URL.
+     * @return An encoded URL.
+     */
+    private String buildUrl(String queryUrl, JSONObject parameters) {
         String url = null;
         try {
-            url = QUERY_URL + URLEncoder.encode(CourseSerializer.buildJSONMapParameter(query, term).toString(), "utf-8");
-        } catch (UnsupportedEncodingException | JSONException e) {
+            url = queryUrl + URLEncoder.encode(parameters.toString(), "utf-8");
+        } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "Error building URL", e);
         }
 

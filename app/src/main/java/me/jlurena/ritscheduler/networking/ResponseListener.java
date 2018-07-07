@@ -1,4 +1,4 @@
-package me.jlurena.ritscheduler.serializers;
+package me.jlurena.ritscheduler.networking;
 
 import com.android.volley.VolleyError;
 

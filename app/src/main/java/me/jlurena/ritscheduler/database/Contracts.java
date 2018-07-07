@@ -1,18 +1,21 @@
 package me.jlurena.ritscheduler.database;
 
 /**
- * me.jlurena.ritscheduler.database.Contracts.java
  * Contracts for keys in database.
  */
 class Contracts {
+
+    /**
+     * Contracts for Model.
+     */
     static class BaseModel {
         /**
          * Key representing model type
          */
-        static String MODEL_TYPE_KEY = "modelType";
+        static final String MODEL_TYPE_KEY = "modelType";
         /**
          * Key representing the model id.
          */
-        static String MODEL_ID_KEY = "modelId";
+        static final String MODEL_ID_KEY = "modelId";
     }
 }

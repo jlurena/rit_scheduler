@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Meeting {
 
-    public static final String TYPE = "meeting";
     private String[] days;
     private String[] daysFull;
     private String[] locations;

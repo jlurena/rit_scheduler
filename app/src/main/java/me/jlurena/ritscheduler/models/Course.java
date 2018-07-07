@@ -11,10 +11,10 @@ import java.util.Map;
  * Represents a course.
  */
 
-public class Course extends BaseModel {
+public class Course extends Model {
 
     @JsonIgnore
-    public static final String TYPE = "course";
+    private static final String TYPE = "course";
     private String subject;
     private String enrollStatus;
     private String classType;
@@ -77,8 +77,10 @@ public class Course extends BaseModel {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         Course course = (Course) o;
 

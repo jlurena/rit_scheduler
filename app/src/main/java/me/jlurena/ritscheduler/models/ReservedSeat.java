@@ -7,7 +7,6 @@ package me.jlurena.ritscheduler.models;
 
 public class ReservedSeat {
 
-    public static final String TYPE = "reservedSeat";
     private String description;
     private String descr;
     private String major;
@@ -64,7 +63,6 @@ public class ReservedSeat {
     }
 
     public static class ReservedSeatDetails {
-        public static final String TYPE = "reservedSeatDetails";
         private String description;
         private String total;
         private String id;
