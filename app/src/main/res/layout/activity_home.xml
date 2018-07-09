@@ -1,18 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="me.jlurena.ritscheduler.Home">
 
-    <TextView
+    <com.nightonke.boommenu.BoomMenuButton
+        android:id="@+id/boom_menu_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-</android.support.constraint.ConstraintLayout>
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        app:bmb_boomEnum="boomHorizontalThrow_1"
+        app:bmb_buttonEnum="simpleCircle"
+        app:bmb_buttonPlaceEnum="buttonPlace_sc_1"
+        app:bmb_hideDuration="500"
+        app:bmb_piecePlaceEnum="piecePlace_dot_1"
+        app:bmb_showDuration="500"
+        app:bmb_normalColor="@color/color_primary"
+        app:bmb_draggable="true"
+        app:bmb_highlightedColor="@color/color_primary_highlight"/>
+</RelativeLayout>
