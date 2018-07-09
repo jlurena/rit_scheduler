@@ -646,12 +646,6 @@ public abstract class BoomButtonBuilder<T> {
         return (T) this;
     }
 
-    public T setImageClickListener(View.OnClickListener clickListener) {
-        BoomButton button = button();
-        button.image.setOnClickListener(clickListener);
-        return (T) this;
-    }
-
     /**
      * Add a custom view to the button.
      * @param layoutRes Layout ResID of view to add.
