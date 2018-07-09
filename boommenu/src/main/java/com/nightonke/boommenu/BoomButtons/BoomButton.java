@@ -15,6 +15,7 @@ import android.os.Build;
 import android.support.annotation.LayoutRes;
 import android.text.TextUtils;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -558,12 +559,23 @@ public abstract class BoomButton extends FrameLayout {
     }
 
     void updateInnerViewRect() {
-        FrameLayout.LayoutParams params = new LayoutParams(Util.dp2px(200), LayoutParams.WRAP_CONTENT);
-        if (image != null)
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        if (image != null) {
             params.leftMargin = imageRect.right;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-//            params.setMarginStart(innerViewRect.left);
-//        params.topMargin = innerViewRect.top;
+            params.topMargin = textRect.top;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                params.setMarginStart(imageRect.right);
+            }
+        } else {
+            params.leftMargin  = innerViewRect.left;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                params.setMarginStart(imageRect.right);
+            }
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            params.setMarginEnd(Util.dp2px(10));
+        }
+
         if (innerView != null)
             innerView.setLayoutParams(params);
     }

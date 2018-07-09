@@ -1,44 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.nightonke.boommenu.BMBShadow xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/shadow"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="10dp"
+    android:layout_marginStart="10dp">
 
-    <RelativeLayout
-        android:layout_width="200dp"
-        android:layout_height="wrap_content">
+    <EditText
+        android:id="@+id/search_course"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:hint="@string/csci_261"
+        android:textColor="@android:color/white"
+        android:textColorHint="@color/medium_gray"/>
 
-        <com.rengwuxian.materialedittext.MaterialEditText
-            android:id="@+id/search_course"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:hint="@string/csci_261"
-            app:met_baseColor="@color/color_primary"
-            app:met_errorColor="@android:color/holo_red_light"
-            app:met_floatingLabel="highlight"
-            app:met_helperText="@string/search_for_a_course"
-            app:met_maxCharacters="10"
-            app:met_textColor="@color/dark_gray" />
+    <fr.ganfra.materialspinner.MaterialSpinner
+        android:id="@+id/term_spinner"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        app:ms_alignLabels="false"
+        app:ms_arrowColor="@color/color_accent"
+        app:ms_arrowSize="16dp"
+        app:ms_baseColor="@color/color_primary"
+        app:ms_enableErrorLabel="false"
+        app:ms_enableFloatingLabel="false"
+        app:ms_errorColor="@android:color/holo_red_light"
+        app:ms_floatingLabelText="floating label"
+        app:ms_highlightColor="@color/color_primary_highlight"
+        app:ms_hint="Fall 2020" />
 
-        <fr.ganfra.materialspinner.MaterialSpinner
-            android:id="@+id/term_spinner"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="10dp"
-            app:ms_alignLabels="false"
-            app:ms_arrowColor="@color/color_accent"
-            app:ms_arrowSize="16dp"
-            app:ms_baseColor="@color/color_primary"
-            app:ms_enableErrorLabel="false"
-            app:ms_enableFloatingLabel="false"
-            app:ms_errorColor="@android:color/holo_red_light"
-            app:ms_floatingLabelText="floating label"
-            app:ms_highlightColor="@color/color_primary_highlight"
-            app:ms_hint="hint" />
-    </RelativeLayout>
-
-</com.nightonke.boommenu.BMBShadow>
+</RelativeLayout>

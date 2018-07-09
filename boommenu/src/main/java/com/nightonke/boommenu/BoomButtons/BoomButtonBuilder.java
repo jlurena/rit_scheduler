@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.LayoutRes;
 import android.text.TextUtils;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.nightonke.boommenu.Piece.BoomPiece;
@@ -642,6 +643,12 @@ public abstract class BoomButtonBuilder<T> {
                 if (piece != null) piece.setColor(button.pieceColor());
             }
         }
+        return (T) this;
+    }
+
+    public T setImageClickListener(View.OnClickListener clickListener) {
+        BoomButton button = button();
+        button.image.setOnClickListener(clickListener);
         return (T) this;
     }
 
