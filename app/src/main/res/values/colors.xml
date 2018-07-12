@@ -7,4 +7,10 @@
     <color name="dark_gray">#4E4E4E</color>
     <color name="medium_gray">#919191</color>
     <color name="light_gray">#fafafa</color>
+    <color name="beige_orange">#ffedbc</color>
+    <color name="header_color_calendar">#8f000000</color>
+    <color name="day_background_color_calendar">#05000000</color>
+    <color name="header_column_background_calendar">#ffffffff</color>
+    <color name="header_row_background_color_calendar">#ffefefef</color>
+    <color name="now_line_color_calendar">#dbfffc</color>
 </resources>

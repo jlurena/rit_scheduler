@@ -1,5 +1,7 @@
 package me.jlurena.ritscheduler.models;
 
+import android.support.annotation.ColorInt;
+
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +17,10 @@ public class Course extends Model {
 
     @JsonIgnore
     private static final String TYPE = "course";
+    /**
+     * Color assigned by user for UI.
+     */
+    private @ColorInt int color;
     private String subject;
     private String enrollStatus;
     private String classType;
@@ -457,5 +463,13 @@ public class Course extends Model {
     public Map<String, Object> toMap() {
         //noinspection unchecked
         return new ObjectMapper().convertValue(this, Map.class);
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
     }
 }

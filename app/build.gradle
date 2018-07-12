@@ -2,9 +2,6 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 27
-    configurations.all {
-        resolutionStrategy.force 'com.android.support:support-annotations:27.1.1'
-    }
     defaultConfig {
         applicationId "me.jlurena.ritscheduler"
         minSdkVersion 24
@@ -25,13 +22,12 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     // Widgets
-    implementation 'com.github.ppamorim:prismview:0.3'
-    implementation 'com.github.franmontiel:FullScreenDialog:1.0.1'
-    implementation 'com.rengwuxian.materialedittext:library:2.1.4'
+    implementation 'com.github.ppamorim:dragger:1.2'
     implementation('com.github.ganfra:material-spinner:2.0.0') {
         exclude group: 'com.android.support', module: 'appcompat-v7'
         exclude group: 'com.android.support', module: 'appcompat-v4'
     }
+    implementation 'com.github.quivr:android-week-view:2.3.0'
     // Couchbase NoSQL DB
     implementation 'com.couchbase.lite:couchbase-lite-android:2.0.2'
     // Networking
@@ -39,10 +35,11 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-core:2.9.3'
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.9.3'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.3'
-    implementation project(':android_week_view')
     // Support Libraries
-    //noinspection GradleCompatible
     implementation 'com.android.support:support-compat:27.1.1'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:recyclerview-v7:27.1.1'
+    implementation 'com.android.support:support-v4:27.1.1'
     implementation 'com.android.support:support-core-ui:27.1.1'
     implementation 'com.android.support:support-annotations:27.1.1'
     implementation project(':boommenu')

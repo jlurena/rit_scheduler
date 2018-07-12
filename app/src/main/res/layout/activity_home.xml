@@ -6,6 +6,26 @@
     android:layout_height="match_parent"
     tools:context="me.jlurena.ritscheduler.Home">
 
+    <com.alamkanak.weekview.WeekView
+        android:id="@+id/weekView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:firstDayOfWeek="sunday"
+        app:showNowLine="true"
+        app:nowLineColor="@android:color/holo_red_light"
+        app:nowLineThickness="4dp"
+        app:eventTextColor="@android:color/white"
+        app:textSize="12sp"
+        app:hourHeight="60dp"
+        app:headerColumnPadding="8dp"
+        app:headerColumnTextColor="@color/header_color_calendar"
+        app:headerRowPadding="12dp"
+        app:columnGap="8dp"
+        app:headerRowBackgroundColor="@color/header_row_background_color_calendar"
+        app:dayBackgroundColor="@color/day_background_color_calendar"
+        app:todayBackgroundColor="#EFF7FE"
+        app:headerColumnBackground="@color/header_column_background_calendar"/>
+
     <com.nightonke.boommenu.BoomMenuButton
         android:id="@+id/boom_menu_button"
         android:layout_width="wrap_content"

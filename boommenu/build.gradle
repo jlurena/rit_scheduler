@@ -26,13 +26,13 @@ ext {
 
 android {
     compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
-        minSdkVersion 14
+        minSdkVersion 24
         targetSdkVersion 27
         versionCode 2110
-        versionName "2.1.1"
+        versionName "2.1.2"
     }
     buildTypes {
         release {
@@ -45,4 +45,5 @@ android {
 dependencies {
     implementation "com.android.support:support-compat:27.1.1"
     implementation "com.android.support:support-core-ui:27.1.1"
+    implementation 'com.android.support:support-v4:27.1.1'
 }
