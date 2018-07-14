@@ -1,0 +1,26 @@
+apply plugin: 'com.android.library'
+
+repositories {
+    mavenCentral()
+}
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion '28.0.1'
+
+    defaultConfig {
+        minSdkVersion 24
+        targetSdkVersion 28
+    }
+}
+
+configurations {
+    javadocDeps
+}
+dependencies {
+    implementation "com.android.support:support-compat:28.0.0-alpha3"
+    implementation "com.android.support:support-core-ui:28.0.0-alpha3"
+    implementation 'com.android.support:support-v4:28.0.0-alpha3'
+    implementation 'com.android.support:appcompat-v7:28.0.0-alpha3'
+    javadocDeps 'com.android.support:appcompat-v7:28.0.0-alpha3'
+}
