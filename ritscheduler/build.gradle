@@ -4,7 +4,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "me.jlurena.ritscheduler"
-        minSdkVersion 24
+        minSdkVersion 26
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -22,11 +22,9 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     // Widgets
-    implementation 'com.github.ppamorim:dragger:1.2'
-    implementation('com.github.ganfra:material-spinner:2.0.0') {
-        exclude group: 'com.android.support', module: 'appcompat-v7'
-        exclude group: 'com.android.support', module: 'appcompat-v4'
-    }
+    implementation 'com.google.dagger:dagger:2.0'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.0'
+    implementation 'com.github.ganfra:material-spinner:2.0.0'
     // Couchbase NoSQL DB
     implementation 'com.couchbase.lite:couchbase-lite-android:2.0.2'
     // Networking
@@ -35,12 +33,8 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.9.3'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.3'
     // Support Libraries
-    implementation 'com.android.support:support-compat:28.0.0-alpha3'
-    implementation 'com.android.support:appcompat-v7:28.0.0-alpha3'
-    implementation 'com.android.support:recyclerview-v7:28.0.0-alpha3'
-    implementation 'com.android.support:support-v4:28.0.0-alpha3'
-    implementation 'com.android.support:support-core-ui:28.0.0-alpha3'
     implementation 'com.android.support:support-annotations:27.1.1'
+    // Modules
     implementation project(':boommenu')
     implementation project(':androidweekview')
 }
