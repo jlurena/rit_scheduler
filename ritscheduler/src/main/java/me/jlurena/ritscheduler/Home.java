@@ -3,6 +3,8 @@ package me.jlurena.ritscheduler;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.nightonke.boommenu.BoomButtons.BoomButton;
 import com.nightonke.boommenu.BoomButtons.HamButton;
@@ -11,17 +13,23 @@ import com.nightonke.boommenu.ButtonEnum;
 import com.nightonke.boommenu.OnBoomListenerAdapter;
 import com.nightonke.boommenu.Util;
 
+import org.threeten.bp.LocalDate;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.ganfra.materialspinner.MaterialSpinner;
 import me.jlurena.revolvingweekview.WeekView;
 import me.jlurena.revolvingweekview.WeekViewEvent;
+import me.jlurena.ritscheduler.models.Term;
 
 
 public class Home extends Activity {
 
     private BoomMenuButton mBoomMenuButton;
-    private WeekView weekView;
+    private WeekView mWeekView;
+    private MaterialSpinner mTermSpinner;
+    private EditText mSearchCourse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +37,19 @@ public class Home extends Activity {
         setContentView(R.layout.activity_home);
         initBoomButton();
         initCalendar();
+        initSearchCourse();
+        initTermSpinner();
 
+        Toast.makeText(getApplicationContext(), Term.nextTerm(), Toast.LENGTH_LONG).show();
+
+    }
+
+    private void initSearchCourse() {
+        mTermSpinner = findViewById(R.id.term_spinner);
+    }
+
+    private void initTermSpinner() {
+        mSearchCourse = findViewById(R.id.search_course);
     }
 
     private void initBoomButton() {
@@ -60,9 +80,9 @@ public class Home extends Activity {
     }
 
     private void initCalendar() {
-        weekView = findViewById(R.id.weekView);
+        mWeekView = findViewById(R.id.weekView);
 
-        weekView.setWeekViewLoader(new WeekView.WeekViewLoader() {
+        mWeekView.setWeekViewLoader(new WeekView.WeekViewLoader() {
 
             @Override
             public List<? extends WeekViewEvent> onWeekViewLoad() {
