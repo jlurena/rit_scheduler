@@ -1,1 +1,1 @@
-include ':ritscheduler', ':boommenu', 'androidweekview'
+include ':ritscheduler', ':boommenu', 'revolvingweekview'

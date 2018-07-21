@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 27
     defaultConfig {
         applicationId "me.jlurena.ritscheduler"
-        minSdkVersion 26
-        targetSdkVersion 28
+        minSdkVersion 22
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -16,15 +16,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    buildToolsVersion '28.0.1'
+    buildToolsVersion "27.0.3"
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     // Widgets
-    implementation 'com.google.dagger:dagger:2.0'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.0'
-    implementation 'com.github.ganfra:material-spinner:2.0.0'
+    implementation ('com.github.ganfra:material-spinner:2.0.0'){
+        exclude group: 'com.android.support', module: 'appcompat-v7'
+    }
     // Couchbase NoSQL DB
     implementation 'com.couchbase.lite:couchbase-lite-android:2.0.2'
     // Networking
@@ -34,7 +34,9 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.3'
     // Support Libraries
     implementation 'com.android.support:support-annotations:27.1.1'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:recyclerview-v7:27.1.1'
     // Modules
     implementation project(':boommenu')
-    implementation project(':androidweekview')
+    implementation project(':revolvingweekview')
 }

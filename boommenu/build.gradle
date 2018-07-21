@@ -25,12 +25,12 @@ ext {
 }
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '28.0.1'
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
 
     defaultConfig {
-        minSdkVersion 24
-        targetSdkVersion 28
+        minSdkVersion 22
+        targetSdkVersion 27
         versionCode 2110
         versionName "2.1.2"
     }
@@ -44,4 +44,5 @@ android {
 
 dependencies {
     implementation 'com.android.support:support-annotations:27.1.1'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
 }

@@ -6,6 +6,22 @@
     android:layout_height="match_parent"
     tools:context="me.jlurena.ritscheduler.Home">
 
+    <me.jlurena.revolvingweekview.WeekView
+        android:id="@+id/weekView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:eventTextColor="@android:color/white"
+        app:hourHeight="60dp"
+        app:headerColumnPadding="8dp"
+        app:headerColumnTextColor="#8f000000"
+        app:headerRowPadding="12dp"
+        app:noOfVisibleDays="3"
+        app:headerRowBackgroundColor="@color/color_accent"
+        app:dayBackgroundColor="#05000000"
+        app:todayBackgroundColor="#1848adff"
+        app:headerColumnBackground="#ffefefef"
+        />
+
 
     <com.nightonke.boommenu.BoomMenuButton
         android:id="@+id/boom_menu_button"

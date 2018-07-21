@@ -11,10 +11,17 @@ import com.nightonke.boommenu.ButtonEnum;
 import com.nightonke.boommenu.OnBoomListenerAdapter;
 import com.nightonke.boommenu.Util;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import me.jlurena.revolvingweekview.WeekView;
+import me.jlurena.revolvingweekview.WeekViewEvent;
+
 
 public class Home extends Activity {
 
     private BoomMenuButton mBoomMenuButton;
+    private WeekView weekView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +60,14 @@ public class Home extends Activity {
     }
 
     private void initCalendar() {
+        weekView = findViewById(R.id.weekView);
 
+        weekView.setWeekViewLoader(new WeekView.WeekViewLoader() {
+
+            @Override
+            public List<? extends WeekViewEvent> onWeekViewLoad() {
+                return new ArrayList<>();
+            }
+        });
     }
 }
