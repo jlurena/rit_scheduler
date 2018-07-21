@@ -6,7 +6,11 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.List;
 import java.util.Map;
+
+import me.jlurena.revolvingweekview.WeekView;
+import me.jlurena.revolvingweekview.WeekViewEvent;
 
 /**
  * models.Course.java
@@ -471,5 +475,20 @@ public class Course extends Model {
 
     public void setColor(int color) {
         this.color = color;
+    }
+
+    /**
+     * Creates a List of WeekViewEvents based on this Course's properties.
+     * @return A list of WeekViewEvents.
+     */
+    public List<WeekViewEvent> toWeekViewEvents() {
+        List<WeekViewEvent> events = meetings.toWeekViewEvents(); // Get WeekViewEvents from meetings.
+
+        for (WeekViewEvent event: events) {
+            event.setIdentifier(this.courseId);
+            event.setColor(this.color);
+            event.setName(this.subject + " " + this.catalogNumber + "-" + this.section);
+        }
+        return events;
     }
 }

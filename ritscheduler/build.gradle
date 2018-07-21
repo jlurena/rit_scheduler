@@ -36,6 +36,7 @@ dependencies {
     implementation 'com.android.support:support-annotations:27.1.1'
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:recyclerview-v7:27.1.1'
+    implementation 'com.jakewharton.threetenabp:threetenabp:1.1.0'
     // Modules
     implementation project(':boommenu')
     implementation project(':revolvingweekview')
