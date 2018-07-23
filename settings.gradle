@@ -1,1 +1,1 @@
-include ':ritscheduler', ':boommenu', 'revolvingweekview'
+include ':ritscheduler', ':boommenu'

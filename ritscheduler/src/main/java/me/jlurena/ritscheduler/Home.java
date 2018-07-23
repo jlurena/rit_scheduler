@@ -13,8 +13,6 @@ import com.nightonke.boommenu.ButtonEnum;
 import com.nightonke.boommenu.OnBoomListenerAdapter;
 import com.nightonke.boommenu.Util;
 
-import org.threeten.bp.LocalDate;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +38,8 @@ public class Home extends Activity {
         initSearchCourse();
         initTermSpinner();
 
-        Toast.makeText(getApplicationContext(), Term.nextTerm(), Toast.LENGTH_LONG).show();
+        Term term = new Term();
+        Toast.makeText(getApplicationContext(), term.goToSemester(3), Toast.LENGTH_LONG).show();
 
     }
 

@@ -25,6 +25,7 @@ dependencies {
     implementation ('com.github.ganfra:material-spinner:2.0.0'){
         exclude group: 'com.android.support', module: 'appcompat-v7'
     }
+    implementation 'me.jlurena:revolvingweekview:1.0.0'
     // Couchbase NoSQL DB
     implementation 'com.couchbase.lite:couchbase-lite-android:2.0.2'
     // Networking
@@ -39,5 +40,4 @@ dependencies {
     implementation 'com.jakewharton.threetenabp:threetenabp:1.1.0'
     // Modules
     implementation project(':boommenu')
-    implementation project(':revolvingweekview')
 }
