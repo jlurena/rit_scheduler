@@ -38,13 +38,10 @@ public class Home extends Activity {
         initSearchCourse();
         initTermSpinner();
 
-        Term term = new Term();
-        Toast.makeText(getApplicationContext(), term.goToSemester(3), Toast.LENGTH_LONG).show();
 
     }
 
     private void initSearchCourse() {
-        mTermSpinner = findViewById(R.id.term_spinner);
     }
 
     private void initTermSpinner() {

@@ -40,4 +40,11 @@ dependencies {
     implementation 'com.jakewharton.threetenabp:threetenabp:1.1.0'
     // Modules
     implementation project(':boommenu')
+
+    // Test Libraries
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:1.10.19'
+    testImplementation ('org.threeten:threetenbp:1.1.0'){
+        exclude group:'com.jakewharton.threetenabp', module:'threetenabp'
+    }
 }
