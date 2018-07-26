@@ -1,8 +1,9 @@
 package me.jlurena.ritscheduler;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -19,6 +20,7 @@ import java.util.List;
 
 import me.jlurena.revolvingweekview.WeekView;
 import me.jlurena.revolvingweekview.WeekViewEvent;
+import me.jlurena.ritscheduler.models.Course;
 import me.jlurena.ritscheduler.models.Term;
 
 
@@ -28,34 +30,50 @@ public class Home extends Activity {
     private WeekView mWeekView;
     private Spinner mTermSpinner;
     private EditText mSearchCourse;
-    private Term term;
-
+    private List<Course> courses;
+    private Term selectedTerm;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         initBoomButton();
         initCalendar();
-
-
     }
 
-    private void initSearchCourse() {
+    private void initSearchCourseEditText() {
+        mSearchCourse = findViewById(R.id.search_course);
+        mSearchCourse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mSearchCourse.setError(null);
+            }
+        });
     }
 
     private void initTermSpinner() {
         mTermSpinner = findViewById(R.id.term_spinner);
-        term = Term.currentTerm();
+        Term term = Term.currentTerm();
         // Generate current and next two terms
-        Term[] terms = { term, term.nextSemester(), term.plusSemesters(2)};
+        Term[] terms = {term, term.nextSemester(), term.plusSemesters(2)};
         ArrayAdapter<Term> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, terms);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mTermSpinner.setAdapter(spinnerAdapter);
+
+        mTermSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                selectedTerm = (Term) mTermSpinner.getSelectedItem();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                selectedTerm = (Term) mTermSpinner.getItemAtPosition(0);
+            }
+        });
     }
 
     private void initBoomButton() {
         mBoomMenuButton = findViewById(R.id.boom_menu_button);
-        final Context context = this.getBaseContext();
 
         mBoomMenuButton.setButtonEnum(ButtonEnum.Ham);
 
@@ -65,22 +83,30 @@ public class Home extends Activity {
                 .normalColorRes(R.color.dark_gray)
                 .highlightedColorRes(R.color.color_accent)
                 .buttonHeight(Util.dp2px(80)));
+
         mBoomMenuButton.setOnBoomListener(new OnBoomListenerAdapter() {
 
             @Override
             public void onClicked(int index, BoomButton boomButton) {
-                // When clicked
+                String query = mSearchCourse.getText().toString();
+                if (query.isEmpty()) {
+                    mSearchCourse.setError("Search field cannot be empty");
+                } else {
+                    // TODO launch new activity and perform search
+                }
             }
 
             @Override
             public void onBoomDidHide() {
-                // When finished hiding
+                mSearchCourse.getText().clear();
+                mSearchCourse.setError(null);
             }
 
             @Override
             public void onBoomDidShow() {
                 // Setup View inside of boom
                 initTermSpinner();
+                initSearchCourseEditText();
 
             }
         });
@@ -93,6 +119,7 @@ public class Home extends Activity {
 
             @Override
             public List<? extends WeekViewEvent> onWeekViewLoad() {
+                // TODO load saved events in db here
                 return new ArrayList<>();
             }
         });

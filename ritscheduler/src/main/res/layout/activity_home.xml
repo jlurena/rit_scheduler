@@ -37,5 +37,6 @@
         app:bmb_highlightedColor="@color/color_primary_highlight"
         app:bmb_normalColor="@color/color_primary"
         app:bmb_piecePlaceEnum="piecePlace_dot_1"
+        app:bmb_autoHide="false"
         app:bmb_showDuration="500" />
 </RelativeLayout>

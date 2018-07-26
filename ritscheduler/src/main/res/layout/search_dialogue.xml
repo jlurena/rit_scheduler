@@ -16,7 +16,8 @@
         android:textColor="@android:color/white"
         android:textColorHint="@color/medium_gray"
         android:textSize="16sp"
-        android:inputType="textVisiblePassword" />
+        android:inputType="textVisiblePassword"
+        android:maxLength="10"/>
 
     <Spinner
         android:id="@+id/term_spinner"
