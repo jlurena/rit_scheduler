@@ -5,5 +5,26 @@
         <item name="android:colorPrimary">@color/color_primary</item>
         <item name="android:colorPrimaryDark">@color/color_primary_dark</item>
         <item name="android:colorAccent">@color/color_accent</item>
+
+        <item name="android:spinnerItemStyle" parent="Base.Widget.AppCompat.Spinner.Underlined">
+            @style/spinnerItemStyle
+        </item>
+
+        <item name="android:spinnerDropDownItemStyle">
+            @style/spinnerDropDownItemStyle
+        </item>
+    </style>
+    <style name="spinnerItemStyle">
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+    <style name="spinnerDropDownItemStyle" parent="@android:style/Widget.DropDownItem.Spinner">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@color/boom_menu_button_bg</item>
+        <item name="android:textSize">16sp</item>
     </style>
 </resources>

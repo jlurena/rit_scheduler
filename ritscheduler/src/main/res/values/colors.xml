@@ -13,4 +13,5 @@
     <color name="header_column_background_calendar">#ffffffff</color>
     <color name="header_row_background_color_calendar">#ffefefef</color>
     <color name="now_line_color_calendar">#dbfffc</color>
+    <color name="boom_menu_button_bg">#4e4e4e</color>
 </resources>

@@ -10,27 +10,20 @@
         android:id="@+id/search_course"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_toStartOf="@+id/term_spinner"
         android:layout_alignParentStart="true"
         android:hint="@string/csci_261"
         android:textColor="@android:color/white"
         android:textColorHint="@color/medium_gray"
-        android:inputType="text" />
+        android:textSize="16sp"
+        android:inputType="textVisiblePassword" />
 
-    <fr.ganfra.materialspinner.MaterialSpinner
+    <Spinner
         android:id="@+id/term_spinner"
-        android:layout_width="100dp"
+        android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        app:ms_alignLabels="false"
-        app:ms_arrowColor="@color/color_accent"
-        app:ms_arrowSize="16dp"
-        app:ms_baseColor="@color/color_primary"
-        app:ms_enableErrorLabel="false"
-        app:ms_enableFloatingLabel="false"
-        app:ms_errorColor="@android:color/holo_red_light"
-        app:ms_floatingLabelText="floating label"
-        app:ms_highlightColor="@color/color_primary_highlight"
-        app:ms_hint="Fall 2020" />
+        android:layout_alignBaseline="@+id/search_course"
+        style="@style/Base.Widget.AppCompat.Spinner.Underlined" />
 
 </RelativeLayout>

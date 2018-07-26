@@ -3,8 +3,9 @@ package me.jlurena.ritscheduler;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.Spinner;
 
 import com.nightonke.boommenu.BoomButtons.BoomButton;
 import com.nightonke.boommenu.BoomButtons.HamButton;
@@ -16,7 +17,6 @@ import com.nightonke.boommenu.Util;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.ganfra.materialspinner.MaterialSpinner;
 import me.jlurena.revolvingweekview.WeekView;
 import me.jlurena.revolvingweekview.WeekViewEvent;
 import me.jlurena.ritscheduler.models.Term;
@@ -26,8 +26,9 @@ public class Home extends Activity {
 
     private BoomMenuButton mBoomMenuButton;
     private WeekView mWeekView;
-    private MaterialSpinner mTermSpinner;
+    private Spinner mTermSpinner;
     private EditText mSearchCourse;
+    private Term term;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +36,6 @@ public class Home extends Activity {
         setContentView(R.layout.activity_home);
         initBoomButton();
         initCalendar();
-        initSearchCourse();
-        initTermSpinner();
 
 
     }
@@ -45,7 +44,13 @@ public class Home extends Activity {
     }
 
     private void initTermSpinner() {
-        mSearchCourse = findViewById(R.id.search_course);
+        mTermSpinner = findViewById(R.id.term_spinner);
+        term = Term.currentTerm();
+        // Generate current and next two terms
+        Term[] terms = { term, term.nextSemester(), term.plusSemesters(2)};
+        ArrayAdapter<Term> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, terms);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mTermSpinner.setAdapter(spinnerAdapter);
     }
 
     private void initBoomButton() {
@@ -54,8 +59,6 @@ public class Home extends Activity {
 
         mBoomMenuButton.setButtonEnum(ButtonEnum.Ham);
 
-
-        // Search for a course
         mBoomMenuButton.addBuilder(new HamButton.Builder()
                 .normalImageRes(android.R.drawable.ic_menu_search)
                 .addView(R.layout.search_dialogue)
@@ -68,9 +71,17 @@ public class Home extends Activity {
             public void onClicked(int index, BoomButton boomButton) {
                 // When clicked
             }
+
             @Override
             public void onBoomDidHide() {
                 // When finished hiding
+            }
+
+            @Override
+            public void onBoomDidShow() {
+                // Setup View inside of boom
+                initTermSpinner();
+
             }
         });
     }

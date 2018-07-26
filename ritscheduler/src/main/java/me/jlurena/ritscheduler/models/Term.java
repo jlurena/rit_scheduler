@@ -102,11 +102,7 @@ public class Term {
 
     @Override
     public String toString() {
-        return "Term{" +
-                "currentTermDate=" + currentTermDate +
-                ", semester=" + semester +
-                ", termCode='" + termCode + '\'' +
-                '}';
+        return String.format(Locale.getDefault(), "%s '%d", this.semester.toString(), this.currentTermDate.getYear() % 100);
     }
 
     /**
