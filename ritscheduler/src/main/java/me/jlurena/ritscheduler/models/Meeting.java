@@ -7,6 +7,8 @@ import org.threeten.bp.LocalTime;
 import org.threeten.bp.format.DateTimeFormatter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import me.jlurena.revolvingweekview.DayTime;
@@ -152,5 +154,13 @@ public class Meeting {
         }
 
         return events;
+    }
+
+    /**
+     * Check if the same instructor is used.
+     * @return true if same instructor is used.
+     */
+    public boolean isSameInstructor() {
+        return Collections.frequency(Arrays.asList(instructors), instructors[0]) == instructors.length;
     }
 }

@@ -14,4 +14,10 @@
     <color name="header_row_background_color_calendar">#ffefefef</color>
     <color name="now_line_color_calendar">#dbfffc</color>
     <color name="boom_menu_button_bg">#4e4e4e</color>
+    <color name="open_course_icon">@android:color/holo_green_light</color>
+    <color name="open_course_text">@android:color/holo_green_dark</color>
+    <color name="closed_course_icon">@android:color/holo_red_light</color>
+    <color name="closed_course_text">@android:color/holo_red_dark</color>
+    <color name="colorPrimaryTextDefaultMaterialLight">#DE000000</color>
+    <color name="material_gray">#DFDFDF</color>
 </resources>
