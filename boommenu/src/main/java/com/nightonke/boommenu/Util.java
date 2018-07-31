@@ -20,6 +20,7 @@ import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.StateSet;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -384,6 +385,10 @@ public class Util {
 
     public static Util getInstance() {
         return ourInstance;
+    }
+
+    public static int sp2Px(float sp, Context context) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.getResources().getDisplayMetrics());
     }
 
     private Util() {

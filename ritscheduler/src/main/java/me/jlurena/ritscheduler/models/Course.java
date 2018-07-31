@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import me.jlurena.revolvingweekview.WeekView;
@@ -490,5 +491,13 @@ public class Course extends Model {
             event.setName(this.subject + " " + this.catalogNumber + "-" + this.section);
         }
         return events;
+    }
+
+    /**
+     * Get qualified name of Course.
+     * @return The qualified name of this Course in the format of [subject]-[section]. Eg: CSCI-250.
+     */
+    public String getQualifiedName() {
+        return String.format(Locale.getDefault(), "%s-%s", this.subject, this.section);
     }
 }
