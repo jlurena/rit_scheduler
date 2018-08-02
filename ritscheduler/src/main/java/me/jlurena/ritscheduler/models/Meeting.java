@@ -1,5 +1,6 @@
 package me.jlurena.ritscheduler.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.threeten.bp.DayOfWeek;
@@ -160,6 +161,7 @@ public class Meeting {
      * Check if the same instructor is used.
      * @return true if same instructor is used.
      */
+    @JsonIgnore
     public boolean isSameInstructor() {
         return Collections.frequency(Arrays.asList(instructors), instructors[0]) == instructors.length;
     }

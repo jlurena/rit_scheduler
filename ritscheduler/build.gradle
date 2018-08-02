@@ -9,6 +9,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        renderscriptTargetApi 18
+        renderscriptSupportModeEnabled true
     }
     buildTypes {
         release {
@@ -24,6 +26,8 @@ dependencies {
     // Widgets
     implementation 'me.jlurena:revolvingweekview:1.0.0'
     implementation 'com.github.rey5137:material:1.2.5'
+    // Future use: implementation 'com.xw.repo:bubbleseekbar:3.19'
+    implementation 'com.github.rtugeek:colorseekbar:1.7.2'
     // Couchbase NoSQL DB
     implementation 'com.couchbase.lite:couchbase-lite-android:2.0.2'
     // Networking
@@ -38,6 +42,7 @@ dependencies {
     implementation 'com.android.support:cardview-v7:27.1.1'
     implementation 'com.jakewharton.threetenabp:threetenabp:1.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    implementation 'com.qhutch.elevationimageview:elevationimageview:2.0'
     // Modules
     implementation project(':boommenu')
 

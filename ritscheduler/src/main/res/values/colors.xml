@@ -19,5 +19,5 @@
     <color name="closed_course_icon">@android:color/holo_red_light</color>
     <color name="closed_course_text">@android:color/holo_red_dark</color>
     <color name="colorPrimaryTextDefaultMaterialLight">#DE000000</color>
-    <color name="material_gray">#DFDFDF</color>
+    <color name="material_gray">#f2efef</color>
 </resources>

@@ -497,6 +497,7 @@ public class Course extends Model {
      * Get qualified name of Course.
      * @return The qualified name of this Course in the format of [subject]-[section]. Eg: CSCI-250.
      */
+    @JsonIgnore
     public String getQualifiedName() {
         return String.format(Locale.getDefault(), "%s-%s", this.subject, this.section);
     }

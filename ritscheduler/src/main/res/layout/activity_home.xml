@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -21,14 +21,22 @@
         app:todayBackgroundColor="#1848adff"
         app:headerColumnBackground="#ffefefef"
         />
+    <FrameLayout
+        android:id="@+id/course_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
 
     <com.nightonke.boommenu.BoomMenuButton
         android:id="@+id/boom_menu_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:bmb_boomEnum="boomHorizontalThrow_1"
         app:bmb_buttonEnum="simpleCircle"
         app:bmb_buttonPlaceEnum="buttonPlace_sc_1"
@@ -39,4 +47,4 @@
         app:bmb_piecePlaceEnum="piecePlace_dot_1"
         app:bmb_autoHide="false"
         app:bmb_showDuration="500" />
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

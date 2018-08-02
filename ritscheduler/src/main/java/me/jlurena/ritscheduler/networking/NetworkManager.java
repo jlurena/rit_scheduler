@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import me.jlurena.ritscheduler.models.Course;
 
@@ -28,6 +29,7 @@ public class NetworkManager {
     private static final String TAG = "NetworkManager";
     private static NetworkManager instance = null;
     private final RequestQueue requestQueue;
+    private final static AtomicInteger requestCounter = new AtomicInteger();
 
     /**
      * Instantiate a NetworkManager with the application's context.
@@ -82,7 +84,7 @@ public class NetworkManager {
     public void queryCourses(String query, String term, final ResponseListener<List<Course>> responseListener) {
 
         String url = buildUrl(CourseSerializer.QUERY_URL, CourseSerializer.buildCourseQueryParameter(query, term));
-
+        requestCounter.incrementAndGet();
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -101,6 +103,14 @@ public class NetworkManager {
             }
         });
         requestQueue.add(request);
+        requestQueue.addRequestFinishedListener(new RequestQueue.RequestFinishedListener<Object>() {
+            @Override
+            public void onRequestFinished(Request<Object> request) {
+                if (requestCounter.get() == 0) {
+                    responseListener.onRequestFinished();
+                }
+            }
+        });
     }
 
     /**

@@ -48,11 +48,6 @@ public class Rotate3DAnimation extends Animation {
         final Camera camera = this.camera;
         final Matrix matrix = t.getMatrix();
 
-//        int index = (int) (xs.size() * interpolatedTime);
-//        if (index == xs.size()) index--;
-//        float x = xs.get(index);
-//        float y = ys.get(index);
-
         float x = 0, y = 0;
         if (interpolatedTime != 1) {
             float xOffset = interpolatedTime * xs.size();
