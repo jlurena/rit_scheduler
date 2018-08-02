@@ -1,9 +1,15 @@
 package me.jlurena.ritscheduler;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
@@ -11,7 +17,7 @@ import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.FrameLayout;
 import android.widget.Spinner;
 
 import com.android.volley.VolleyError;
@@ -37,26 +43,35 @@ public class Home extends Activity {
 
     private BoomMenuButton mBoomMenuButton;
     private WeekView mWeekView;
+    private ViewGroup mHomeMainContainer;
     private Spinner mTermSpinner;
     private EditText mSearchCourse;
+    private CourseCardFragment courseCardFragment;
+    private FrameLayout mFragmentContainer;
+
     private Term selectedTerm;
     private NetworkManager networkManager;
+    private boolean isCourseCardVisible = false;
+    private static final String COURSE_FRAG_TAG = "CourseFrag";
 
 
     private static final String courseRegex = "^[A-Za-z]{4}\\s\\d{3}-\\d{2}$";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         networkManager = NetworkManager.getInstance(getApplicationContext());
+        this.mHomeMainContainer = findViewById(R.id.home_main_container);
+        this.mFragmentContainer = findViewById(R.id.course_fragment_container);
 
         initBoomButton();
         initCalendar();
     }
 
     private void initSearchCourseEditText() {
-        mSearchCourse = findViewById(R.id.search_course);
+        this.mSearchCourse = findViewById(R.id.search_course);
         mSearchCourse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -66,14 +81,14 @@ public class Home extends Activity {
     }
 
     private void initTermSpinner() {
-        mTermSpinner = findViewById(R.id.term_spinner);
+        this.mTermSpinner = findViewById(R.id.term_spinner);
         Term term = Term.currentTerm();
         // Generate current and next two terms
         Term[] terms = {term, term.nextSemester(), term.plusSemesters(2)};
         ArrayAdapter<Term> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, terms);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mTermSpinner.setAdapter(spinnerAdapter);
-        selectedTerm = term;
+        this.mTermSpinner.setAdapter(spinnerAdapter);
+        this.selectedTerm = term;
 
         mTermSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -89,7 +104,7 @@ public class Home extends Activity {
     }
 
     private void initBoomButton() {
-        mBoomMenuButton = findViewById(R.id.boom_menu_button);
+        this.mBoomMenuButton = findViewById(R.id.boom_menu_button);
 
         mBoomMenuButton.setButtonEnum(ButtonEnum.Ham);
 
@@ -104,7 +119,8 @@ public class Home extends Activity {
 
             @Override
             public void onClicked(int index, final BoomButton boomButton) {
-                RotateAnimation rotateAnimation = new RotateAnimation(0, 180, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                RotateAnimation rotateAnimation = new RotateAnimation(0, 180, Animation.RELATIVE_TO_SELF, 0.5f,
+                        Animation.RELATIVE_TO_SELF, 0.5f);
                 rotateAnimation.setDuration(3000);
                 rotateAnimation.setInterpolator(new LinearInterpolator());
 
@@ -122,6 +138,7 @@ public class Home extends Activity {
                         networkManager.queryCourses(query, selectedTerm.getTermCode(),
                                 new ResponseListener<List<Course>>() {
 
+                                    @SuppressLint("ClickableViewAccessibility")
                                     @Override
                                     public void getResult(List<Course> courses, int errorCode, VolleyError error) {
                                         if (errorCode == 200) {
@@ -130,14 +147,9 @@ public class Home extends Activity {
                                             } else if (courses.size() < 1) {
                                                 // TODO not found error
                                             } else {
+                                                courseCardFragment = CourseCardFragment.newInstance(courses.get(0));
+                                                isCourseCardVisible = true;
                                                 mBoomMenuButton.reboom();
-                                                CourseCardFragment courseCardFragment = CourseCardFragment
-                                                        .newInstance(courses.get(0));
-                                                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                                                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                                                ft.replace(R.id.course_fragment_container, courseCardFragment).commit();
-
-
                                             }
                                         } else {
 
@@ -161,6 +173,14 @@ public class Home extends Activity {
             public void onBoomDidHide() {
                 mSearchCourse.getText().clear();
                 mSearchCourse.setError(null);
+                if (isCourseCardVisible) {
+                    disableBackground();
+                    final FragmentManager fm = getFragmentManager();
+                    final FragmentTransaction ft = fm.beginTransaction();
+                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                    ft.replace(R.id.course_fragment_container, courseCardFragment,
+                            COURSE_FRAG_TAG).commit();
+                }
             }
 
             @Override
@@ -173,8 +193,48 @@ public class Home extends Activity {
         });
     }
 
+    private void enableBackground() {
+        Utils.clearDim(mHomeMainContainer);
+        mBoomMenuButton.setDraggable(true);
+        mBoomMenuButton.setEnabled(true);
+    }
+
+    private void disableBackground() {
+        // Dim and remove listeners from background
+
+        mBoomMenuButton.setDraggable(false);
+        mBoomMenuButton.setEnabled(false);
+        Utils.applyDim(mHomeMainContainer, .5F);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+
+            if (isCourseCardVisible && courseCardFragment != null) {
+                Rect rect = new Rect(0, 0, 0, 0);
+
+                mFragmentContainer.getHitRect(rect);
+
+                boolean intersects = rect.contains((int) event.getX(), (int) event.getY());
+
+                if (!intersects) {
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+                    ft.remove(courseCardFragment).commit();
+                    enableBackground();
+                    isCourseCardVisible = false;
+                    return true;
+                }
+            }
+        }
+
+        return super.onTouchEvent(event);
+    }
+
     private void initCalendar() {
-        mWeekView = findViewById(R.id.weekView);
+        this.mWeekView = findViewById(R.id.weekView);
 
         mWeekView.setWeekViewLoader(new WeekView.WeekViewLoader() {
 
