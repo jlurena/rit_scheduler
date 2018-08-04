@@ -440,7 +440,7 @@ public abstract class BoomButton extends FrameLayout {
     }
 
     // TODO HERE HAMBUTTON IS MADE
-    @SuppressLint("NewApi")
+    @SuppressLint({"NewApi", "ClickableViewAccessibility"})
     protected void initHamButton() {
         button = (FrameLayout) findViewById(R.id.button);
         LayoutParams params = (LayoutParams) button.getLayoutParams();

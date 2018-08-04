@@ -22,13 +22,6 @@ public abstract class Model {
     }
 
     /**
-     * Convert this model object into a representative map.
-     *
-     * @return A map representing this model.
-     */
-    public abstract Map<String, Object> toMap();
-
-    /**
      * Get the modelId, a unique ID representing this type of model.
      *
      * @return The modelId.
@@ -45,4 +38,11 @@ public abstract class Model {
     public void setModelId(String modelId) {
         this.modelId = modelId;
     }
+
+    /**
+     * Convert this model object into a representative map.
+     *
+     * @return A map representing this model.
+     */
+    public abstract Map<String, Object> toMap();
 }

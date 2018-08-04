@@ -119,7 +119,7 @@
             android:layout_height="40dp"
             android:layout_marginBottom="5dp"
             android:layout_marginEnd="10dp"
-            android:background="@drawable/ripple_round_add_button"
+            android:background="@drawable/ripple_round_button"
             android:contentDescription="@string/add"
             android:elevation="8dp"
             android:src="@drawable/plus"

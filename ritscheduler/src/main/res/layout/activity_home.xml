@@ -36,7 +36,7 @@
             app:bmb_buttonPlaceEnum="buttonPlace_sc_1"
             app:bmb_draggable="true"
             app:bmb_hideDuration="500"
-            app:bmb_highlightedColor="@color/color_primary_highlight"
+            app:bmb_highlightedColor="@color/color_primary_ripple"
             app:bmb_normalColor="@color/color_primary"
             app:bmb_piecePlaceEnum="piecePlace_dot_1"
             app:bmb_showDuration="500"

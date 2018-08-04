@@ -27,9 +27,9 @@ import me.jlurena.ritscheduler.models.Course;
 public class NetworkManager {
 
     private static final String TAG = "NetworkManager";
+    private final static AtomicInteger requestCounter = new AtomicInteger();
     private static NetworkManager instance = null;
     private final RequestQueue requestQueue;
-    private final static AtomicInteger requestCounter = new AtomicInteger();
 
     /**
      * Instantiate a NetworkManager with the application's context.
@@ -47,8 +47,9 @@ public class NetworkManager {
      * @return The instance of NetworkManager.
      */
     public static synchronized NetworkManager getInstance(Context context) {
-        if (instance == null)
+        if (instance == null) {
             instance = new NetworkManager(context);
+        }
         return instance;
     }
 
@@ -63,6 +64,24 @@ public class NetworkManager {
             throw new IllegalStateException(NetworkManager.class.getSimpleName() + " is not initialized");
         }
         return instance;
+    }
+
+    /**
+     * Builds and encodes a URL.
+     *
+     * @param queryUrl URL path.
+     * @param parameters Parameters of URL.
+     * @return An encoded URL.
+     */
+    private String buildUrl(String queryUrl, JSONObject parameters) {
+        String url = null;
+        try {
+            url = queryUrl + URLEncoder.encode(parameters.toString(), "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            Log.e(TAG, "Error building URL", e);
+        }
+
+        return url;
     }
 
     /**
@@ -111,23 +130,5 @@ public class NetworkManager {
                 }
             }
         });
-    }
-
-    /**
-     * Builds and encodes a URL.
-     *
-     * @param queryUrl URL path.
-     * @param parameters Parameters of URL.
-     * @return An encoded URL.
-     */
-    private String buildUrl(String queryUrl, JSONObject parameters) {
-        String url = null;
-        try {
-            url = queryUrl + URLEncoder.encode(parameters.toString(), "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            Log.e(TAG, "Error building URL", e);
-        }
-
-        return url;
     }
 }

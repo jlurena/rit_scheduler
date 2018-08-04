@@ -57,6 +57,23 @@ public class Home extends Activity implements CourseCardFragment.OnAddCourseClic
     private boolean isCourseCardVisible = false;
     private DataManager dataManager;
 
+    @Override
+    public void addCourseListener(Course course) {
+        try {
+            dataManager.addModel(course);
+        } catch (CouchbaseLiteException e) {
+            new AlertDialog.Builder(Home.this)
+                    .setTitle(R.string.error)
+                    .setMessage(R.string.save_error)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).show();
+        }
+    }
+
     private void disableBackground() {
         // Dim and remove listeners from background
 
@@ -133,14 +150,7 @@ public class Home extends Activity implements CourseCardFragment.OnAddCourseClic
 
                                     // Display error if size is not 1
                                     if (courses.size() != 1) {
-                                        AlertDialog.Builder dialog = new AlertDialog.Builder(Home.this)
-                                                .setTitle(R.string.error)
-                                                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(DialogInterface dialog, int which) {
-                                                        dialog.dismiss();
-                                                    }
-                                                });
+                                        AlertDialog.Builder dialog = Utils.errorDialogFactory(Home.this, null);
 
                                         if (courses.size() > 1) {
                                             dialog.setMessage(R.string.course_term_ambigious_error_msg);
@@ -151,20 +161,13 @@ public class Home extends Activity implements CourseCardFragment.OnAddCourseClic
                                         dialog.show();
 
                                     } else {
-                                        courseCardFragment = CourseCardFragment.newInstance(courses.get(0));
+                                        courseCardFragment = CourseCardFragment.newInstance(Home.this, courses.get(0));
                                         courseCardFragment.setOnAddCourseClickListener(Home.this);
                                         isCourseCardVisible = true;
                                         mBoomMenuButton.reboom();
                                     }
                                 } else {
-                                    AlertDialog.Builder dialog = new AlertDialog.Builder(Home.this)
-                                            .setTitle(R.string.error)
-                                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    dialog.dismiss();
-                                                }
-                                            });
+                                    AlertDialog.Builder dialog = Utils.errorDialogFactory(Home.this, null);
 
                                     if (error != null) {
                                         dialog.setMessage(error.getMessage()).show();
@@ -232,23 +235,6 @@ public class Home extends Activity implements CourseCardFragment.OnAddCourseClic
                 selectedTerm = (Term) mTermSpinner.getItemAtPosition(0);
             }
         });
-    }
-
-    @Override
-    public void addCourseListener(Course course) {
-        try {
-            dataManager.addModel(course);
-        } catch (CouchbaseLiteException e) {
-            new AlertDialog.Builder(Home.this)
-                    .setTitle(R.string.error)
-                    .setMessage(R.string.save_error)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }).show();
-        }
     }
 
     @Override

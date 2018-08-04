@@ -1,11 +1,13 @@
 package me.jlurena.ritscheduler;
 
 import android.app.Fragment;
+import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v4.graphics.ColorUtils;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -22,9 +24,6 @@ import com.nightonke.boommenu.Util;
 import com.rtugeek.android.colorseekbar.ColorSeekBar;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import me.jlurena.ritscheduler.models.Course;
 import me.jlurena.ritscheduler.models.Meeting;
@@ -50,29 +49,57 @@ public class CourseCardFragment extends Fragment {
     /**
      * Factory method to create an instance of CardFragment.
      *
+     * @param context Application context.
      * @param course The course object.
      * @return A new instance of fragment CourseCardFragment.
      */
-    public static CourseCardFragment newInstance(Course course) {
+    public static CourseCardFragment newInstance(Context context, Course course) {
         CourseCardFragment fragment = new CourseCardFragment();
         Bundle args = new Bundle();
         try {
             args.putString(ARG_PARAM1, mapper.writeValueAsString(course));
             fragment.setArguments(args);
         } catch (JsonProcessingException e) {
-            // TODO some error
+            Utils.errorDialogFactory(context, context.getString(R.string.generic_error)).show();
         }
         return fragment;
     }
 
+    private TextView createTextView(String text, int row, int col) {
+        TextView textView = new TextView(getActivity());
+        GridLayout.LayoutParams gllp = new GridLayout.LayoutParams();
+
+        gllp.rowSpec = GridLayout.spec(row);
+        gllp.columnSpec = GridLayout.spec(col);
+        gllp.setMarginStart(Util.dp2px(10));
+        gllp.setMarginEnd(Util.dp2px(10));
+        textView.setLayoutParams(gllp);
+
+        textView.setText(text);
+        textView.setTextColor(getResources().getColor(R.color.dark_gray));
+        textView.setTextSize(12);
+        textView.setGravity(Gravity.CENTER);
+
+        return textView;
+    }
+
+    @SuppressWarnings("ConstantConditions")
     private void initColorSeekbar() {
-        final Drawable headerDrawable = DrawableCompat.wrap(this.mCourseHeader.getBackground());
+        // Create clone of drawables to set on header
+        final Drawable headerDrawable =
+                getResources().getDrawable(R.drawable.course_view_header_background, null).getConstantState().newDrawable().mutate();
+        final Drawable addButtonDrawable =
+                getResources().getDrawable(R.drawable.ripple_round_button, null).getConstantState().newDrawable().mutate();
+
         this.mColorSlider.setOnColorChangeListener(new ColorSeekBar.OnColorChangeListener() {
             @Override
             public void onColorChangeListener(int colorBarPosition, int alphaBarPosition, int color) {
                 currentColor = color;
-                DrawableCompat.setTint(headerDrawable, color);
+                headerDrawable.setTint(color);
                 mCourseHeader.setBackground(headerDrawable);
+
+                addButtonDrawable.setTint(color);
+                mAddCourse.setBackground(Utils.getPressedColorRippleDrawable(color, ColorUtils.blendARGB(color, Color.BLACK, 0.2F), addButtonDrawable));
             }
         });
 
@@ -80,13 +107,15 @@ public class CourseCardFragment extends Fragment {
             @Override
             public void done() {
                 if (currentColor != null) {
-                    DrawableCompat.setTint(headerDrawable, currentColor);
+                    headerDrawable.setTint(currentColor);
                     mCourseHeader.setBackground(headerDrawable);
+
+                    addButtonDrawable.setTint(currentColor);
+                    mAddCourse.setBackground(Utils.getPressedColorRippleDrawable(currentColor, ColorUtils.blendARGB(currentColor, Color.BLACK, 0.2F), addButtonDrawable));
                 } else {
-                    mColorSlider.setColorBarPosition(mColorSlider.getColorIndexPosition(getActivity().getResources().getColor(R.color.color_primary)));
+                    mColorSlider.setColorBarPosition(mColorSlider.getColorIndexPosition(getActivity().getResources().getColor(R.color
+                            .color_primary)));
                 }
-
-
             }
         });
 
@@ -110,24 +139,6 @@ public class CourseCardFragment extends Fragment {
 
     }
 
-    private TextView createTextView(String text, int row, int col) {
-        TextView textView = new TextView(getActivity());
-        GridLayout.LayoutParams gllp = new GridLayout.LayoutParams();
-
-        gllp.rowSpec = GridLayout.spec(row);
-        gllp.columnSpec = GridLayout.spec(col);
-        gllp.setMarginStart(Util.dp2px(10));
-        gllp.setMarginEnd(Util.dp2px(10));
-        textView.setLayoutParams(gllp);
-
-        textView.setText(text);
-        textView.setTextColor(getResources().getColor(R.color.dark_gray));
-        textView.setTextSize(12);
-        textView.setGravity(Gravity.CENTER);
-
-        return textView;
-    }
-
     private void initCourseCardDetails() {
         final int dayTimesCol = 1;
         final int locationsCol = 3;
@@ -135,14 +146,14 @@ public class CourseCardFragment extends Fragment {
         String dayTimes[] = meetings.getDayTimes();
         int dayTimesLength = meetings.getDayTimes().length;
         // Sometimes locations < meetings, in this case duplicate this list
-        List<String> locations = meetings.getLocationsShort().length < dayTimesLength ? Collections.nCopies(dayTimesLength, meetings.getLocationsShort()[0]) : Arrays.asList(meetings.getLocationsShort());
+        String[] locations = meetings.getLocationsShortForEachDayTime();
         // Set professor name, set icon position
         String professors = meetings.isSameInstructor() ? meetings.getInstructors()[0].trim() : TextUtils.join(", ", meetings.getInstructors());
         GridLayout.LayoutParams glParams = (GridLayout.LayoutParams) this.mProfessorIcon.getLayoutParams();
-        glParams.rowSpec = GridLayout.spec(dayTimesLength+1);
+        glParams.rowSpec = GridLayout.spec(dayTimesLength + 1);
         this.mProfessorIcon.setLayoutParams(glParams);
 
-        TextView tv = createTextView(professors, dayTimesLength+1, 1);
+        TextView tv = createTextView(professors, dayTimesLength + 1, 1);
         this.mCourseDetailsLayout.addView(tv);
 
         // Set icon span of course meetings icons
@@ -161,7 +172,7 @@ public class CourseCardFragment extends Fragment {
             this.mCourseDetailsLayout.addView(createTextView(dayTimes[i], i, dayTimesCol));
             // Its at bottom, + teacher row + times rows
 
-            this.mCourseDetailsLayout.addView(createTextView(locations.get(i), i, locationsCol));
+            this.mCourseDetailsLayout.addView(createTextView(locations[i], i, locationsCol));
         }
 
 
@@ -173,8 +184,11 @@ public class CourseCardFragment extends Fragment {
         if (getArguments() != null) {
             try {
                 this.course = mapper.readValue(getArguments().getString(ARG_PARAM1), Course.class);
+                if (this.course.getColor() != 0) {
+                    this.currentColor = this.course.getColor();
+                }
             } catch (IOException e) {
-                // TODO some error handling
+                Utils.errorDialogFactory(getActivity(), getString(R.string.generic_error)).show();
             }
         }
     }
@@ -188,7 +202,7 @@ public class CourseCardFragment extends Fragment {
                 this.course = mapper.readValue(savedInstanceState.getString(ARG_PARAM1), Course.class);
             }
         } catch (IOException e) {
-            // TODO some error handling
+            Utils.errorDialogFactory(getActivity(), getString(R.string.generic_error)).show();
         }
 
         this.mAddCourse = view.findViewById(R.id.course_add_fab);
@@ -211,6 +225,7 @@ public class CourseCardFragment extends Fragment {
 
     /**
      * Sets onAddCourseClickListener for Add button.
+     *
      * @param onAddCourseClickListener The Add click listener.
      */
     public void setOnAddCourseClickListener(OnAddCourseClickListener onAddCourseClickListener) {
@@ -220,6 +235,7 @@ public class CourseCardFragment extends Fragment {
     public interface OnAddCourseClickListener {
         /**
          * Action to implement when adding a course.
+         *
          * @param course Course to add.
          */
         void addCourseListener(Course course);

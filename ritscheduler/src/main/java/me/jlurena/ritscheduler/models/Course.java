@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import me.jlurena.revolvingweekview.WeekView;
 import me.jlurena.revolvingweekview.WeekViewEvent;
 
 /**
@@ -78,93 +77,18 @@ public class Course extends Model {
         super(TYPE);
     }
 
-    public String getComboSection() {
-        return comboSection;
-    }
-
-    public void setComboSection(String comboSection) {
-        this.comboSection = comboSection;
-    }
-
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
 
         Course course = (Course) o;
 
         return this.courseId.equals(course.courseId);
-    }
-
-    @Override
-    public int hashCode() {
-        return notes.hashCode();
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
-    public String getEnrollStatus() {
-        return enrollStatus;
-    }
-
-    public void setEnrollStatus(String enrollStatus) {
-        this.enrollStatus = enrollStatus;
-    }
-
-    public String getClassType() {
-        return classType;
-    }
-
-    public void setClassType(String classType) {
-        this.classType = classType;
-    }
-
-    public String getComponent() {
-        return component;
-    }
-
-    public void setComponent(String component) {
-        this.component = component;
-    }
-
-    public String getInstructorMode() {
-        return instructorMode;
-    }
-
-    public void setInstructorMode(String instructorMode) {
-        this.instructorMode = instructorMode;
-    }
-
-    public String getCampus() {
-        return campus;
-    }
-
-    public void setCampus(String campus) {
-        this.campus = campus;
-    }
-
-    public String getStartingTerm() {
-        return startingTerm;
-    }
-
-    public void setStartingTerm(String startingTerm) {
-        this.startingTerm = startingTerm;
-    }
-
-    public String getAcademicGroupShort() {
-        return academicGroupShort;
-    }
-
-    public void setAcademicGroupShort(String academicGroupShort) {
-        this.academicGroupShort = academicGroupShort;
     }
 
     public String getAcademicCareer() {
@@ -175,92 +99,20 @@ public class Course extends Model {
         this.academicCareer = academicCareer;
     }
 
-    public String[] getAttributeValues() {
-        return attributeValues;
+    public String getAcademicGroup() {
+        return academicGroup;
     }
 
-    public void setAttributeValues(String[] attributeValues) {
-        this.attributeValues = attributeValues;
+    public void setAcademicGroup(String academicGroup) {
+        this.academicGroup = academicGroup;
     }
 
-    public String getCourseTitleLong() {
-        return courseTitleLong;
+    public String getAcademicGroupShort() {
+        return academicGroupShort;
     }
 
-    public void setCourseTitleLong(String courseTitleLong) {
-        this.courseTitleLong = courseTitleLong;
-    }
-
-    public String getCatalogNumber() {
-        return catalogNumber;
-    }
-
-    public void setCatalogNumber(String catalogNumber) {
-        this.catalogNumber = catalogNumber;
-    }
-
-    public String[] getAttributeDescriptions() {
-        return attributeDescriptions;
-    }
-
-    public void setAttributeDescriptions(String[] attributeDescriptions) {
-        this.attributeDescriptions = attributeDescriptions;
-    }
-
-    public int getWaitCap() {
-        return waitCap;
-    }
-
-    public void setWaitCap(int waitCap) {
-        this.waitCap = waitCap;
-    }
-
-    public String getClassNumber() {
-        return classNumber;
-    }
-
-    public void setClassNumber(String classNumber) {
-        this.classNumber = classNumber;
-    }
-
-    public String getSessionCode() {
-        return sessionCode;
-    }
-
-    public void setSessionCode(String sessionCode) {
-        this.sessionCode = sessionCode;
-    }
-
-    public String[] getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(String[] attributes) {
-        this.attributes = attributes;
-    }
-
-    public int getWaitTotal() {
-        return waitTotal;
-    }
-
-    public void setWaitTotal(int waitTotal) {
-        this.waitTotal = waitTotal;
-    }
-
-    public int getEnrollmentCap() {
-        return enrollmentCap;
-    }
-
-    public void setEnrollmentCap(int enrollmentCap) {
-        this.enrollmentCap = enrollmentCap;
-    }
-
-    public String getPpSearchId() {
-        return ppSearchId;
-    }
-
-    public void setPpSearchId(String ppSearchId) {
-        this.ppSearchId = ppSearchId;
+    public void setAcademicGroupShort(String academicGroupShort) {
+        this.academicGroupShort = academicGroupShort;
     }
 
     public String getAcademicTitle() {
@@ -271,76 +123,52 @@ public class Course extends Model {
         this.academicTitle = academicTitle;
     }
 
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public int getEnrollmentTotal() {
-        return enrollmentTotal;
-    }
-
-    public void setEnrollmentTotal(int enrollmentTotal) {
-        this.enrollmentTotal = enrollmentTotal;
-    }
-
-    public String getSection() {
-        return section;
-    }
-
-    public void setSection(String section) {
-        this.section = section;
-    }
-
-    public String getCourseDescription() {
-        return courseDescription;
-    }
-
-    public void setCourseDescription(String courseDescription) {
-        this.courseDescription = courseDescription;
-    }
-
-    public String getAcademicGroup() {
-        return academicGroup;
-    }
-
-    public void setAcademicGroup(String academicGroup) {
-        this.academicGroup = academicGroup;
-    }
-
-    public int getUnitsMaximum() {
-        return unitsMaximum;
-    }
-
-    public void setUnitsMaximum(int unitsMaximum) {
-        this.unitsMaximum = unitsMaximum;
-    }
-
-    public int getUnitsMinimum() {
-        return unitsMinimum;
-    }
-
-    public void setUnitsMinimum(int unitsMinimum) {
-        this.unitsMinimum = unitsMinimum;
-    }
-
-    public String getGradingBasis() {
-        return gradingBasis;
-    }
-
-    public void setGradingBasis(String gradingBasis) {
-        this.gradingBasis = gradingBasis;
-    }
-
     public String getAssociatedClassNumber() {
         return associatedClassNumber;
     }
 
     public void setAssociatedClassNumber(String associatedClassNumber) {
         this.associatedClassNumber = associatedClassNumber;
+    }
+
+    public String[] getAssociatedClasses() {
+        return associatedClasses;
+    }
+
+    public void setAssociatedClasses(String[] associatedClasses) {
+        this.associatedClasses = associatedClasses;
+    }
+
+    public String[] getAssociatedComponents() {
+        return associatedComponents;
+    }
+
+    public void setAssociatedComponents(String[] associatedComponents) {
+        this.associatedComponents = associatedComponents;
+    }
+
+    public String[] getAttributeDescriptions() {
+        return attributeDescriptions;
+    }
+
+    public void setAttributeDescriptions(String[] attributeDescriptions) {
+        this.attributeDescriptions = attributeDescriptions;
+    }
+
+    public String[] getAttributeValues() {
+        return attributeValues;
+    }
+
+    public void setAttributeValues(String[] attributeValues) {
+        this.attributeValues = attributeValues;
+    }
+
+    public String[] getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(String[] attributes) {
+        this.attributes = attributes;
     }
 
     public String getAutoEnrollSect1() {
@@ -359,115 +187,36 @@ public class Course extends Model {
         this.autoEnrollSect2 = autoEnrollSect2;
     }
 
-    public String getCourseId() {
-        return courseId;
+    public String getCampus() {
+        return campus;
     }
 
-    public void setCourseId(String courseId) {
-        this.courseId = courseId;
-        super.setModelId(courseId);
+    public void setCampus(String campus) {
+        this.campus = campus;
     }
 
-    public String getPrintTopic() {
-        return printTopic;
+    public String getCatalogNumber() {
+        return catalogNumber;
     }
 
-    public void setPrintTopic(String printTopic) {
-        this.printTopic = printTopic;
+    public void setCatalogNumber(String catalogNumber) {
+        this.catalogNumber = catalogNumber;
     }
 
-    public String getCourseTopicId() {
-        return courseTopicId;
+    public String getClassNumber() {
+        return classNumber;
     }
 
-    public void setCourseTopicId(String courseTopicId) {
-        this.courseTopicId = courseTopicId;
+    public void setClassNumber(String classNumber) {
+        this.classNumber = classNumber;
     }
 
-    public String getCourseTopic() {
-        return courseTopic;
+    public String getClassType() {
+        return classType;
     }
 
-    public void setCourseTopic(String courseTopic) {
-        this.courseTopic = courseTopic;
-    }
-
-    public String[] getAssociatedComponents() {
-        return associatedComponents;
-    }
-
-    public void setAssociatedComponents(String[] associatedComponents) {
-        this.associatedComponents = associatedComponents;
-    }
-
-    public RelatedAttributes getRelatedAttributes() {
-        return relatedAttributes;
-    }
-
-    public void setRelatedAttributes(RelatedAttributes relatedAttributes) {
-        this.relatedAttributes = relatedAttributes;
-    }
-
-    public Meeting getMeetings() {
-        return meetings;
-    }
-
-    public void setMeetings(Meeting meetings) {
-        this.meetings = meetings;
-    }
-
-    public String[] getPreReqDescriptions() {
-        return preReqDescriptions;
-    }
-
-    public void setPreReqDescriptions(String[] preReqDescriptions) {
-        this.preReqDescriptions = preReqDescriptions;
-    }
-
-    public String[] getPreReqDescrsShort() {
-        return preReqDescrsShort;
-    }
-
-    public void setPreReqDescrsShort(String[] preReqDescrsShort) {
-        this.preReqDescrsShort = preReqDescrsShort;
-    }
-
-    public String[] getPreReqDescrsLong() {
-        return preReqDescrsLong;
-    }
-
-    public void setPreReqDescrsLong(String[] preReqDescrsLong) {
-        this.preReqDescrsLong = preReqDescrsLong;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public String[] getAssociatedClasses() {
-        return associatedClasses;
-    }
-
-    public void setAssociatedClasses(String[] associatedClasses) {
-        this.associatedClasses = associatedClasses;
-    }
-
-    public ReservedSeat[] getReservedCap() {
-        return reservedCap;
-    }
-
-    public void setReservedCap(ReservedSeat[] reservedCap) {
-        this.reservedCap = reservedCap;
-    }
-
-    @Override
-    public Map<String, Object> toMap() {
-        //noinspection unchecked
-        return new ObjectMapper().convertValue(this, Map.class);
+    public void setClassType(String classType) {
+        this.classType = classType;
     }
 
     public int getColor() {
@@ -478,27 +227,281 @@ public class Course extends Model {
         this.color = color;
     }
 
-    /**
-     * Creates a List of WeekViewEvents based on this Course's properties.
-     * @return A list of WeekViewEvents.
-     */
-    public List<WeekViewEvent> toWeekViewEvents() {
-        List<WeekViewEvent> events = meetings.toWeekViewEvents(); // Get WeekViewEvents from meetings.
+    public String getComboSection() {
+        return comboSection;
+    }
 
-        for (WeekViewEvent event: events) {
-            event.setIdentifier(this.courseId);
-            event.setColor(this.color);
-            event.setName(this.subject + " " + this.catalogNumber + "-" + this.section);
-        }
-        return events;
+    public void setComboSection(String comboSection) {
+        this.comboSection = comboSection;
+    }
+
+    public String getComponent() {
+        return component;
+    }
+
+    public void setComponent(String component) {
+        this.component = component;
+    }
+
+    public String getCourseDescription() {
+        return courseDescription;
+    }
+
+    public void setCourseDescription(String courseDescription) {
+        this.courseDescription = courseDescription;
+    }
+
+    public String getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(String courseId) {
+        this.courseId = courseId;
+        super.setModelId(courseId);
+    }
+
+    public String getCourseTitleLong() {
+        return courseTitleLong;
+    }
+
+    public void setCourseTitleLong(String courseTitleLong) {
+        this.courseTitleLong = courseTitleLong;
+    }
+
+    public String getCourseTopic() {
+        return courseTopic;
+    }
+
+    public void setCourseTopic(String courseTopic) {
+        this.courseTopic = courseTopic;
+    }
+
+    public String getCourseTopicId() {
+        return courseTopicId;
+    }
+
+    public void setCourseTopicId(String courseTopicId) {
+        this.courseTopicId = courseTopicId;
+    }
+
+    public String getEnrollStatus() {
+        return enrollStatus;
+    }
+
+    public void setEnrollStatus(String enrollStatus) {
+        this.enrollStatus = enrollStatus;
+    }
+
+    public int getEnrollmentCap() {
+        return enrollmentCap;
+    }
+
+    public void setEnrollmentCap(int enrollmentCap) {
+        this.enrollmentCap = enrollmentCap;
+    }
+
+    public int getEnrollmentTotal() {
+        return enrollmentTotal;
+    }
+
+    public void setEnrollmentTotal(int enrollmentTotal) {
+        this.enrollmentTotal = enrollmentTotal;
+    }
+
+    public String getGradingBasis() {
+        return gradingBasis;
+    }
+
+    public void setGradingBasis(String gradingBasis) {
+        this.gradingBasis = gradingBasis;
+    }
+
+    public String getInstructorMode() {
+        return instructorMode;
+    }
+
+    public void setInstructorMode(String instructorMode) {
+        this.instructorMode = instructorMode;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public Meeting getMeetings() {
+        return meetings;
+    }
+
+    public void setMeetings(Meeting meetings) {
+        this.meetings = meetings;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public String getPpSearchId() {
+        return ppSearchId;
+    }
+
+    public void setPpSearchId(String ppSearchId) {
+        this.ppSearchId = ppSearchId;
+    }
+
+    public String[] getPreReqDescriptions() {
+        return preReqDescriptions;
+    }
+
+    public void setPreReqDescriptions(String[] preReqDescriptions) {
+        this.preReqDescriptions = preReqDescriptions;
+    }
+
+    public String[] getPreReqDescrsLong() {
+        return preReqDescrsLong;
+    }
+
+    public void setPreReqDescrsLong(String[] preReqDescrsLong) {
+        this.preReqDescrsLong = preReqDescrsLong;
+    }
+
+    public String[] getPreReqDescrsShort() {
+        return preReqDescrsShort;
+    }
+
+    public void setPreReqDescrsShort(String[] preReqDescrsShort) {
+        this.preReqDescrsShort = preReqDescrsShort;
+    }
+
+    public String getPrintTopic() {
+        return printTopic;
+    }
+
+    public void setPrintTopic(String printTopic) {
+        this.printTopic = printTopic;
     }
 
     /**
      * Get qualified name of Course.
+     *
      * @return The qualified name of this Course in the format of [subject]-[section]. Eg: CSCI-250.
      */
     @JsonIgnore
     public String getQualifiedName() {
         return String.format(Locale.getDefault(), "%s-%s", this.subject, this.section);
+    }
+
+    public RelatedAttributes getRelatedAttributes() {
+        return relatedAttributes;
+    }
+
+    public void setRelatedAttributes(RelatedAttributes relatedAttributes) {
+        this.relatedAttributes = relatedAttributes;
+    }
+
+    public ReservedSeat[] getReservedCap() {
+        return reservedCap;
+    }
+
+    public void setReservedCap(ReservedSeat[] reservedCap) {
+        this.reservedCap = reservedCap;
+    }
+
+    public String getSection() {
+        return section;
+    }
+
+    public void setSection(String section) {
+        this.section = section;
+    }
+
+    public String getSessionCode() {
+        return sessionCode;
+    }
+
+    public void setSessionCode(String sessionCode) {
+        this.sessionCode = sessionCode;
+    }
+
+    public String getStartingTerm() {
+        return startingTerm;
+    }
+
+    public void setStartingTerm(String startingTerm) {
+        this.startingTerm = startingTerm;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public int getUnitsMaximum() {
+        return unitsMaximum;
+    }
+
+    public void setUnitsMaximum(int unitsMaximum) {
+        this.unitsMaximum = unitsMaximum;
+    }
+
+    public int getUnitsMinimum() {
+        return unitsMinimum;
+    }
+
+    public void setUnitsMinimum(int unitsMinimum) {
+        this.unitsMinimum = unitsMinimum;
+    }
+
+    public int getWaitCap() {
+        return waitCap;
+    }
+
+    public void setWaitCap(int waitCap) {
+        this.waitCap = waitCap;
+    }
+
+    public int getWaitTotal() {
+        return waitTotal;
+    }
+
+    public void setWaitTotal(int waitTotal) {
+        this.waitTotal = waitTotal;
+    }
+
+    @Override
+    public int hashCode() {
+        return notes.hashCode();
+    }
+
+    @Override
+    public Map<String, Object> toMap() {
+        //noinspection unchecked
+        return new ObjectMapper().convertValue(this, Map.class);
+    }
+
+    /**
+     * Creates a List of WeekViewEvents based on this Course's properties.
+     *
+     * @return A list of WeekViewEvents.
+     */
+    public List<WeekViewEvent> toWeekViewEvents() {
+        List<WeekViewEvent> events = meetings.toWeekViewEvents(); // Get WeekViewEvents from meetings.
+
+        for (WeekViewEvent event : events) {
+            event.setIdentifier(this.courseId);
+            event.setColor(this.color);
+            event.setName(this.subject + " " + this.catalogNumber + "-" + this.section);
+        }
+        return events;
     }
 }

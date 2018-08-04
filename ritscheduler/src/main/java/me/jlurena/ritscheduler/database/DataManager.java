@@ -95,7 +95,8 @@ public class DataManager {
      * @throws CouchbaseLiteException Exception thrown when inable to query document.
      */
     public void getModel(String modelId, String modelType, Class objectType, DocumentParser documentParser) throws CouchbaseLiteException {
-        Query query = QueryBuilder.select(SelectResult.all()).from(DataSource.database(database)).where(Expression.property(MODEL_TYPE_KEY).equalTo(Expression.string(modelType)).and(Expression.property(MODEL_ID_KEY).equalTo(Expression.string(modelId))));
+        Query query = QueryBuilder.select(SelectResult.all()).from(DataSource.database(database)).where(Expression.property(MODEL_TYPE_KEY).equalTo
+                (Expression.string(modelType)).and(Expression.property(MODEL_ID_KEY).equalTo(Expression.string(modelId))));
         Dictionary objectDictionary = query.execute().next().getDictionary(0);
         //noinspection unchecked
         documentParser.toModelCallback(new ObjectMapper().convertValue(objectDictionary.toMap(), objectType));
