@@ -7,35 +7,34 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nightonke.boommenu.Util;
-import com.rey.material.widget.FloatingActionButton;
-import com.rey.material.widget.TextView;
 import com.rtugeek.android.colorseekbar.ColorSeekBar;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import me.jlurena.ritscheduler.models.Course;
 import me.jlurena.ritscheduler.models.Meeting;
+import me.jlurena.ritscheduler.models.Term;
 
 public class CourseCardFragment extends Fragment {
     private static final String ARG_PARAM1 = "course";
     private static final ObjectMapper mapper = new ObjectMapper();
-    private final int DAYS_COL = 1;
-    private final int TIMES_COL = 2;
-    /**
-     * Keep track of the current row of Day and Time textview
-     */
-    private int currentDayTimesRow = 0;
     private Course course;
-    private FloatingActionButton mAddCourse;
+    private ImageButton mAddCourse;
     private TextView mCourseSection;
     private TextView mCourseName;
     private TextView mCourseTerm;
@@ -45,7 +44,6 @@ public class CourseCardFragment extends Fragment {
     private ImageView mCalendarIcon;
     private ImageView mLocationIcon;
     private OnAddCourseClickListener onAddCourseClickListener;
-    private TextView mProfessorsName;
     private ColorSeekBar mColorSlider;
     private Integer currentColor;
 
@@ -99,67 +97,71 @@ public class CourseCardFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (onAddCourseClickListener != null) {
-                    onAddCourseClickListener.onAddCourse();
-                    mAddCourse.setLineMorphingState((mAddCourse.getLineMorphingState() + 1) % 2, true);
+                    onAddCourseClickListener.addCourseListener(course);
                 }
             }
         });
 
         this.mCourseName.setText(this.course.getCourseTitleLong());
         this.mCourseSection.setText(this.course.getQualifiedName());
-        this.mCourseTerm.setText(this.course.getStartingTerm());
+        this.mCourseTerm.setText(Term.of(this.course.getStartingTerm()).longTermName());
         initCourseCardDetails();
         initColorSeekbar();
 
     }
 
-    private TextView createDayTimeTextView(String text, int row, int col) {
+    private TextView createTextView(String text, int row, int col) {
         TextView textView = new TextView(getActivity());
         GridLayout.LayoutParams gllp = new GridLayout.LayoutParams();
 
         gllp.rowSpec = GridLayout.spec(row);
         gllp.columnSpec = GridLayout.spec(col);
-        gllp.setMarginStart(Util.dp2px(20));
+        gllp.setMarginStart(Util.dp2px(10));
+        gllp.setMarginEnd(Util.dp2px(10));
         textView.setLayoutParams(gllp);
 
         textView.setText(text);
         textView.setTextColor(getResources().getColor(R.color.dark_gray));
         textView.setTextSize(12);
+        textView.setGravity(Gravity.CENTER);
 
         return textView;
     }
 
     private void initCourseCardDetails() {
+        final int dayTimesCol = 1;
+        final int locationsCol = 3;
         Meeting meetings = this.course.getMeetings();
-        String days[] = meetings.getDays();
-        String times[] = meetings.getTimes();
-        int length = meetings.getDates().length;
+        String dayTimes[] = meetings.getDayTimes();
+        int dayTimesLength = meetings.getDayTimes().length;
+        // Sometimes locations < meetings, in this case duplicate this list
+        List<String> locations = meetings.getLocationsShort().length < dayTimesLength ? Collections.nCopies(dayTimesLength, meetings.getLocationsShort()[0]) : Arrays.asList(meetings.getLocationsShort());
         // Set professor name, set icon position
-        String professors = meetings.isSameInstructor() ? meetings.getInstructors()[0] : TextUtils.join(", ", meetings.getInstructors());
+        String professors = meetings.isSameInstructor() ? meetings.getInstructors()[0].trim() : TextUtils.join(", ", meetings.getInstructors());
         GridLayout.LayoutParams glParams = (GridLayout.LayoutParams) this.mProfessorIcon.getLayoutParams();
-        glParams.rowSpec = GridLayout.spec(length+1);
+        glParams.rowSpec = GridLayout.spec(dayTimesLength+1);
         this.mProfessorIcon.setLayoutParams(glParams);
 
-        glParams = (GridLayout.LayoutParams) this.mProfessorsName.getLayoutParams();
-        glParams.rowSpec = GridLayout.spec(length+1);
-        this.mProfessorsName.setLayoutParams(glParams);
-        this.mProfessorsName.setText(professors);
+        TextView tv = createTextView(professors, dayTimesLength+1, 1);
+        this.mCourseDetailsLayout.addView(tv);
 
         // Set icon span of course meetings icons
         glParams = (GridLayout.LayoutParams) this.mCalendarIcon.getLayoutParams();
-        glParams.rowSpec = GridLayout.spec(0, length);
+        glParams.rowSpec = GridLayout.spec(0, dayTimesLength);
         this.mCalendarIcon.setLayoutParams(glParams);
 
         // Set icon span of course location icon
         glParams = (GridLayout.LayoutParams) this.mLocationIcon.getLayoutParams();
-        glParams.rowSpec = GridLayout.spec(2 + length, 2 + length);
+        glParams.rowSpec = GridLayout.spec(0, dayTimesLength);
         this.mLocationIcon.setLayoutParams(glParams);
 
 
-        // Set days and times
-        for (int i = 0; i < length; i++) {
-            this.mCourseDetailsLayout.addView(createDayTimeTextView(days[i], i, DAYS_COL));
-            this.mCourseDetailsLayout.addView(createDayTimeTextView(times[i], i, TIMES_COL));
+        // Set days, times and location
+        for (int i = 0; i < dayTimesLength; i++) {
+            this.mCourseDetailsLayout.addView(createTextView(dayTimes[i], i, dayTimesCol));
+            // Its at bottom, + teacher row + times rows
+
+            this.mCourseDetailsLayout.addView(createTextView(locations.get(i), i, locationsCol));
         }
 
 
@@ -196,7 +198,6 @@ public class CourseCardFragment extends Fragment {
         this.mCourseDetailsLayout = view.findViewById(R.id.course_details_gl);
         this.mCourseHeader = view.findViewById(R.id.course_header_container);
         this.mProfessorIcon = view.findViewById(R.id.course_professor_icon);
-        this.mProfessorsName = view.findViewById(R.id.course_professors_name);
         this.mCalendarIcon = view.findViewById(R.id.course_calendar_icon);
         this.mLocationIcon = view.findViewById(R.id.course_location_icon);
         this.mColorSlider = view.findViewById(R.id.colorSlider);
@@ -217,6 +218,10 @@ public class CourseCardFragment extends Fragment {
     }
 
     public interface OnAddCourseClickListener {
-        void onAddCourse();
+        /**
+         * Action to implement when adding a course.
+         * @param course Course to add.
+         */
+        void addCourseListener(Course course);
     }
 }

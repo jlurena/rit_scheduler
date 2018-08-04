@@ -4,7 +4,6 @@
         <item name="android:colorPrimary">@color/color_primary</item>
         <item name="android:colorPrimaryDark">@color/color_primary_dark</item>
         <item name="android:colorAccent">@color/color_accent</item>
-
         <item name="android:spinnerItemStyle" parent="Base.Widget.AppCompat.Spinner.Underlined">
             @style/spinnerItemStyle
         </item>
@@ -13,6 +12,7 @@
             @style/spinnerDropDownItemStyle
         </item>
     </style>
+
     <style name="spinnerItemStyle">
         <item name="android:paddingStart">0dp</item>
         <item name="android:paddingEnd">0dp</item>
@@ -21,6 +21,7 @@
         <item name="android:gravity">center</item>
         <item name="android:textSize">16sp</item>
     </style>
+
     <style name="spinnerDropDownItemStyle" parent="@android:style/Widget.DropDownItem.Spinner">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:background">@color/boom_menu_button_bg</item>
@@ -28,48 +29,4 @@
         <item name="android:gravity">center</item>
         <item name="android:textAlignment">center</item>
     </style>
-
-    <!--FAB Styles-->
-    <style name="LightFloatingActionButtonIcon" >
-        <item name="lmd_state">@xml/fab_icon_states</item>
-        <item name="lmd_curState">0</item>
-        <item name="lmd_padding">2dp</item>
-        <item name="lmd_animDuration">400</item>
-        <item name="lmd_interpolator">@android:anim/accelerate_decelerate_interpolator</item>
-        <item name="lmd_strokeSize">3dp</item>
-        <item name="lmd_strokeColor">#FFFFFFFF</item>
-        <item name="lmd_strokeCap">butt</item>
-        <item name="lmd_strokeJoin">miter</item>
-        <item name="lmd_clockwise">true</item>
-    </style>
-
-    <style name="DarkFloatingActionButtonIcon" >
-        <item name="lmd_state">@xml/fab_icon_states</item>
-        <item name="lmd_curState">0</item>
-        <item name="lmd_padding">2dp</item>
-        <item name="lmd_animDuration">400</item>
-        <item name="lmd_interpolator">@android:anim/accelerate_decelerate_interpolator</item>
-        <item name="lmd_strokeSize">4dp</item>
-        <item name="lmd_strokeColor">#FF000000</item>
-        <item name="lmd_strokeCap">round</item>
-        <item name="lmd_strokeJoin">round</item>
-        <item name="lmd_clockwise">true</item>
-    </style>
-
-    <style name="LightFABLine" parent="Material.Widget.FloatingActionButton.Light">
-        <item name="rd_rippleColor">#33000000</item>
-        <item name="fab_backgroundColor">@color/color_primary</item>
-        <item name="fab_iconLineMorphing">@style/LightFloatingActionButtonIcon</item>
-    </style>
-
-    <style name="DarkFABLine" parent="Material.Widget.FloatingActionButton.Light">
-        <item name="rd_rippleColor">#33000000</item>
-        <item name="fab_backgroundColor">@color/color_accent</item>
-        <item name="fab_iconLineMorphing">@style/DarkFloatingActionButtonIcon</item>
-    </style>
-
-    <array name="fab_line">
-        <item>@style/LightFABLine</item>
-        <item>@style/DarkFABLine</item>
-    </array>
 </resources>

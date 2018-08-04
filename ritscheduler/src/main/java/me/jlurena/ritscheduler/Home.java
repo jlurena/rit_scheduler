@@ -1,12 +1,12 @@
 package me.jlurena.ritscheduler;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +21,7 @@ import android.widget.FrameLayout;
 import android.widget.Spinner;
 
 import com.android.volley.VolleyError;
+import com.couchbase.lite.CouchbaseLiteException;
 import com.nightonke.boommenu.BoomButtons.BoomButton;
 import com.nightonke.boommenu.BoomButtons.HamButton;
 import com.nightonke.boommenu.BoomMenuButton;
@@ -33,14 +34,17 @@ import java.util.List;
 
 import me.jlurena.revolvingweekview.WeekView;
 import me.jlurena.revolvingweekview.WeekViewEvent;
+import me.jlurena.ritscheduler.database.DataManager;
 import me.jlurena.ritscheduler.models.Course;
 import me.jlurena.ritscheduler.models.Term;
 import me.jlurena.ritscheduler.networking.NetworkManager;
 import me.jlurena.ritscheduler.networking.ResponseListener;
 
 
-public class Home extends Activity {
+public class Home extends Activity implements CourseCardFragment.OnAddCourseClickListener {
 
+    private static final String COURSE_FRAG_TAG = "CourseFrag";
+    private static final String courseRegex = "^[A-Za-z]{4}\\s\\d{3}([A-Za-z]{1})?-\\d{2}$";
     private BoomMenuButton mBoomMenuButton;
     private WeekView mWeekView;
     private ViewGroup mHomeMainContainer;
@@ -48,26 +52,153 @@ public class Home extends Activity {
     private EditText mSearchCourse;
     private CourseCardFragment courseCardFragment;
     private FrameLayout mFragmentContainer;
-
     private Term selectedTerm;
     private NetworkManager networkManager;
     private boolean isCourseCardVisible = false;
-    private static final String COURSE_FRAG_TAG = "CourseFrag";
+    private DataManager dataManager;
 
+    private void disableBackground() {
+        // Dim and remove listeners from background
 
-    private static final String courseRegex = "^[A-Za-z]{4}\\s\\d{3}-\\d{2}$";
+        mBoomMenuButton.setDraggable(false);
+        mBoomMenuButton.setEnabled(false);
+        Utils.applyDim(mHomeMainContainer, .5F);
+    }
 
+    private void enableBackground() {
+        Utils.clearDim(mHomeMainContainer);
+        mBoomMenuButton.setDraggable(true);
+        mBoomMenuButton.setEnabled(true);
+    }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
-        networkManager = NetworkManager.getInstance(getApplicationContext());
-        this.mHomeMainContainer = findViewById(R.id.home_main_container);
-        this.mFragmentContainer = findViewById(R.id.course_fragment_container);
+    private void initBoomButton() {
+        this.mBoomMenuButton = findViewById(R.id.boom_menu_button);
 
-        initBoomButton();
-        initCalendar();
+        mBoomMenuButton.setButtonEnum(ButtonEnum.Ham);
+
+        mBoomMenuButton.addBuilder(new HamButton.Builder()
+                .normalImageRes(android.R.drawable.ic_menu_search)
+                .addView(R.layout.search_dialogue)
+                .normalColorRes(R.color.dark_gray)
+                .highlightedColorRes(R.color.color_accent)
+                .buttonHeight(Util.dp2px(80)));
+
+        mBoomMenuButton.setOnBoomListener(new OnBoomListenerAdapter() {
+
+            @Override
+            public void onBoomDidHide() {
+                mSearchCourse.getText().clear();
+                mSearchCourse.setError(null);
+                if (isCourseCardVisible) {
+                    disableBackground();
+                    final FragmentManager fm = getFragmentManager();
+                    final FragmentTransaction ft = fm.beginTransaction();
+                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                    ft.replace(R.id.course_fragment_container, courseCardFragment,
+                            COURSE_FRAG_TAG).commit();
+                }
+            }
+
+            @Override
+            public void onBoomDidShow() {
+                // Setup View inside of boom
+                initTermSpinner();
+                initSearchCourseEditText();
+
+            }
+
+            @Override
+            public void onClicked(int index, final BoomButton boomButton) {
+                RotateAnimation rotateAnimation = new RotateAnimation(0, 180, Animation.RELATIVE_TO_SELF, 0.5f,
+                        Animation.RELATIVE_TO_SELF, 0.5f);
+                rotateAnimation.setDuration(3000);
+                rotateAnimation.setInterpolator(new LinearInterpolator());
+
+                String query = mSearchCourse.getText().toString();
+                final Animation swinging = AnimationUtils.loadAnimation(Home.this, R.anim.swinging);
+
+                if (query.isEmpty()) {
+                    boomButton.getImageView().startAnimation(swinging);
+                    mSearchCourse.setError("Search field cannot be empty");
+                } else {
+                    if (query.matches(courseRegex)) {
+                        // Start animation
+                        boomButton.getImageView().setAnimation(rotateAnimation);
+                        // Start call
+                        networkManager.queryCourses(query, selectedTerm.getTermCode(), new ResponseListener<List<Course>>() {
+
+                            @Override
+                            public void getResult(List<Course> courses, int errorCode, VolleyError error) {
+                                if (errorCode == 200) {
+
+                                    // Display error if size is not 1
+                                    if (courses.size() != 1) {
+                                        AlertDialog.Builder dialog = new AlertDialog.Builder(Home.this)
+                                                .setTitle(R.string.error)
+                                                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        dialog.dismiss();
+                                                    }
+                                                });
+
+                                        if (courses.size() > 1) {
+                                            dialog.setMessage(R.string.course_term_ambigious_error_msg);
+                                        } else {
+                                            dialog.setMessage(R.string.no_results_error);
+                                        }
+
+                                        dialog.show();
+
+                                    } else {
+                                        courseCardFragment = CourseCardFragment.newInstance(courses.get(0));
+                                        courseCardFragment.setOnAddCourseClickListener(Home.this);
+                                        isCourseCardVisible = true;
+                                        mBoomMenuButton.reboom();
+                                    }
+                                } else {
+                                    AlertDialog.Builder dialog = new AlertDialog.Builder(Home.this)
+                                            .setTitle(R.string.error)
+                                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            });
+
+                                    if (error != null) {
+                                        dialog.setMessage(error.getMessage()).show();
+                                    } else {
+                                        dialog.setMessage(R.string.generic_error).show();
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onRequestFinished() {
+                                boomButton.getImageView().clearAnimation();
+                            }
+                        });
+                    } else {
+                        boomButton.getImageView().startAnimation(swinging);
+                        mSearchCourse.setError("Must match format \"CSCI 250-01\"");
+                    }
+                }
+            }
+        });
+    }
+
+    private void initCalendar() {
+        this.mWeekView = findViewById(R.id.weekView);
+
+        mWeekView.setWeekViewLoader(new WeekView.WeekViewLoader() {
+
+            @Override
+            public List<? extends WeekViewEvent> onWeekViewLoad() {
+                // TODO load saved events in db here
+                return new ArrayList<>();
+            }
+        });
     }
 
     private void initSearchCourseEditText() {
@@ -103,108 +234,34 @@ public class Home extends Activity {
         });
     }
 
-    private void initBoomButton() {
-        this.mBoomMenuButton = findViewById(R.id.boom_menu_button);
-
-        mBoomMenuButton.setButtonEnum(ButtonEnum.Ham);
-
-        mBoomMenuButton.addBuilder(new HamButton.Builder()
-                .normalImageRes(android.R.drawable.ic_menu_search)
-                .addView(R.layout.search_dialogue)
-                .normalColorRes(R.color.dark_gray)
-                .highlightedColorRes(R.color.color_accent)
-                .buttonHeight(Util.dp2px(80)));
-
-        mBoomMenuButton.setOnBoomListener(new OnBoomListenerAdapter() {
-
-            @Override
-            public void onClicked(int index, final BoomButton boomButton) {
-                RotateAnimation rotateAnimation = new RotateAnimation(0, 180, Animation.RELATIVE_TO_SELF, 0.5f,
-                        Animation.RELATIVE_TO_SELF, 0.5f);
-                rotateAnimation.setDuration(3000);
-                rotateAnimation.setInterpolator(new LinearInterpolator());
-
-                String query = mSearchCourse.getText().toString();
-                final Animation swinging = AnimationUtils.loadAnimation(Home.this, R.anim.swinging);
-
-                if (query.isEmpty()) {
-                    boomButton.getImageView().startAnimation(swinging);
-                    mSearchCourse.setError("Search field cannot be empty");
-                } else {
-                    if (query.matches(courseRegex)) {
-                        // Start animation
-                        boomButton.getImageView().setAnimation(rotateAnimation);
-                        // Start call
-                        networkManager.queryCourses(query, selectedTerm.getTermCode(),
-                                new ResponseListener<List<Course>>() {
-
-                                    @SuppressLint("ClickableViewAccessibility")
-                                    @Override
-                                    public void getResult(List<Course> courses, int errorCode, VolleyError error) {
-                                        if (errorCode == 200) {
-                                            if (courses.size() > 1) {
-                                                // TODO some "search term too ambigous" error
-                                            } else if (courses.size() < 1) {
-                                                // TODO not found error
-                                            } else {
-                                                courseCardFragment = CourseCardFragment.newInstance(courses.get(0));
-                                                isCourseCardVisible = true;
-                                                mBoomMenuButton.reboom();
-                                            }
-                                        } else {
-
-                                            // TODO some error dialog for bad response
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onRequestFinished() {
-                                        boomButton.getImageView().clearAnimation();
-                                    }
-                                });
-                    } else {
-                        boomButton.getImageView().startAnimation(swinging);
-                        mSearchCourse.setError("Must match format \"CSCI 250-01\"");
-                    }
-                }
-            }
-
-            @Override
-            public void onBoomDidHide() {
-                mSearchCourse.getText().clear();
-                mSearchCourse.setError(null);
-                if (isCourseCardVisible) {
-                    disableBackground();
-                    final FragmentManager fm = getFragmentManager();
-                    final FragmentTransaction ft = fm.beginTransaction();
-                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                    ft.replace(R.id.course_fragment_container, courseCardFragment,
-                            COURSE_FRAG_TAG).commit();
-                }
-            }
-
-            @Override
-            public void onBoomDidShow() {
-                // Setup View inside of boom
-                initTermSpinner();
-                initSearchCourseEditText();
-
-            }
-        });
+    @Override
+    public void addCourseListener(Course course) {
+        try {
+            dataManager.addModel(course);
+        } catch (CouchbaseLiteException e) {
+            new AlertDialog.Builder(Home.this)
+                    .setTitle(R.string.error)
+                    .setMessage(R.string.save_error)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).show();
+        }
     }
 
-    private void enableBackground() {
-        Utils.clearDim(mHomeMainContainer);
-        mBoomMenuButton.setDraggable(true);
-        mBoomMenuButton.setEnabled(true);
-    }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_home);
+        this.networkManager = NetworkManager.getInstance(this);
+        this.dataManager = DataManager.getInstance(this);
+        this.mHomeMainContainer = findViewById(R.id.home_main_container);
+        this.mFragmentContainer = findViewById(R.id.course_fragment_container);
 
-    private void disableBackground() {
-        // Dim and remove listeners from background
-
-        mBoomMenuButton.setDraggable(false);
-        mBoomMenuButton.setEnabled(false);
-        Utils.applyDim(mHomeMainContainer, .5F);
+        initBoomButton();
+        initCalendar();
     }
 
     @Override
@@ -231,18 +288,5 @@ public class Home extends Activity {
         }
 
         return super.onTouchEvent(event);
-    }
-
-    private void initCalendar() {
-        this.mWeekView = findViewById(R.id.weekView);
-
-        mWeekView.setWeekViewLoader(new WeekView.WeekViewLoader() {
-
-            @Override
-            public List<? extends WeekViewEvent> onWeekViewLoad() {
-                // TODO load saved events in db here
-                return new ArrayList<>();
-            }
-        });
     }
 }

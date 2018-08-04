@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="200dp"
-    android:layout_marginTop="8dp"
-    android:layout_marginStart="8dp"
     android:layout_marginEnd="8dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="8dp"
     app:cardBackgroundColor="@android:color/white"
     app:cardCornerRadius="4dp"
     app:cardElevation="8dp">
@@ -17,14 +17,14 @@
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/course_header_container"
-            android:background="@drawable/course_view_header_background"
             android:layout_width="match_parent"
             android:layout_height="65dp"
+            android:background="@drawable/course_view_header_background"
             android:paddingEnd="5dp"
             android:paddingStart="5dp"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <com.rey.material.widget.TextView
+            <TextView
                 android:id="@+id/course_section_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -35,7 +35,7 @@
                 android:textColor="@android:color/white"
                 android:textSize="25sp" />
 
-            <com.rey.material.widget.TextView
+            <TextView
                 android:id="@+id/course_name_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
                 android:textSize="12sp"
                 app:layout_constraintTop_toBottomOf="@+id/course_section_tv" />
 
-            <com.rey.material.widget.TextView
+            <TextView
                 android:id="@+id/course_term_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -67,76 +67,65 @@
             app:layout_constraintStart_toStartOf="@id/course_header_container"
             app:layout_constraintTop_toBottomOf="@+id/course_header_container">
 
-            <ImageView
+            <com.qhutch.elevationimageview.ElevationImageView
                 android:id="@+id/course_calendar_icon"
-                android:src="@drawable/calendar_blank"
-                android:elevation="5dp"
                 android:layout_column="0"
+                android:elevation="8dp"
                 android:layout_gravity="center"
                 android:layout_row="0"
-                android:tint="@color/medium_gray"
-                android:contentDescription="@string/professor" />
-            <Space
-                android:layout_row="1"
-                android:layout_height="5dp"
-                />
+                android:contentDescription="@string/professor"
+                android:src="@drawable/calendar_blank"
+                android:tint="@color/medium_gray" />
 
-            <ImageView
+            <com.qhutch.elevationimageview.ElevationImageView
                 android:id="@+id/course_location_icon"
-                android:src="@drawable/office_building"
+                android:layout_column="2"
                 android:elevation="8dp"
+                android:layout_gravity="center"
+                android:layout_row="0"
+                android:contentDescription="@string/professor"
+                android:src="@drawable/office_building"
+                android:tint="@color/medium_gray" />
+
+            <Space
+                android:layout_height="5dp"
+                android:layout_row="1" />
+
+            <com.qhutch.elevationimageview.ElevationImageView
+                android:id="@+id/course_professor_icon"
                 android:layout_column="0"
+                android:elevation="8dp"
                 android:layout_gravity="center"
                 android:layout_row="2"
-                android:tint="@color/medium_gray"
-                android:contentDescription="@string/professor" />
-
-            <Space
-                android:layout_row="3"
-                android:layout_height="10dp"
-                />
-
-            <ImageView
-                android:id="@+id/course_professor_icon"
+                android:contentDescription="@string/professor"
                 android:src="@drawable/teach"
-                android:layout_column="0"
-                android:layout_gravity="center"
-                android:layout_row="4"
-                android:tint="@color/medium_gray"
-                android:contentDescription="@string/professor" />
+                android:tint="@color/medium_gray" />
 
-            <com.rey.material.widget.TextView
-                android:id="@+id/course_professors_name"
-                android:layout_column="1"
-                android:layout_marginStart="20dp"
-                android:layout_row="4"
-                android:text="@string/professor_x"
-                android:textSize="12sp"
-
-                />
         </GridLayout>
 
         <com.rtugeek.android.colorseekbar.ColorSeekBar
             android:id="@+id/colorSlider"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:colorSeeds="@array/material_colors"
             app:colorBarPosition="79"
+            app:colorSeeds="@array/material_colors"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/course_add_fab"
-            app:layout_constraintStart_toStartOf="@id/course_header_container"/>
+            app:layout_constraintStart_toStartOf="@id/course_header_container" />
 
-        <com.rey.material.widget.FloatingActionButton
+        <ImageButton
             android:id="@+id/course_add_fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/ripple_round_add_button"
+            android:contentDescription="@string/add"
+            android:elevation="8dp"
+            android:src="@drawable/plus"
+            android:tint="@android:color/white"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:fab_backgroundColor="@color/color_accent"
-            app:fab_radius="16dp"
-            app:fab_iconSrc="@drawable/ic_plus_white_48dp"
-            app:v_styleId="@array/fab_line"
-            />
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
 

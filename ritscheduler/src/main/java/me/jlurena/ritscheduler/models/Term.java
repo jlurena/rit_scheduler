@@ -27,16 +27,39 @@ public class Term {
         this.currentTermDate = date;
         this.termCode = toTermCode(this.currentTermDate);
         if (Semester.isFall(this.currentTermDate)) {
-            semester = Semester.Fall;
+            this.semester = Semester.Fall;
         } else if (Semester.isSpring(this.currentTermDate)) {
-            semester = Semester.Spring;
+            this.semester = Semester.Spring;
         } else {
-            semester = Semester.Summer;
+            this.semester = Semester.Summer;
+        }
+    }
+
+    private Term(String termCode) {
+        this.termCode = termCode;
+        int year = (termCode.charAt(0) - '0') * 1000 + Integer.parseInt(termCode.substring(1, 3));
+        char semesterChar = termCode.charAt(3);
+        switch (semesterChar) {
+            case '1':
+                this.semester = Semester.Fall;
+                this.currentTermDate = LocalDate.of(year, 10, 1);
+                break;
+            case '5':
+                this.semester = Semester.Spring;
+                this.currentTermDate = LocalDate.of(year, 2, 1);
+                break;
+            case '8':
+                this.semester = Semester.Summer;
+                this.currentTermDate = LocalDate.of(year, 7, 1);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid Term Code");
         }
     }
 
     /**
      * Get an instance of a Term.
+     *
      * @param year Year of term.
      * @param month Month of term.
      * @param day Day of term.
@@ -64,6 +87,17 @@ public class Term {
     public static Term of(LocalDate date) {
         return new Term(date);
     }
+
+    /**
+     * Get an instance of a term.
+     *
+     * @param termCode Term code.
+     * @return A term based on term code.
+     */
+    public static Term of(String termCode) {
+        return new Term(termCode);
+    }
+
 
     /**
      * Cyphers a date into a Term code.
@@ -100,9 +134,8 @@ public class Term {
         return termCode;
     }
 
-    @Override
-    public String toString() {
-        return String.format(Locale.getDefault(), "%s '%d", this.semester.toString(), this.currentTermDate.getYear() % 100);
+    public String longTermName() {
+        return String.format(Locale.getDefault(), "%s '%d", this.semester.toString(), this.currentTermDate.getYear());
     }
 
     /**
@@ -150,6 +183,11 @@ public class Term {
         }
 
         return term;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(Locale.getDefault(), "%s '%d", this.semester.toString(), this.currentTermDate.getYear() % 100);
     }
 
     /**

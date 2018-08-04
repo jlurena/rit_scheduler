@@ -18,4 +18,11 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="search_hint">CSCI 250-01</string>
+    <string name="error">Error</string>
+    <string name="course_term_ambigious_error_msg">Search term was too ambigious. Please try again.</string>
+    <string name="no_courses_found_error_msg">No courses found matching that search term. Please try again.</string>
+    <string name="internet_error">Unable to connect and retrieve course information.</string>
+    <string name="no_results_error">No results found.</string>
+    <string name="generic_error">Something weird happened. Try again later.</string>
+    <string name="save_error">Unable to save this course. Please try again later.</string>
 </resources>
