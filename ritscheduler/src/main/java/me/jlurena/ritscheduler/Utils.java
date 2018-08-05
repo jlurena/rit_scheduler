@@ -9,13 +9,13 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.support.annotation.ColorInt;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.view.ViewGroup;
 import android.view.ViewGroupOverlay;
 
-public class Utils {
+class Utils {
 
     public static void applyDim(@NonNull ViewGroup parent, float dimAmount) {
         Drawable dim = new ColorDrawable(Color.BLACK);
@@ -35,12 +35,13 @@ public class Utils {
      * Creates an AlertDialog.Builder with generic "Error" title and dismissable "OK" button.
      *
      * @param context Application context.
+     * @param title Title of dialog.
      * @param errorMsg The error message.
      * @return The AlertDialog.Builder.
      */
-    public static AlertDialog.Builder errorDialogFactory(@NonNull Context context, @Nullable String errorMsg) {
+    public static AlertDialog.Builder alertDialogFactory(@NonNull Context context, @StringRes int title, @Nullable String errorMsg) {
         return new AlertDialog.Builder(context)
-                .setTitle(R.string.error)
+                .setTitle(title)
                 .setMessage(errorMsg)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
@@ -50,20 +51,11 @@ public class Utils {
                 });
     }
 
-    public static RippleDrawable getPressedColorRippleDrawable(@ColorInt int normalColor, @ColorInt int pressedColor) {
-        return new RippleDrawable(getPressedColorSelector(pressedColor), getColorDrawableFromColor(normalColor), null);
+    public static RippleDrawable getPressedColorRippleDrawable(@ColorInt int pressedColor) {
+        return new RippleDrawable(new ColorStateList(new int[][]{new int[]{}}, new int[]{pressedColor}), new ColorDrawable(pressedColor), null);
     }
 
-    public static RippleDrawable getPressedColorRippleDrawable(@ColorInt int normalColor, @ColorInt int pressedColor, Drawable drawable) {
-        return new RippleDrawable(getPressedColorSelector(pressedColor), drawable, null);
-    }
-
-
-    public static ColorStateList getPressedColorSelector(int pressedColor) {
-        return new ColorStateList(new int[][]{new int[]{}}, new int[]{pressedColor});
-    }
-
-    public static ColorDrawable getColorDrawableFromColor(int color) {
-        return new ColorDrawable(color);
+    public static RippleDrawable getPressedColorRippleDrawable(@ColorInt int pressedColor, Drawable drawable) {
+        return new RippleDrawable(new ColorStateList(new int[][]{new int[]{}}, new int[]{pressedColor}), drawable, null);
     }
 }

@@ -20,7 +20,7 @@ import me.jlurena.revolvingweekview.WeekViewEvent;
 public class Course extends Model {
 
     @JsonIgnore
-    private static final String TYPE = "course";
+    public static final String TYPE = "course";
     /**
      * Color assigned by user for UI.
      */
@@ -395,7 +395,7 @@ public class Course extends Model {
      */
     @JsonIgnore
     public String getQualifiedName() {
-        return String.format(Locale.getDefault(), "%s-%s", this.subject, this.section);
+        return String.format(Locale.getDefault(), "%s %s-%s", this.subject, this.catalogNumber, this.section);
     }
 
     public RelatedAttributes getRelatedAttributes() {
@@ -500,7 +500,7 @@ public class Course extends Model {
         for (WeekViewEvent event : events) {
             event.setIdentifier(this.courseId);
             event.setColor(this.color);
-            event.setName(this.subject + " " + this.catalogNumber + "-" + this.section);
+            event.setName(getQualifiedName());
         }
         return events;
     }

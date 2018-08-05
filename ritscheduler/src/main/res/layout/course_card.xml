@@ -40,7 +40,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="3dp"
-                android:text="Analysis of Algorithms"
                 android:textColor="@android:color/white"
                 android:textSize="12sp"
                 app:layout_constraintTop_toBottomOf="@+id/course_section_tv" />
@@ -70,20 +69,20 @@
             <com.qhutch.elevationimageview.ElevationImageView
                 android:id="@+id/course_calendar_icon"
                 android:layout_column="0"
-                android:elevation="8dp"
                 android:layout_gravity="center"
                 android:layout_row="0"
                 android:contentDescription="@string/professor"
+                android:elevation="8dp"
                 android:src="@drawable/calendar_blank"
                 android:tint="@color/medium_gray" />
 
             <com.qhutch.elevationimageview.ElevationImageView
                 android:id="@+id/course_location_icon"
                 android:layout_column="2"
-                android:elevation="8dp"
                 android:layout_gravity="center"
                 android:layout_row="0"
                 android:contentDescription="@string/professor"
+                android:elevation="8dp"
                 android:src="@drawable/office_building"
                 android:tint="@color/medium_gray" />
 
@@ -94,10 +93,10 @@
             <com.qhutch.elevationimageview.ElevationImageView
                 android:id="@+id/course_professor_icon"
                 android:layout_column="0"
-                android:elevation="8dp"
                 android:layout_gravity="center"
                 android:layout_row="2"
                 android:contentDescription="@string/professor"
+                android:elevation="8dp"
                 android:src="@drawable/teach"
                 android:tint="@color/medium_gray" />
 
@@ -107,11 +106,20 @@
             android:id="@+id/colorSlider"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:colorBarPosition="79"
             app:colorSeeds="@array/material_colors"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/course_add_fab"
             app:layout_constraintStart_toStartOf="@id/course_header_container" />
+
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/round_orange_button"
+            android:contentDescription="@string/add"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <ImageButton
             android:id="@+id/course_add_fab"
@@ -126,6 +134,7 @@
             android:tint="@android:color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
 
     </android.support.constraint.ConstraintLayout>
 

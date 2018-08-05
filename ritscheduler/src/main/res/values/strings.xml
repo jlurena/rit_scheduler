@@ -1,26 +1,15 @@
 <resources>
     <string name="app_name">RITScheduler</string>
-    <string name="menu">Menu</string>
-    <string name="search">Search</string>
-    <string name="search_for_a_course">Search for a Course</string>
     <string name="csci_261">CSCI-261</string>
-    <string name="open">Open</string>
-    <string name="closed">Closed</string>
-    <string name="_16_20">16/20</string>
-    <string name="days_times">Days/Times</string>
-    <string name="location">Location</string>
-    <string name="instructor">Instructor</string>
     <string name="fall_2018">Fall 2018</string>
-    <string name="professor_x">Professor X</string>
     <string name="add">Add</string>
     <string name="professor">Professor</string>
 
     <string name="search_hint">CSCI 250–01</string>
     <string name="error">Error</string>
     <string name="course_term_ambigious_error_msg">Search term was too ambigious. Please try again.</string>
-    <string name="no_courses_found_error_msg">No courses found matching that search term. Please try again.</string>
-    <string name="internet_error">Unable to connect and retrieve course information.</string>
     <string name="no_results_error">No results found.</string>
     <string name="generic_error">Something weird happened. Try again later.</string>
     <string name="save_error">Unable to save this course. Please try again later.</string>
+    <string name="error_retrieving_saved_courses">Error retrieving saved courses.</string>
 </resources>

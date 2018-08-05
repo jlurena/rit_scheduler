@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.graphics.ColorUtils;
@@ -13,6 +14,10 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -31,9 +36,10 @@ import me.jlurena.ritscheduler.models.Term;
 
 public class CourseCardFragment extends Fragment {
     private static final String ARG_PARAM1 = "course";
+    private static final String ARG_PARAM2 = "isexisting";
     private static final ObjectMapper mapper = new ObjectMapper();
     private Course course;
-    private ImageButton mAddCourse;
+    private ImageButton mAddCourseButton;
     private TextView mCourseSection;
     private TextView mCourseName;
     private TextView mCourseTerm;
@@ -44,23 +50,25 @@ public class CourseCardFragment extends Fragment {
     private ImageView mLocationIcon;
     private OnAddCourseClickListener onAddCourseClickListener;
     private ColorSeekBar mColorSlider;
-    private Integer currentColor;
+    private int currentColor;
 
     /**
      * Factory method to create an instance of CardFragment.
      *
      * @param context Application context.
      * @param course The course object.
+     * @param isSavedCourse Flag indicating if its a saved course.
      * @return A new instance of fragment CourseCardFragment.
      */
-    public static CourseCardFragment newInstance(Context context, Course course) {
+    public static CourseCardFragment newInstance(Context context, Course course, boolean isSavedCourse) {
         CourseCardFragment fragment = new CourseCardFragment();
         Bundle args = new Bundle();
         try {
             args.putString(ARG_PARAM1, mapper.writeValueAsString(course));
+            args.putBoolean(ARG_PARAM2, isSavedCourse);
             fragment.setArguments(args);
         } catch (JsonProcessingException e) {
-            Utils.errorDialogFactory(context, context.getString(R.string.generic_error)).show();
+            Utils.alertDialogFactory(context, R.string.error, context.getString(R.string.generic_error)).show();
         }
         return fragment;
     }
@@ -83,6 +91,66 @@ public class CourseCardFragment extends Fragment {
         return textView;
     }
 
+    private void initAddCourseButton() {
+        final RotateAnimation rotateAnimation = new RotateAnimation(0, 90, Animation.RELATIVE_TO_SELF, 0.5f,
+                Animation.RELATIVE_TO_SELF, 0.5f);
+        rotateAnimation.setDuration(500);
+        rotateAnimation.setInterpolator(new LinearInterpolator());
+        final Handler clickHandler = new Handler();
+
+        final Runnable clickRunnable = new Runnable() {
+            @Override
+            public void run() {
+                onAddCourseClickListener.addCourseListener(course);
+            }
+        };
+
+        // Fade in animation of the check mark.
+        // Fade check in, then call clickListener with a delay so user can see it.
+        final Animation fadeIn = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_in);
+        fadeIn.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mAddCourseButton.setImageResource(R.drawable.check);
+                clickHandler.postDelayed(clickRunnable, 500);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+        });
+
+        rotateAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mAddCourseButton.startAnimation(fadeIn);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+        });
+
+
+        this.mAddCourseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (onAddCourseClickListener != null) {
+                    // The animations are handling the click
+                    mAddCourseButton.startAnimation(rotateAnimation);
+                }
+            }
+        });
+    }
+
     @SuppressWarnings("ConstantConditions")
     private void initColorSeekbar() {
         // Create clone of drawables to set on header
@@ -99,43 +167,37 @@ public class CourseCardFragment extends Fragment {
                 mCourseHeader.setBackground(headerDrawable);
 
                 addButtonDrawable.setTint(color);
-                mAddCourse.setBackground(Utils.getPressedColorRippleDrawable(color, ColorUtils.blendARGB(color, Color.BLACK, 0.2F), addButtonDrawable));
+                mAddCourseButton.setBackground(Utils.getPressedColorRippleDrawable(ColorUtils.blendARGB(color, Color.BLACK, 0.2F),
+                        addButtonDrawable));
+
+                course.setColor(currentColor);
             }
         });
 
         this.mColorSlider.setOnInitDoneListener(new ColorSeekBar.OnInitDoneListener() {
             @Override
             public void done() {
-                if (currentColor != null) {
-                    headerDrawable.setTint(currentColor);
-                    mCourseHeader.setBackground(headerDrawable);
+                headerDrawable.setTint(currentColor);
+                mCourseHeader.setBackground(headerDrawable);
 
-                    addButtonDrawable.setTint(currentColor);
-                    mAddCourse.setBackground(Utils.getPressedColorRippleDrawable(currentColor, ColorUtils.blendARGB(currentColor, Color.BLACK, 0.2F), addButtonDrawable));
-                } else {
-                    mColorSlider.setColorBarPosition(mColorSlider.getColorIndexPosition(getActivity().getResources().getColor(R.color
-                            .color_primary)));
-                }
+                addButtonDrawable.setTint(currentColor);
+                mAddCourseButton.setBackground(Utils.getPressedColorRippleDrawable(ColorUtils.blendARGB(currentColor, Color.BLACK,
+                        0.2F), addButtonDrawable));
+                mColorSlider.setColorBarPosition(mColorSlider.getColorIndexPosition(currentColor));
             }
         });
 
     }
 
     private void initCourseCard() {
-        this.mAddCourse.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (onAddCourseClickListener != null) {
-                    onAddCourseClickListener.addCourseListener(course);
-                }
-            }
-        });
+
 
         this.mCourseName.setText(this.course.getCourseTitleLong());
         this.mCourseSection.setText(this.course.getQualifiedName());
         this.mCourseTerm.setText(Term.of(this.course.getStartingTerm()).longTermName());
         initCourseCardDetails();
         initColorSeekbar();
+        initAddCourseButton();
 
     }
 
@@ -188,7 +250,7 @@ public class CourseCardFragment extends Fragment {
                     this.currentColor = this.course.getColor();
                 }
             } catch (IOException e) {
-                Utils.errorDialogFactory(getActivity(), getString(R.string.generic_error)).show();
+                Utils.alertDialogFactory(getActivity(), R.string.error, getString(R.string.generic_error)).show();
             }
         }
     }
@@ -202,10 +264,11 @@ public class CourseCardFragment extends Fragment {
                 this.course = mapper.readValue(savedInstanceState.getString(ARG_PARAM1), Course.class);
             }
         } catch (IOException e) {
-            Utils.errorDialogFactory(getActivity(), getString(R.string.generic_error)).show();
+            Utils.alertDialogFactory(getActivity(), R.string.error, getString(R.string.generic_error)).show();
         }
 
-        this.mAddCourse = view.findViewById(R.id.course_add_fab);
+        this.currentColor = this.course.getColor() != 0 ? this.course.getColor() : getResources().getColor(R.color.color_primary);
+        this.mAddCourseButton = view.findViewById(R.id.course_add_fab);
         this.mCourseName = view.findViewById(R.id.course_name_tv);
         this.mCourseSection = view.findViewById(R.id.course_section_tv);
         this.mCourseTerm = view.findViewById(R.id.course_term_tv);

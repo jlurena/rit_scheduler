@@ -21,10 +21,10 @@
     <Spinner
         android:id="@+id/term_spinner"
         style="@style/Base.Widget.AppCompat.Spinner.Underlined"
-        android:popupBackground="@drawable/spinner_popup_background"
         android:layout_width="115dp"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/search_course"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:popupBackground="@drawable/spinner_popup_background" />
 
 </RelativeLayout>

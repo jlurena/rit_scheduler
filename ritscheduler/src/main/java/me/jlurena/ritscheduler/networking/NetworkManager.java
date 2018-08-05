@@ -125,6 +125,7 @@ public class NetworkManager {
         requestQueue.addRequestFinishedListener(new RequestQueue.RequestFinishedListener<Object>() {
             @Override
             public void onRequestFinished(Request<Object> request) {
+                requestCounter.decrementAndGet();
                 if (requestCounter.get() == 0) {
                     responseListener.onRequestFinished();
                 }

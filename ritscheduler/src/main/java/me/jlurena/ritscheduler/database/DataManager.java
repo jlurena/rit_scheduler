@@ -12,8 +12,13 @@ import com.couchbase.lite.Expression;
 import com.couchbase.lite.MutableDocument;
 import com.couchbase.lite.Query;
 import com.couchbase.lite.QueryBuilder;
+import com.couchbase.lite.Result;
+import com.couchbase.lite.ResultSet;
 import com.couchbase.lite.SelectResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import me.jlurena.ritscheduler.models.Model;
 
@@ -95,11 +100,42 @@ public class DataManager {
      * @throws CouchbaseLiteException Exception thrown when inable to query document.
      */
     public void getModel(String modelId, String modelType, Class objectType, DocumentParser documentParser) throws CouchbaseLiteException {
-        Query query = QueryBuilder.select(SelectResult.all()).from(DataSource.database(database)).where(Expression.property(MODEL_TYPE_KEY).equalTo
-                (Expression.string(modelType)).and(Expression.property(MODEL_ID_KEY).equalTo(Expression.string(modelId))));
+        Query query = QueryBuilder
+                .select(SelectResult.all())
+                .from(DataSource.database(database))
+                .where(
+                        Expression.property(MODEL_TYPE_KEY).equalTo(Expression.string(modelType))
+                                .and(Expression.property(MODEL_ID_KEY).equalTo(Expression.string(modelId)))
+                );
         Dictionary objectDictionary = query.execute().next().getDictionary(0);
         //noinspection unchecked
         documentParser.toModelCallback(new ObjectMapper().convertValue(objectDictionary.toMap(), objectType));
+    }
+
+    /**
+     * Retrieves all properties of document that matches the type. It is then casted
+     * into objectType and passed to the DocumentParser @see {@link DocumentParser#toModelCallback(Object)}.
+     *
+     * @param modelType The type name of the model.
+     * @param objectType The class type of the object representing the model.
+     * @param documentParser Document parser interface used to convert the document to appropriate model type.
+     * @throws CouchbaseLiteException Exception thrown when inable to query document.
+     */
+    public void getModels(String modelType, Class objectType, DocumentParser documentParser) throws CouchbaseLiteException {
+        Query query = QueryBuilder
+                .select(SelectResult.all())
+                .from(DataSource.database(database))
+                .where(Expression.property(MODEL_TYPE_KEY)
+                        .equalTo(Expression.string(modelType)));
+        ResultSet results = query.execute();
+        ObjectMapper objectMapper = new ObjectMapper();
+        List models = new ArrayList();
+        for (Result result : results) {
+            //noinspection unchecked
+            models.add(objectMapper.convertValue(result.getDictionary(0).toMap(), objectType));
+        }
+        //noinspection unchecked
+        documentParser.toModelCallback(models);
     }
 
     /**

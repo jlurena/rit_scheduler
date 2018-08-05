@@ -12,10 +12,10 @@ import java.util.Locale;
  */
 public class Term {
 
-    private static LocalDate now = LocalDate.now();
-    private LocalDate currentTermDate;
-    private Semester semester;
-    private String termCode;
+    private static final LocalDate now = LocalDate.now();
+    private final LocalDate currentTermDate;
+    private final Semester semester;
+    private final String termCode;
 
     private Term(LocalDate currentTermDate, Semester semester, String termCode) {
         this.currentTermDate = currentTermDate;

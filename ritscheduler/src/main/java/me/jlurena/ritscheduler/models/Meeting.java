@@ -23,7 +23,7 @@ import me.jlurena.revolvingweekview.WeekViewEvent;
 @SuppressWarnings("ConstantConditions")
 public class Meeting {
 
-    public static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("h:ma");
+    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("h:ma");
     private String[] days;
     /**
      * Days of meeting in an Array represented as full humanized day names.
@@ -162,7 +162,6 @@ public class Meeting {
         String[] locations = getLocationsShortForEachDayTime();
         for (int i = 0; i < length; i++) {
             String[] days = this.daysFull[i].split(" ");
-            event = new WeekViewEvent();
 
             // Parse hours
             splitTime = this.times[i].split(" - ");
@@ -170,9 +169,10 @@ public class Meeting {
             endTime = LocalTime.parse(splitTime[1], dtf);
 
             // Set Location
-            event.setLocation(locations[i]);
             for (String day : days) {
-                dayOfWeek = DayOfWeek.valueOf(day);
+                event = new WeekViewEvent();
+                event.setLocation(locations[i]);
+                dayOfWeek = DayOfWeek.valueOf(day.toUpperCase());
 
                 start = new DayTime(dayOfWeek, startTime);
                 end = new DayTime(dayOfWeek, endTime);
