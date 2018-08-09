@@ -12,4 +12,7 @@
     <string name="generic_error">Something weird happened. Try again later.</string>
     <string name="save_error">Unable to save this course. Please try again later.</string>
     <string name="error_retrieving_saved_courses">Error retrieving saved courses.</string>
+    <string name="confirm">Confirm</string>
+    <string name="delete_course_error">Unable to delete this course. Please try again later.</string>
+    <string name="update_course_error">Unable to update this course. Please try again later.</string>
 </resources>

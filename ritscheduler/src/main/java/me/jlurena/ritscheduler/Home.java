@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Spinner;
 
 import com.android.volley.VolleyError;
@@ -42,7 +43,7 @@ import me.jlurena.ritscheduler.networking.NetworkManager;
 import me.jlurena.ritscheduler.networking.ResponseListener;
 
 
-public class Home extends Activity implements CourseCardFragment.OnAddCourseClickListener {
+public class Home extends Activity implements CourseCardFragment.ButtonsListeners {
 
     private static final String COURSE_FRAG_TAG = "CourseFrag";
     private static final String courseRegex = "^[A-Za-z]{4}\\s\\d{3}([A-Za-z])?-\\d{2}$";
@@ -59,8 +60,12 @@ public class Home extends Activity implements CourseCardFragment.OnAddCourseClic
     private DataManager dataManager;
     private HashSet<Course> courses;
 
+    private void refreshCalendar() {
+
+    }
+
     @Override
-    public void addCourseListener(Course course) {
+    public void addCourseButton(Course course) {
         try {
             dataManager.addModel(course);
             courses.add(course);
@@ -72,6 +77,33 @@ public class Home extends Activity implements CourseCardFragment.OnAddCourseClic
             }
         } catch (CouchbaseLiteException e) {
             Utils.alertDialogFactory(this, R.string.error, getString(R.string.save_error)).show();
+        } finally {
+            removeCourseCardFragment();
+        }
+    }
+
+    @Override
+    public void deleteCourseButton(Course course) {
+        try {
+            dataManager.deleteModel(course);
+            courses.remove(course);
+            mWeekView.notifyDatasetChanged();
+        } catch (CouchbaseLiteException e) {
+            Utils.alertDialogFactory(this, R.string.error, getString(R.string.delete_course_error)).show();
+        } finally {
+            removeCourseCardFragment();
+        }
+    }
+
+    @Override
+    public void updateCourseButton(Course course) {
+        try {
+            dataManager.updateModel(course);
+            courses.remove(course);
+            courses.add(course);
+            mWeekView.notifyDatasetChanged();
+        } catch (CouchbaseLiteException e) {
+            Utils.alertDialogFactory(this, R.string.error, getString(R.string.update_course_error)).show();
         } finally {
             removeCourseCardFragment();
         }
@@ -121,18 +153,18 @@ public class Home extends Activity implements CourseCardFragment.OnAddCourseClic
 
             @Override
             public void onClicked(int index, final BoomButton boomButton) {
+                final ImageView image = boomButton.getImageView();
                 final Animation rotateAnimation = AnimationUtils.loadAnimation(Home.this, R.anim.rotate);
-
                 String query = mSearchCourse.getText().toString();
                 final Animation swinging = AnimationUtils.loadAnimation(Home.this, R.anim.swinging);
 
                 if (query.isEmpty()) {
-                    boomButton.getImageView().startAnimation(swinging);
+                    image.startAnimation(swinging);
                     mSearchCourse.setError("Search field cannot be empty");
                 } else {
                     if (query.matches(courseRegex)) {
                         // Start animation
-                        boomButton.getImageView().startAnimation(rotateAnimation);
+                        image.startAnimation(rotateAnimation);
                         // Start call
                         networkManager.queryCourses(query, selectedTerm.getTermCode(), new ResponseListener<List<Course>>() {
 
@@ -154,7 +186,7 @@ public class Home extends Activity implements CourseCardFragment.OnAddCourseClic
 
                                     } else {
                                         courseCardFragment = CourseCardFragment.newInstance(Home.this, courses.get(0), false);
-                                        courseCardFragment.setOnAddCourseClickListener(Home.this);
+                                        courseCardFragment.setButtonsListeners(Home.this);
                                         isCourseCardVisible = true;
                                         mBoomMenuButton.reboom();
                                     }
@@ -171,11 +203,11 @@ public class Home extends Activity implements CourseCardFragment.OnAddCourseClic
 
                             @Override
                             public void onRequestFinished() {
-                                boomButton.getImageView().clearAnimation();
+                                image.clearAnimation();
                             }
                         });
                     } else {
-                        boomButton.getImageView().startAnimation(swinging);
+                        image.startAnimation(swinging);
                         mSearchCourse.setError("Must match format \"CSCI 250-01\"");
                     }
                 }
@@ -221,8 +253,8 @@ public class Home extends Activity implements CourseCardFragment.OnAddCourseClic
             public void onEventClick(WeekViewEvent event, RectF eventRect) {
                 for (Course course : courses) {
                     if (course.getCourseId().equals(event.getIdentifier())) {
-                        courseCardFragment = CourseCardFragment.newInstance(Home.this, course, false);
-                        courseCardFragment.setOnAddCourseClickListener(Home.this);
+                        courseCardFragment = CourseCardFragment.newInstance(Home.this, course, true);
+                        courseCardFragment.setButtonsListeners(Home.this);
                         isCourseCardVisible = true;
                         showCourseCard();
                     }

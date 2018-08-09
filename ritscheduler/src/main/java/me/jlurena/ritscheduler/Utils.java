@@ -15,6 +15,8 @@ import android.support.annotation.StringRes;
 import android.view.ViewGroup;
 import android.view.ViewGroupOverlay;
 
+import java.util.ArrayList;
+
 class Utils {
 
     public static void applyDim(@NonNull ViewGroup parent, float dimAmount) {

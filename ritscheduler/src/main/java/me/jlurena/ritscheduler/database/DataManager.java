@@ -82,11 +82,34 @@ public class DataManager {
      * @throws CouchbaseLiteException If inable to save document/model.
      */
     public void addModel(Model model) throws CouchbaseLiteException {
-        MutableDocument document = new MutableDocument();
+        MutableDocument document = new MutableDocument(model.getModelId());
         document.setData(model.toMap());
         document.setString(MODEL_TYPE_KEY, model.modelType);
         document.setString(MODEL_ID_KEY, model.getModelId());
         database.save(document);
+    }
+
+    /**
+     * Updates a model in the database.
+     *
+     * @param model Model to add to database.
+     * @throws CouchbaseLiteException If inable to update document/model.
+     */
+    public void updateModel(Model model) throws CouchbaseLiteException {
+        MutableDocument document = database.getDocument(model.getModelId()).toMutable();
+        document.setData(model.toMap());
+        document.setString(MODEL_TYPE_KEY, model.modelType);
+        document.setString(MODEL_ID_KEY, model.getModelId());
+        database.save(document);
+    }
+
+    /**
+     * Deletes a model in the database.
+     * @param model Model to delete.
+     * @throws CouchbaseLiteException If inable to delete model.
+     */
+    public void deleteModel(Model model) throws CouchbaseLiteException {
+        database.delete(database.getDocument(model.getModelId()));
     }
 
     /**

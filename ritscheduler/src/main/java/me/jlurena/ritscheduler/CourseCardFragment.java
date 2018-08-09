@@ -1,7 +1,9 @@
 package me.jlurena.ritscheduler;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -40,6 +42,7 @@ public class CourseCardFragment extends Fragment {
     private static final ObjectMapper mapper = new ObjectMapper();
     private Course course;
     private ImageButton mAddCourseButton;
+    private ImageButton mAddCourseButtonUnderlay;
     private TextView mCourseSection;
     private TextView mCourseName;
     private TextView mCourseTerm;
@@ -48,9 +51,12 @@ public class CourseCardFragment extends Fragment {
     private ImageView mProfessorIcon;
     private ImageView mCalendarIcon;
     private ImageView mLocationIcon;
-    private OnAddCourseClickListener onAddCourseClickListener;
+    private ButtonsListeners buttonsListeners;
     private ColorSeekBar mColorSlider;
     private int currentColor;
+    private boolean firstLaunch = true;
+    private boolean isSavedCourse;
+    private ImageButton mDeleteCourseButton;
 
     /**
      * Factory method to create an instance of CardFragment.
@@ -97,11 +103,14 @@ public class CourseCardFragment extends Fragment {
         rotateAnimation.setDuration(500);
         rotateAnimation.setInterpolator(new LinearInterpolator());
         final Handler clickHandler = new Handler();
-
         final Runnable clickRunnable = new Runnable() {
             @Override
             public void run() {
-                onAddCourseClickListener.addCourseListener(course);
+                if (isSavedCourse) {
+                    buttonsListeners.updateCourseButton(course);
+                } else {
+                    buttonsListeners.addCourseButton(course);
+                }
             }
         };
 
@@ -143,7 +152,7 @@ public class CourseCardFragment extends Fragment {
         this.mAddCourseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (onAddCourseClickListener != null) {
+                if (buttonsListeners != null) {
                     // The animations are handling the click
                     mAddCourseButton.startAnimation(rotateAnimation);
                 }
@@ -158,17 +167,31 @@ public class CourseCardFragment extends Fragment {
                 getResources().getDrawable(R.drawable.course_view_header_background, null).getConstantState().newDrawable().mutate();
         final Drawable addButtonDrawable =
                 getResources().getDrawable(R.drawable.ripple_round_button, null).getConstantState().newDrawable().mutate();
+        final Drawable addButtonOverlayDrawable =
+                getResources().getDrawable(R.drawable.ripple_round_button, null).getConstantState().newDrawable().mutate();
+        final Drawable deleteButtonDrawable =
+                getResources().getDrawable(R.drawable.ripple_round_button, null).getConstantState().newDrawable().mutate();
 
         this.mColorSlider.setOnColorChangeListener(new ColorSeekBar.OnColorChangeListener() {
             @Override
             public void onColorChangeListener(int colorBarPosition, int alphaBarPosition, int color) {
+                if (firstLaunch) {
+                    firstLaunch = false;
+                    return;
+                }
                 currentColor = color;
                 headerDrawable.setTint(color);
                 mCourseHeader.setBackground(headerDrawable);
 
                 addButtonDrawable.setTint(color);
+                addButtonOverlayDrawable.setTint(color);
                 mAddCourseButton.setBackground(Utils.getPressedColorRippleDrawable(ColorUtils.blendARGB(color, Color.BLACK, 0.2F),
                         addButtonDrawable));
+                mAddCourseButtonUnderlay.setBackground(addButtonOverlayDrawable);
+
+                deleteButtonDrawable.setTint(color);
+                mDeleteCourseButton.setBackground(Utils.getPressedColorRippleDrawable(ColorUtils.blendARGB(color, Color.BLACK, 0.2F),
+                        deleteButtonDrawable));
 
                 course.setColor(currentColor);
             }
@@ -177,11 +200,14 @@ public class CourseCardFragment extends Fragment {
         this.mColorSlider.setOnInitDoneListener(new ColorSeekBar.OnInitDoneListener() {
             @Override
             public void done() {
+                currentColor = course.getColor() != 0 ? course.getColor() : getResources().getColor(R.color.color_primary);
                 headerDrawable.setTint(currentColor);
                 mCourseHeader.setBackground(headerDrawable);
 
                 addButtonDrawable.setTint(currentColor);
                 mAddCourseButton.setBackground(Utils.getPressedColorRippleDrawable(ColorUtils.blendARGB(currentColor, Color.BLACK,
+                        0.2F), addButtonDrawable));
+                mDeleteCourseButton.setBackground(Utils.getPressedColorRippleDrawable(ColorUtils.blendARGB(currentColor, Color.BLACK,
                         0.2F), addButtonDrawable));
                 mColorSlider.setColorBarPosition(mColorSlider.getColorIndexPosition(currentColor));
             }
@@ -190,13 +216,12 @@ public class CourseCardFragment extends Fragment {
     }
 
     private void initCourseCard() {
-
-
         this.mCourseName.setText(this.course.getCourseTitleLong());
         this.mCourseSection.setText(this.course.getQualifiedName());
         this.mCourseTerm.setText(Term.of(this.course.getStartingTerm()).longTermName());
         initCourseCardDetails();
         initColorSeekbar();
+        initEditCourseButtons();
         initAddCourseButton();
 
     }
@@ -240,12 +265,42 @@ public class CourseCardFragment extends Fragment {
 
     }
 
+    private void initEditCourseButtons() {
+        if (this.isSavedCourse) {
+            this.mAddCourseButton.setImageResource(R.drawable.check);
+
+            this.mDeleteCourseButton.setVisibility(View.VISIBLE);
+            this.mDeleteCourseButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.confirm)
+                            .setMessage("Are you sure you want to delete " + course.getQualifiedName() + "?")
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    buttonsListeners.deleteCourseButton(course);
+                                }
+                            })
+                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            }).show();
+                }
+            });
+
+        }
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             try {
                 this.course = mapper.readValue(getArguments().getString(ARG_PARAM1), Course.class);
+                this.isSavedCourse = getArguments().getBoolean(ARG_PARAM2);
                 if (this.course.getColor() != 0) {
                     this.currentColor = this.course.getColor();
                 }
@@ -262,13 +317,16 @@ public class CourseCardFragment extends Fragment {
         try {
             if (savedInstanceState != null) {
                 this.course = mapper.readValue(savedInstanceState.getString(ARG_PARAM1), Course.class);
+                this.isSavedCourse = getArguments().getBoolean(ARG_PARAM2);
             }
         } catch (IOException e) {
             Utils.alertDialogFactory(getActivity(), R.string.error, getString(R.string.generic_error)).show();
         }
 
         this.currentColor = this.course.getColor() != 0 ? this.course.getColor() : getResources().getColor(R.color.color_primary);
-        this.mAddCourseButton = view.findViewById(R.id.course_add_fab);
+        this.mAddCourseButton = view.findViewById(R.id.course_add_btn);
+        this.mAddCourseButtonUnderlay = view.findViewById(R.id.course_add_btn_underlay);
+        this.mDeleteCourseButton = view.findViewById(R.id.course_delete_btn);
         this.mCourseName = view.findViewById(R.id.course_name_tv);
         this.mCourseSection = view.findViewById(R.id.course_section_tv);
         this.mCourseTerm = view.findViewById(R.id.course_term_tv);
@@ -287,20 +345,34 @@ public class CourseCardFragment extends Fragment {
     }
 
     /**
-     * Sets onAddCourseClickListener for Add button.
+     * Sets buttonsListeners for Add button.
      *
-     * @param onAddCourseClickListener The Add click listener.
+     * @param buttonsListeners The Add click listener.
      */
-    public void setOnAddCourseClickListener(OnAddCourseClickListener onAddCourseClickListener) {
-        this.onAddCourseClickListener = onAddCourseClickListener;
+    public void setButtonsListeners(ButtonsListeners buttonsListeners) {
+        this.buttonsListeners = buttonsListeners;
     }
 
-    public interface OnAddCourseClickListener {
+    public interface ButtonsListeners {
         /**
          * Action to implement when adding a course.
          *
          * @param course Course to add.
          */
-        void addCourseListener(Course course);
+        void addCourseButton(Course course);
+
+        /**
+         * Listener for delete a course button.
+         *
+         * @param course Course to delete.
+         */
+        void deleteCourseButton(Course course);
+
+        /**
+         * Listener to update a Course.
+         *
+         * @param course Course to update.
+         */
+        void updateCourseButton(Course course);
     }
 }
