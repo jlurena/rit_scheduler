@@ -1,6 +1,5 @@
 package me.jlurena.ritscheduler.models;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.threeten.bp.LocalDate;
 

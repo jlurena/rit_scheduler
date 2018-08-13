@@ -6,9 +6,11 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import me.jlurena.revolvingweekview.WeekViewEvent;
 
@@ -88,7 +90,7 @@ public class Course extends Model {
 
         Course course = (Course) o;
 
-        return this.courseId.equals(course.courseId);
+        return this.getModelId().equals(course.getModelId());
     }
 
     public String getAcademicCareer() {
@@ -480,9 +482,11 @@ public class Course extends Model {
 
     @Override
     public int hashCode() {
-        return notes.hashCode();
+
+        return Objects.hash(this.getModelId());
     }
 
+    @JsonIgnore
     @Override
     public Map<String, Object> toMap() {
         //noinspection unchecked

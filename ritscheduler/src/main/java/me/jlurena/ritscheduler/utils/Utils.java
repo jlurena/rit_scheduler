@@ -1,8 +1,9 @@
-package me.jlurena.ritscheduler;
+package me.jlurena.ritscheduler.utils;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -15,9 +16,13 @@ import android.support.annotation.StringRes;
 import android.view.ViewGroup;
 import android.view.ViewGroupOverlay;
 
-import java.util.ArrayList;
+import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.format.DateTimeFormatter;
 
-class Utils {
+public class Utils {
+
+    public static final LocalDateTime now = LocalDateTime.now();
+    public static final DateTimeFormatter STANDARD_TIME_FORMAT = DateTimeFormatter.ofPattern("h:mma");
 
     public static void applyDim(@NonNull ViewGroup parent, float dimAmount) {
         Drawable dim = new ColorDrawable(Color.BLACK);
@@ -60,4 +65,13 @@ class Utils {
     public static RippleDrawable getPressedColorRippleDrawable(@ColorInt int pressedColor, Drawable drawable) {
         return new RippleDrawable(new ColorStateList(new int[][]{new int[]{}}, new int[]{pressedColor}), drawable, null);
     }
+
+    public static Intent emailIntent(String[] recipients, String subject) {
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, recipients);
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        emailIntent.setType("plain/text");
+        return emailIntent;
+    }
+
 }

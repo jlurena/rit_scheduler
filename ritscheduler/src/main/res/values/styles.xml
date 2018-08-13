@@ -1,17 +1,26 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar.Fullscreen">
-        // Colors
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!--Colors-->
         <item name="android:colorPrimary">@color/color_primary</item>
         <item name="android:colorPrimaryDark">@color/color_primary_dark</item>
         <item name="android:colorAccent">@color/color_accent</item>
-        // Spinner items
+        <!--Spinner Items-->
         <item name="android:spinnerItemStyle" parent="Base.Widget.AppCompat.Spinner.Underlined">
             @style/spinnerItemStyle
         </item>
         <item name="android:spinnerDropDownItemStyle">
             @style/spinnerDropDownItemStyle
         </item>
+        <item name="preferenceTheme">
+            @style/preferenceTheme
+        </item>
+
+        <!--Full screen-->
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
     </style>
 
     <style name="spinnerItemStyle">
@@ -28,5 +37,20 @@
         <item name="android:textSize">16sp</item>
         <item name="android:gravity">center</item>
         <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="preferenceTheme" parent="@style/PreferenceThemeOverlay.v14.Material">
+        <item name="android:background">@drawable/settings_dialog_bg</item>
+    </style>
+
+    <!-- Style for an Preference Entry -->
+    <style name="AppPreference" tools:ignore="PrivateResource">
+        <item name="android:layout">@layout/preference_material</item>
+    </style>
+
+    <!-- Style for a DialogPreference Entry -->
+    <style name="AppPreference.DialogPreference">
+        <item name="positiveButtonText">@android:string/ok</item>
+        <item name="negativeButtonText">@android:string/cancel</item>
     </style>
 </resources>

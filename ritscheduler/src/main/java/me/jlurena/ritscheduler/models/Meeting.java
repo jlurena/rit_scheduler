@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.LocalTime;
-import org.threeten.bp.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +13,7 @@ import java.util.List;
 
 import me.jlurena.revolvingweekview.DayTime;
 import me.jlurena.revolvingweekview.WeekViewEvent;
+import me.jlurena.ritscheduler.utils.Utils;
 
 /**
  * models.Meeting.java
@@ -23,7 +23,7 @@ import me.jlurena.revolvingweekview.WeekViewEvent;
 @SuppressWarnings("ConstantConditions")
 public class Meeting {
 
-    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("h:ma");
+
     private String[] days;
     /**
      * Days of meeting in an Array represented as full humanized day names.
@@ -165,8 +165,8 @@ public class Meeting {
 
             // Parse hours
             splitTime = this.times[i].split(" - ");
-            startTime = LocalTime.parse(splitTime[0], dtf);
-            endTime = LocalTime.parse(splitTime[1], dtf);
+            startTime = LocalTime.parse(splitTime[0], Utils.STANDARD_TIME_FORMAT);
+            endTime = LocalTime.parse(splitTime[1], Utils.STANDARD_TIME_FORMAT);
 
             // Set Location
             for (String day : days) {

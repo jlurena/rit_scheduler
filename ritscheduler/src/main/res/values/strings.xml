@@ -1,11 +1,11 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">RITScheduler</string>
-    <string name="csci_261">CSCI-261</string>
-    <string name="fall_2018">Fall 2018</string>
     <string name="add">Add</string>
     <string name="professor">Professor</string>
 
     <string name="search_hint">CSCI 250–01</string>
+
+    <!--Errors-->
     <string name="error">Error</string>
     <string name="course_term_ambigious_error_msg">Search term was too ambigious. Please try again.</string>
     <string name="no_results_error">No results found.</string>
@@ -15,4 +15,30 @@
     <string name="confirm">Confirm</string>
     <string name="delete_course_error">Unable to delete this course. Please try again later.</string>
     <string name="update_course_error">Unable to update this course. Please try again later.</string>
+
+    <!--Settings-->
+
+    <string name="auto_limit_time">Auto Limit Time</string>
+    <string name="auto_limit_time_key">auto_limit_time_key</string>
+    <string name="num_visible_days_key">num_of_visible_days</string>
+    <string name="num_of_visible_days_title">Number of Visible Days</string>
+    <string name="auto_limit_summary">Set calendar hours to fit around events.</string>
+    <string name="first_visible_day_key">first_visible_day_key</string>
+    <string name="calendar_settings_title">Calendar Settings</string>
+    <string name="support_feedback">Support/Feedback</string>
+    <string name="rate_RITScheduler_key">rate_rit_scheduler</string>
+    <string name="rate_RITScheduler">Rate RIT Scheduler</string>
+    <string name="technical_support_key">technical_support_key</string>
+    <string name="feedback_request_summary">Let me know if you like the app! :)</string>
+    <string name="technical_support_summary">Email me for some technical support</string>
+    <string name="technical_support_title">Technical Support</string>
+    <string name="set_first_visible_day_flag_key">set_first_visible_day_flag</string>
+
+    <string name="start">Start</string>
+    <string name="end">End</string>
+    <string name="hour_range_key">hour_range_key</string>
+    <string name="calendar_hours_default_val" tools:ignore="TypographyDashes">0-1380</string>
+    <string name="calendar_hours_summary">Hours to display on Calendar</string>
+    <string name="calendar_hours_title">Calendar Hours</string>
+    <string name="time_range_error">Start Time must be before End Time</string>
 </resources>

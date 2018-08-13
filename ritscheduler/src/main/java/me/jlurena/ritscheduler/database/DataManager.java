@@ -8,6 +8,7 @@ import com.couchbase.lite.DataSource;
 import com.couchbase.lite.Database;
 import com.couchbase.lite.DatabaseConfiguration;
 import com.couchbase.lite.Dictionary;
+import com.couchbase.lite.Document;
 import com.couchbase.lite.Expression;
 import com.couchbase.lite.MutableDocument;
 import com.couchbase.lite.Query;
@@ -43,7 +44,7 @@ public class DataManager {
     private DataManager(Context context) {
         DatabaseConfiguration config = new DatabaseConfiguration(context);
         try {
-            database = new Database(DB_NAME, config);
+            this.database = new Database(DB_NAME, config);
         } catch (CouchbaseLiteException e) {
             Log.e(TAG, "Could not create database", e);
         }
@@ -90,26 +91,16 @@ public class DataManager {
     }
 
     /**
-     * Updates a model in the database.
-     *
-     * @param model Model to add to database.
-     * @throws CouchbaseLiteException If inable to update document/model.
-     */
-    public void updateModel(Model model) throws CouchbaseLiteException {
-        MutableDocument document = database.getDocument(model.getModelId()).toMutable();
-        document.setData(model.toMap());
-        document.setString(MODEL_TYPE_KEY, model.modelType);
-        document.setString(MODEL_ID_KEY, model.getModelId());
-        database.save(document);
-    }
-
-    /**
      * Deletes a model in the database.
+     *
      * @param model Model to delete.
      * @throws CouchbaseLiteException If inable to delete model.
      */
     public void deleteModel(Model model) throws CouchbaseLiteException {
-        database.delete(database.getDocument(model.getModelId()));
+        Document doc = database.getDocument(model.getModelId());
+        if (doc != null) {
+            database.delete(doc);
+        }
     }
 
     /**
@@ -159,6 +150,20 @@ public class DataManager {
         }
         //noinspection unchecked
         documentParser.toModelCallback(models);
+    }
+
+    /**
+     * Updates a model in the database.
+     *
+     * @param model Model to add to database.
+     * @throws CouchbaseLiteException If inable to update document/model.
+     */
+    public void updateModel(Model model) throws CouchbaseLiteException {
+        MutableDocument document = database.getDocument(model.getModelId()).toMutable();
+        document.setData(model.toMap());
+        document.setString(MODEL_TYPE_KEY, model.modelType);
+        document.setString(MODEL_ID_KEY, model.getModelId());
+        database.save(document);
     }
 
     /**

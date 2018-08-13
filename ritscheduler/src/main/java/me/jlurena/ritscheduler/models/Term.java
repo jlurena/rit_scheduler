@@ -7,12 +7,13 @@ import org.threeten.bp.temporal.TemporalAdjusters;
 
 import java.util.Locale;
 
+import me.jlurena.ritscheduler.utils.Utils;
+
 /**
  * Immutable class representing a school Term in RIT.
  */
 public class Term {
 
-    private static final LocalDate now = LocalDate.now();
     private final LocalDate currentTermDate;
     private final Semester semester;
     private final String termCode;
@@ -75,7 +76,7 @@ public class Term {
      * @return The current term.
      */
     public static Term currentTerm() {
-        return new Term(now);
+        return new Term(Utils.now.toLocalDate());
     }
 
     /**

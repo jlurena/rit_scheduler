@@ -31,7 +31,6 @@
                 android:layout_marginBottom="-5dp"
                 android:includeFontPadding="false"
                 android:lineSpacingExtra="0dp"
-                android:text="@string/csci_261"
                 android:textColor="@android:color/white"
                 android:textSize="25sp" />
 
@@ -50,7 +49,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 android:layout_marginStart="3dp"
-                android:text="@string/fall_2018"
                 android:textColor="@android:color/white"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent" />
@@ -120,10 +118,10 @@
             android:background="@drawable/ripple_round_button"
             android:contentDescription="@string/add"
             android:elevation="8dp"
+            android:rotation="45"
             android:src="@drawable/plus"
             android:tint="@android:color/white"
             android:visibility="gone"
-            android:rotation="45"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/course_add_btn" />
 

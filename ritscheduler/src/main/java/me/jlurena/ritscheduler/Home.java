@@ -28,19 +28,28 @@ import com.nightonke.boommenu.ButtonEnum;
 import com.nightonke.boommenu.OnBoomListenerAdapter;
 import com.nightonke.boommenu.Util;
 
+import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.LocalTime;
+import org.threeten.bp.format.TextStyle;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 
+import me.jlurena.revolvingweekview.DateTimeInterpreter;
+import me.jlurena.revolvingweekview.DayTime;
 import me.jlurena.revolvingweekview.WeekView;
 import me.jlurena.revolvingweekview.WeekViewEvent;
 import me.jlurena.ritscheduler.database.DataManager;
+import me.jlurena.ritscheduler.fragments.CourseCardFragment;
+import me.jlurena.ritscheduler.fragments.SettingsFragment;
 import me.jlurena.ritscheduler.models.Course;
+import me.jlurena.ritscheduler.models.Settings;
 import me.jlurena.ritscheduler.models.Term;
 import me.jlurena.ritscheduler.networking.NetworkManager;
 import me.jlurena.ritscheduler.networking.ResponseListener;
+import me.jlurena.ritscheduler.utils.Utils;
 
 
 public class Home extends Activity implements CourseCardFragment.ButtonsListeners {
@@ -56,13 +65,10 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
     private FrameLayout mFragmentContainer;
     private Term selectedTerm;
     private NetworkManager networkManager;
-    private boolean isCourseCardVisible = false;
+    private boolean isFragmentInflated = false;
     private DataManager dataManager;
     private HashSet<Course> courses;
-
-    private void refreshCalendar() {
-
-    }
+    private SettingsFragment settingsFragment;
 
     @Override
     public void addCourseButton(Course course) {
@@ -78,7 +84,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         } catch (CouchbaseLiteException e) {
             Utils.alertDialogFactory(this, R.string.error, getString(R.string.save_error)).show();
         } finally {
-            removeCourseCardFragment();
+            removeFragment();
         }
     }
 
@@ -87,25 +93,16 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         try {
             dataManager.deleteModel(course);
             courses.remove(course);
-            mWeekView.notifyDatasetChanged();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mWeekView.notifyDatasetChanged();
+                }
+            });
         } catch (CouchbaseLiteException e) {
             Utils.alertDialogFactory(this, R.string.error, getString(R.string.delete_course_error)).show();
         } finally {
-            removeCourseCardFragment();
-        }
-    }
-
-    @Override
-    public void updateCourseButton(Course course) {
-        try {
-            dataManager.updateModel(course);
-            courses.remove(course);
-            courses.add(course);
-            mWeekView.notifyDatasetChanged();
-        } catch (CouchbaseLiteException e) {
-            Utils.alertDialogFactory(this, R.string.error, getString(R.string.update_course_error)).show();
-        } finally {
-            removeCourseCardFragment();
+            removeFragment();
         }
     }
 
@@ -129,7 +126,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
 
         mBoomMenuButton.addBuilder(new HamButton.Builder()
                 .normalImageRes(android.R.drawable.ic_menu_search)
-                .addView(R.layout.search_dialogue)
+                .addView(R.layout.view_search_dialogue)
                 .normalColorRes(R.color.dark_gray)
                 .highlightedColorRes(R.color.color_accent)
                 .buttonHeight(Util.dp2px(80)));
@@ -156,7 +153,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                 final ImageView image = boomButton.getImageView();
                 final Animation rotateAnimation = AnimationUtils.loadAnimation(Home.this, R.anim.rotate);
                 String query = mSearchCourse.getText().toString();
-                final Animation swinging = AnimationUtils.loadAnimation(Home.this, R.anim.swinging);
+                final Animation swinging = AnimationUtils.loadAnimation(Home.this, R.anim.swing_wiggle);
 
                 if (query.isEmpty()) {
                     image.startAnimation(swinging);
@@ -187,7 +184,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                                     } else {
                                         courseCardFragment = CourseCardFragment.newInstance(Home.this, courses.get(0), false);
                                         courseCardFragment.setButtonsListeners(Home.this);
-                                        isCourseCardVisible = true;
+                                        isFragmentInflated = true;
                                         mBoomMenuButton.reboom();
                                     }
                                 } else {
@@ -217,8 +214,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
 
     private void initCalendar() {
         this.mWeekView = findViewById(R.id.weekView);
-        this.mWeekView.goToToday();
-        this.mWeekView.goToHour(LocalTime.now().getHour() - 2);
+        initCalendarSettings();
 
         try {
             dataManager.getModels(Course.TYPE, Course.class, new DataManager.DocumentParser<List<Course>>() {
@@ -232,7 +228,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
             Utils.alertDialogFactory(this, R.string.error, getString(R.string.error_retrieving_saved_courses));
         }
 
-        mWeekView.setWeekViewLoader(new WeekView.WeekViewLoader() {
+        this.mWeekView.setWeekViewLoader(new WeekView.WeekViewLoader() {
 
             @Override
             public List<? extends WeekViewEvent> onWeekViewLoad() {
@@ -255,12 +251,48 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                     if (course.getCourseId().equals(event.getIdentifier())) {
                         courseCardFragment = CourseCardFragment.newInstance(Home.this, course, true);
                         courseCardFragment.setButtonsListeners(Home.this);
-                        isCourseCardVisible = true;
+                        isFragmentInflated = true;
                         showCourseCard();
                     }
                 }
             }
         });
+
+        this.mWeekView.setEmptyViewLongPressListener(new WeekView.EmptyViewLongPressListener() {
+            @Override
+            public void onEmptyViewLongPress(DayTime time) {
+                isFragmentInflated = true;
+                showSettings();
+            }
+        });
+
+        this.mWeekView.setDateTimeInterpreter(new DateTimeInterpreter() {
+            @Override
+            public String interpretDate(DayOfWeek day) {
+                return mWeekView.getNumberOfVisibleDays() > 3 ? day.getDisplayName(TextStyle.SHORT, Locale.getDefault()) : day.getDisplayName
+                        (TextStyle.FULL, Locale.getDefault());
+            }
+
+            @Override
+            public String interpretTime(int hour, int minutes) {
+                return LocalTime.of(hour, minutes).format(Utils.STANDARD_TIME_FORMAT);
+            }
+        });
+    }
+
+    private void initCalendarSettings() {
+        Settings settings = SettingsFragment.updateSettings(this);
+        if (settings.firstVisibleDayFlag()) {
+            this.mWeekView.setFirstDayOfWeek(settings.getFirstVisibleDay());
+        } else {
+            this.mWeekView.goToToday();
+        }
+
+        this.mWeekView.setNumberOfVisibleDays(settings.getNumberOfVisibleDays());
+        this.mWeekView.setAutoLimitTime(settings.isAutoLimitTime());
+        this.mWeekView.setMinTime(settings.getMinHour());
+        this.mWeekView.setMaxTime(settings.getMaxHour());
+
     }
 
     private void initSearchCourseEditText() {
@@ -305,6 +337,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         this.dataManager = DataManager.getInstance(this);
         this.mHomeMainContainer = findViewById(R.id.home_main_container);
         this.mFragmentContainer = findViewById(R.id.course_fragment_container);
+        this.settingsFragment = new SettingsFragment();
 
         initBoomButton();
         initCalendar();
@@ -315,7 +348,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
 
         if (event.getAction() == MotionEvent.ACTION_UP) {
 
-            if (isCourseCardVisible && courseCardFragment != null) {
+            if (isFragmentInflated) {
                 Rect rect = new Rect(0, 0, 0, 0);
 
                 mFragmentContainer.getHitRect(rect);
@@ -323,7 +356,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                 boolean intersects = rect.contains((int) event.getX(), (int) event.getY());
 
                 if (!intersects) {
-                    removeCourseCardFragment();
+                    removeFragment();
                     return true;
                 }
             }
@@ -332,24 +365,56 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         return super.onTouchEvent(event);
     }
 
-    private void removeCourseCardFragment() {
-        if (isCourseCardVisible && courseCardFragment != null) {
+    private void removeFragment() {
+        if (isFragmentInflated) {
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-            ft.remove(courseCardFragment).commit();
+            if (courseCardFragment == null) {
+                initCalendarSettings();
+                ft.remove(settingsFragment);
+            } else {
+                ft.remove(courseCardFragment);
+                courseCardFragment = null;
+            }
+            ft.commit();
             enableBackground();
-            isCourseCardVisible = false;
+            isFragmentInflated = false;
         }
     }
 
     private void showCourseCard() {
-        if (isCourseCardVisible) {
+        if (isFragmentInflated && courseCardFragment != null) {
             disableBackground();
             final FragmentManager fm = getFragmentManager();
             final FragmentTransaction ft = fm.beginTransaction();
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             ft.replace(R.id.course_fragment_container, courseCardFragment,
                     COURSE_FRAG_TAG).commit();
+        }
+    }
+
+    private void showSettings() {
+        if (isFragmentInflated) {
+            disableBackground();
+            final FragmentManager fm = getFragmentManager();
+            final FragmentTransaction ft = fm.beginTransaction();
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            ft.replace(R.id.course_fragment_container, settingsFragment,
+                    SettingsFragment.TAG).commit();
+        }
+    }
+
+    @Override
+    public void updateCourseButton(Course course) {
+        try {
+            dataManager.updateModel(course);
+            courses.remove(course);
+            courses.add(course);
+            mWeekView.notifyDatasetChanged();
+        } catch (CouchbaseLiteException e) {
+            Utils.alertDialogFactory(this, R.string.error, getString(R.string.update_course_error)).show();
+        } finally {
+            removeFragment();
         }
     }
 }

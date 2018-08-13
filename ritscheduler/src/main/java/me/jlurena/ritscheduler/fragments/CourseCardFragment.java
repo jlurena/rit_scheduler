@@ -1,4 +1,4 @@
-package me.jlurena.ritscheduler;
+package me.jlurena.ritscheduler.fragments;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -32,9 +32,11 @@ import com.rtugeek.android.colorseekbar.ColorSeekBar;
 
 import java.io.IOException;
 
+import me.jlurena.ritscheduler.R;
 import me.jlurena.ritscheduler.models.Course;
 import me.jlurena.ritscheduler.models.Meeting;
 import me.jlurena.ritscheduler.models.Term;
+import me.jlurena.ritscheduler.utils.Utils;
 
 public class CourseCardFragment extends Fragment {
     private static final String ARG_PARAM1 = "course";
@@ -313,7 +315,7 @@ public class CourseCardFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.course_card, container, false);
+        View view = inflater.inflate(R.layout.fragment_course_card, container, false);
         try {
             if (savedInstanceState != null) {
                 this.course = mapper.readValue(savedInstanceState.getString(ARG_PARAM1), Course.class);
