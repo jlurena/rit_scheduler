@@ -37,7 +37,6 @@ public class TimePreference extends DialogPreference {
     }
 
     public TimePreference(Context context, AttributeSet attrs, int defStyleAttr) {
-        // Delegate to other constructor
         this(context, attrs, defStyleAttr, defStyleAttr);
     }
 
@@ -215,7 +214,7 @@ public class TimePreference extends DialogPreference {
         @Override
         public void onClick(DialogInterface dialog, int which) {
             if (which == DialogInterface.BUTTON_POSITIVE) {
-                if (startHour > endHour) {
+                if (startHour >= endHour) {
                     Utils.alertDialogFactory(getActivity(), R.string.error, getString(R.string.time_range_error)).show();
                     return;
                 }
