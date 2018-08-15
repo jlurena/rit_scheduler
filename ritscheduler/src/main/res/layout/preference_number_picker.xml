@@ -11,5 +11,5 @@
     app:mnpTextColor="@color/color_primary_dark"
     app:mnpTextSize="16sp"
     app:mnpTextStyle="bold"
-    app:mnpValue="10"
+    app:mnpValue="3"
     app:mnpWrapped="true" />

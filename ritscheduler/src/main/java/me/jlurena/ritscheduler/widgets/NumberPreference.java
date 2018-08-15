@@ -30,10 +30,11 @@ public class NumberPreference extends DialogPreference {
 
     public NumberPreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        this.number = 3;
     }
 
     @Override public int getDialogLayoutResource() {
-        return R.layout.number_picker_preference;
+        return R.layout.preference_number_picker;
     }
 
     public int getNumber() {
