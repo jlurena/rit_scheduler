@@ -93,12 +93,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         try {
             dataManager.deleteModel(course);
             courses.remove(course);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mWeekView.notifyDatasetChanged();
-                }
-            });
+            mWeekView.notifyDatasetChanged();
         } catch (CouchbaseLiteException e) {
             Utils.alertDialogFactory(this, R.string.error, getString(R.string.delete_course_error)).show();
         } finally {
@@ -129,7 +124,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                 .addView(R.layout.view_search_dialogue)
                 .normalColorRes(R.color.dark_gray)
                 .highlightedColorRes(R.color.color_accent)
-                .buttonHeight(Util.dp2px(80)));
+                .buttonHeight(Util.dp2px(110)));
 
         mBoomMenuButton.setOnBoomListener(new OnBoomListenerAdapter() {
 
@@ -290,8 +285,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
 
         this.mWeekView.setNumberOfVisibleDays(settings.getNumberOfVisibleDays());
         this.mWeekView.setAutoLimitTime(settings.isAutoLimitTime());
-        this.mWeekView.setMinTime(settings.getMinHour());
-        this.mWeekView.setMaxTime(settings.getMaxHour());
+        this.mWeekView.setLimitTime(settings.getMinHour(), settings.getMaxHour() + 1); // Let max hour be visible
 
     }
 
