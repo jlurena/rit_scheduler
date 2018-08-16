@@ -41,4 +41,5 @@
     <string name="calendar_hours_summary">Hours to display on Calendar</string>
     <string name="calendar_hours_title">Calendar Hours</string>
     <string name="time_range_error">Start Time must be before End Time</string>
+    <string name="search_for_a_course">Search for a Course</string>
 </resources>
