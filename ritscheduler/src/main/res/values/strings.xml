@@ -37,7 +37,7 @@
     <string name="start">Start</string>
     <string name="end">End</string>
     <string name="hour_range_key">hour_range_key</string>
-    <string name="calendar_hours_default_val" tools:ignore="TypographyDashes">0-1440</string>
+    <string name="calendar_hours_default_val" tools:ignore="TypographyDashes">0-1380</string>
     <string name="calendar_hours_summary">Hours to display on Calendar</string>
     <string name="calendar_hours_title">Calendar Hours</string>
     <string name="time_range_error">Start Time must be before End Time</string>

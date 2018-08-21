@@ -12,11 +12,11 @@
         android:layout_alignParentStart="true"
         android:layout_toStartOf="@+id/term_spinner"
         android:hint="@string/search_hint"
-        android:inputType="textVisiblePassword"
-        android:maxLength="12"
+        android:inputType="textVisiblePassword|textMultiLine"
         android:textColor="@android:color/white"
         android:textColorHint="@color/medium_gray"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:maxLines="3"/>
 
     <Spinner
         android:id="@+id/term_spinner"

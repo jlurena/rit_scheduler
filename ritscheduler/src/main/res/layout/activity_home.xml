@@ -35,28 +35,69 @@
             app:bmb_buttonEnum="simpleCircle"
             app:bmb_buttonPlaceEnum="buttonPlace_sc_1"
             app:bmb_draggable="true"
+            app:bmb_hamHeight="0dp"
+            app:bmb_hamWidth="0dp"
             app:bmb_hideDuration="500"
             app:bmb_highlightedColor="@color/color_accent"
             app:bmb_normalColor="@color/color_primary"
             app:bmb_piecePlaceEnum="piecePlace_dot_1"
             app:bmb_showDuration="500"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:bmb_hamHeight="0dp"
-            app:bmb_hamWidth="0dp">
+            app:layout_constraintEnd_toEndOf="parent">
+
             <ImageView
-                android:layout_height="40dp"
                 android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_gravity="center"
-                android:tint="@android:color/white"
+                android:contentDescription="@string/search_for_a_course"
                 android:src="@android:drawable/ic_search_category_default"
-                android:contentDescription="@string/search_for_a_course" />
+                android:tint="@android:color/white" />
         </com.nightonke.boommenu.BoomMenuButton>
     </android.support.constraint.ConstraintLayout>
 
-    <FrameLayout
-        android:id="@+id/course_fragment_container"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/fragment_outer_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+        android:layout_gravity="center">
+
+        <com.qhutch.elevationimageview.ElevationImageView
+            android:id="@+id/previous"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@android:color/transparent"
+            android:elevation="8dp"
+            android:rotation="270"
+            android:src="@drawable/chevron_right"
+            android:tint="@color/medium_gray"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/course_fragment_container"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <FrameLayout
+            android:id="@+id/course_fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.qhutch.elevationimageview.ElevationImageView
+            android:id="@+id/next"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@android:color/transparent"
+            android:elevation="8dp"
+            android:rotation="90"
+            android:src="@drawable/chevron_right"
+            android:tint="@color/medium_gray"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/course_fragment_container" />
+    </android.support.constraint.ConstraintLayout>
+
 </merge>
