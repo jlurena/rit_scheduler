@@ -23,7 +23,6 @@ import static com.nightonke.boommenu.Animation.BoomEnum.LINE;
  *
  */
 
-// Todo Cache
 public class AnimationManager {
 
     public static ObjectAnimator animate(Object target, String property, long delay, long duration,

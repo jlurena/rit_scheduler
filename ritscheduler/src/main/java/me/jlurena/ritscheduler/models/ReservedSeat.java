@@ -14,14 +14,6 @@ public class ReservedSeat {
     private String toolTip;
     private String end;
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public String getDescr() {
         return descr;
     }
@@ -30,12 +22,20 @@ public class ReservedSeat {
         this.descr = descr;
     }
 
-    public String getMajor() {
-        return major;
+    public String getDescription() {
+        return description;
     }
 
-    public void setMajor(String major) {
-        this.major = major;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getEnd() {
+        return end;
+    }
+
+    public void setEnd(String end) {
+        this.end = end;
     }
 
     public ReservedSeatDetails[] getInfoArray() {
@@ -46,20 +46,20 @@ public class ReservedSeat {
         this.infoArray = infoArray;
     }
 
+    public String getMajor() {
+        return major;
+    }
+
+    public void setMajor(String major) {
+        this.major = major;
+    }
+
     public String getToolTip() {
         return toolTip;
     }
 
     public void setToolTip(String toolTip) {
         this.toolTip = toolTip;
-    }
-
-    public String getEnd() {
-        return end;
-    }
-
-    public void setEnd(String end) {
-        this.end = end;
     }
 
     public static class ReservedSeatDetails {
@@ -74,12 +74,12 @@ public class ReservedSeat {
         private long startDate;
         private String start;
 
-        public String getStart() {
-            return start;
+        public String getCap() {
+            return cap;
         }
 
-        public void setStart(String start) {
-            this.start = start;
+        public void setCap(String cap) {
+            this.cap = cap;
         }
 
         public String getDescription() {
@@ -88,14 +88,6 @@ public class ReservedSeat {
 
         public void setDescription(String description) {
             this.description = description;
-        }
-
-        public String getTotal() {
-            return total;
-        }
-
-        public void setTotal(String total) {
-            this.total = total;
         }
 
         public String getId() {
@@ -114,12 +106,12 @@ public class ReservedSeat {
             this.intCap = intCap;
         }
 
-        public String getCap() {
-            return cap;
+        public String getStart() {
+            return start;
         }
 
-        public void setCap(String cap) {
-            this.cap = cap;
+        public void setStart(String start) {
+            this.start = start;
         }
 
         public long getStartDate() {
@@ -128,6 +120,14 @@ public class ReservedSeat {
 
         public void setStartDate(long startDate) {
             this.startDate = startDate;
+        }
+
+        public String getTotal() {
+            return total;
+        }
+
+        public void setTotal(String total) {
+            this.total = total;
         }
     }
 }

@@ -1,10 +1,10 @@
 package me.jlurena.ritscheduler.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.LocalTime;
-import org.threeten.bp.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,8 +12,8 @@ import java.util.Collections;
 import java.util.List;
 
 import me.jlurena.revolvingweekview.DayTime;
-import me.jlurena.revolvingweekview.WeekView;
 import me.jlurena.revolvingweekview.WeekViewEvent;
+import me.jlurena.ritscheduler.utils.Utils;
 
 /**
  * models.Meeting.java
@@ -23,7 +23,7 @@ import me.jlurena.revolvingweekview.WeekViewEvent;
 @SuppressWarnings("ConstantConditions")
 public class Meeting {
 
-    public static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("h:ma");
+
     private String[] days;
     /**
      * Days of meeting in an Array represented as full humanized day names.
@@ -41,20 +41,20 @@ public class Meeting {
     private String[] instructorEmails;
     private String[] instructors;
 
-    public String[] getInstructorEmails() {
-        return instructorEmails;
+    public String[] getDates() {
+        return dates;
     }
 
-    public void setInstructorEmails(String[] instructorEmails) {
-        this.instructorEmails = instructorEmails;
+    public void setDates(String[] dates) {
+        this.dates = dates;
     }
 
-    public String[] getInstructors() {
-        return instructors;
+    public String[] getDayTimes() {
+        return dayTimes;
     }
 
-    public void setInstructors(String[] instructors) {
-        this.instructors = instructors;
+    public void setDayTimes(String[] dayTimes) {
+        this.dayTimes = dayTimes;
     }
 
     public String[] getDays() {
@@ -73,6 +73,22 @@ public class Meeting {
         this.daysFull = daysFull;
     }
 
+    public String[] getInstructorEmails() {
+        return instructorEmails;
+    }
+
+    public void setInstructorEmails(String[] instructorEmails) {
+        this.instructorEmails = instructorEmails;
+    }
+
+    public String[] getInstructors() {
+        return instructors;
+    }
+
+    public void setInstructors(String[] instructors) {
+        this.instructors = instructors;
+    }
+
     public String[] getLocations() {
         return locations;
     }
@@ -89,6 +105,25 @@ public class Meeting {
         this.locationsShort = locationsShort;
     }
 
+    /**
+     * Helper method that ensures a 1-1 relation with day time meetings and locations in cases
+     * where all locations share the same day time meetings. In essence, makes sure that locations.length = dayTime.length.
+     *
+     * @return An array of locations of size equal to dayTimes.
+     */
+    @JsonIgnore
+    public String[] getLocationsShortForEachDayTime() {
+        // Sometimes locations < meetings, in this case duplicate this list
+        int l = this.dayTimes.length;
+        if (this.locationsShort.length != l) {
+            String[] locations = new String[l];
+            Arrays.fill(locations, this.locationsShort[0]);
+            return locations;
+        } else {
+            return this.locationsShort;
+        }
+    }
+
     public String[] getTimes() {
         return times;
     }
@@ -97,24 +132,19 @@ public class Meeting {
         this.times = times;
     }
 
-    public String[] getDates() {
-        return dates;
-    }
-
-    public void setDates(String[] dates) {
-        this.dates = dates;
-    }
-
-    public String[] getDayTimes() {
-        return dayTimes;
-    }
-
-    public void setDayTimes(String[] dayTimes) {
-        this.dayTimes = dayTimes;
+    /**
+     * Check if the same instructor is used.
+     *
+     * @return true if same instructor is used.
+     */
+    @JsonIgnore
+    public boolean isSameInstructor() {
+        return Collections.frequency(Arrays.asList(instructors), instructors[0]) == instructors.length;
     }
 
     /**
      * Creates a List of WeekViewEvents with start time and end times pertaining to this Meeting.
+     *
      * @return A list of WeekViewEvents <b>ONLY</b> with locations, start time and end times properties.
      */
     public List<WeekViewEvent> toWeekViewEvents() {
@@ -129,19 +159,20 @@ public class Meeting {
         LocalTime startTime, endTime;
         DayTime start, end;
         WeekViewEvent event;
+        String[] locations = getLocationsShortForEachDayTime();
         for (int i = 0; i < length; i++) {
             String[] days = this.daysFull[i].split(" ");
-            event = new WeekViewEvent();
 
             // Parse hours
             splitTime = this.times[i].split(" - ");
-            startTime = LocalTime.parse(splitTime[0], dtf);
-            endTime = LocalTime.parse(splitTime[1], dtf);
+            startTime = LocalTime.parse(splitTime[0], Utils.STANDARD_TIME_FORMAT);
+            endTime = LocalTime.parse(splitTime[1], Utils.STANDARD_TIME_FORMAT);
 
             // Set Location
-            event.setLocation(this.locationsShort[i]);
-            for (String day: days) {
-                dayOfWeek = DayOfWeek.valueOf(day);
+            for (String day : days) {
+                event = new WeekViewEvent();
+                event.setLocation(locations[i]);
+                dayOfWeek = DayOfWeek.valueOf(day.toUpperCase());
 
                 start = new DayTime(dayOfWeek, startTime);
                 end = new DayTime(dayOfWeek, endTime);
@@ -154,13 +185,5 @@ public class Meeting {
         }
 
         return events;
-    }
-
-    /**
-     * Check if the same instructor is used.
-     * @return true if same instructor is used.
-     */
-    public boolean isSameInstructor() {
-        return Collections.frequency(Arrays.asList(instructors), instructors[0]) == instructors.length;
     }
 }

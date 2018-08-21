@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/calendar_settings_title">
+        <SwitchPreference
+            android:key="@string/auto_limit_time_key"
+            android:summary="@string/auto_limit_summary"
+            android:title="@string/auto_limit_time" />
+
+        <me.jlurena.ritscheduler.widgets.NumberPreference
+            style="@style/AppPreference.DialogPreference"
+            android:dialogTitle="@string/num_of_visible_days_title"
+            android:key="@string/num_visible_days_key"
+            android:title="@string/num_of_visible_days_title" />
+
+        <me.jlurena.ritscheduler.widgets.TimePreference
+            style="@style/AppPreference.DialogPreference"
+            android:defaultValue="@string/calendar_hours_default_val"
+            android:dialogTitle="@string/calendar_hours_title"
+            android:key="@string/hour_range_key"
+            android:summary="@string/calendar_hours_summary"
+            android:title="@string/calendar_hours_title" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/support_feedback">
+        <Preference
+            android:key="@string/rate_RITScheduler_key"
+            android:summary="@string/feedback_request_summary"
+            android:title="@string/rate_RITScheduler" />
+        <Preference
+            android:key="@string/technical_support_key"
+            android:summary="@string/technical_support_summary"
+            android:title="@string/technical_support_title" />
+    </PreferenceCategory>
+</android.support.v7.preference.PreferenceScreen>

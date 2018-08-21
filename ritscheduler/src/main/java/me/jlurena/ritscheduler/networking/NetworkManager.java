@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import me.jlurena.ritscheduler.models.Course;
 
@@ -26,6 +27,7 @@ import me.jlurena.ritscheduler.models.Course;
 public class NetworkManager {
 
     private static final String TAG = "NetworkManager";
+    private final static AtomicInteger requestCounter = new AtomicInteger();
     private static NetworkManager instance = null;
     private final RequestQueue requestQueue;
 
@@ -45,8 +47,9 @@ public class NetworkManager {
      * @return The instance of NetworkManager.
      */
     public static synchronized NetworkManager getInstance(Context context) {
-        if (instance == null)
+        if (instance == null) {
             instance = new NetworkManager(context);
+        }
         return instance;
     }
 
@@ -61,6 +64,24 @@ public class NetworkManager {
             throw new IllegalStateException(NetworkManager.class.getSimpleName() + " is not initialized");
         }
         return instance;
+    }
+
+    /**
+     * Builds and encodes a URL.
+     *
+     * @param queryUrl URL path.
+     * @param parameters Parameters of URL.
+     * @return An encoded URL.
+     */
+    private String buildUrl(String queryUrl, JSONObject parameters) {
+        String url = null;
+        try {
+            url = queryUrl + URLEncoder.encode(parameters.toString(), "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            Log.e(TAG, "Error building URL", e);
+        }
+
+        return url;
     }
 
     /**
@@ -82,7 +103,7 @@ public class NetworkManager {
     public void queryCourses(String query, String term, final ResponseListener<List<Course>> responseListener) {
 
         String url = buildUrl(CourseSerializer.QUERY_URL, CourseSerializer.buildCourseQueryParameter(query, term));
-
+        requestCounter.incrementAndGet();
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -101,23 +122,14 @@ public class NetworkManager {
             }
         });
         requestQueue.add(request);
-    }
-
-    /**
-     * Builds and encodes a URL.
-     *
-     * @param queryUrl URL path.
-     * @param parameters Parameters of URL.
-     * @return An encoded URL.
-     */
-    private String buildUrl(String queryUrl, JSONObject parameters) {
-        String url = null;
-        try {
-            url = queryUrl + URLEncoder.encode(parameters.toString(), "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            Log.e(TAG, "Error building URL", e);
-        }
-
-        return url;
+        requestQueue.addRequestFinishedListener(new RequestQueue.RequestFinishedListener<Object>() {
+            @Override
+            public void onRequestFinished(Request<Object> request) {
+                requestCounter.decrementAndGet();
+                if (requestCounter.get() == 0) {
+                    responseListener.onRequestFinished();
+                }
+            }
+        });
     }
 }
