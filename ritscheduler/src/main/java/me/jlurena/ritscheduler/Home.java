@@ -2,11 +2,13 @@ package me.jlurena.ritscheduler;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +29,7 @@ import com.nightonke.boommenu.BoomMenuButton;
 import com.nightonke.boommenu.ButtonEnum;
 import com.nightonke.boommenu.OnBoomListenerAdapter;
 import com.nightonke.boommenu.Util;
+import com.qhutch.elevationimageview.ElevationImageView;
 
 import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.LocalTime;
@@ -54,21 +57,57 @@ import me.jlurena.ritscheduler.utils.Utils;
 
 public class Home extends Activity implements CourseCardFragment.ButtonsListeners {
 
-    private static final String COURSE_FRAG_TAG = "CourseFrag";
-    private static final String courseRegex = "^[A-Za-z]{4}\\s\\d{3}([A-Za-z])?-\\d{2}$";
     private BoomMenuButton mBoomMenuButton;
     private WeekView mWeekView;
     private ViewGroup mHomeMainContainer;
     private Spinner mTermSpinner;
     private EditText mSearchCourse;
-    private CourseCardFragment courseCardFragment;
-    private FrameLayout mFragmentContainer;
     private Term selectedTerm;
     private NetworkManager networkManager;
     private boolean isFragmentInflated = false;
     private DataManager dataManager;
     private HashSet<Course> courses;
     private SettingsFragment settingsFragment;
+    private ConstraintLayout mFragmentOuterContainer;
+    private List<Course> queryResult;
+    private ElevationImageView mNext;
+    private ElevationImageView mPrev;
+    private int currentCoursePosition;
+    private boolean isDimmed = false;
+
+    private void initNextPrevButtons() {
+        this.mNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isFragmentInflated && queryResult != null && !queryResult.isEmpty()) {
+                    if (queryResult.size() -1 > currentCoursePosition) {
+                        showCourseCard(queryResult.get(++currentCoursePosition), false);
+                        mPrev.setVisibility(View.VISIBLE);
+                    }
+                    if (currentCoursePosition >= queryResult.size() -1) {
+                        mNext.setVisibility(View.GONE);
+                        mPrev.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        });
+
+        this.mPrev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isFragmentInflated && queryResult != null && !queryResult.isEmpty()) {
+                    if (currentCoursePosition > 0) {
+                        showCourseCard(queryResult.get(--currentCoursePosition), false);
+                        mNext.setVisibility(View.VISIBLE);
+                    }
+                    if (currentCoursePosition == 0) {
+                        mPrev.setVisibility(View.GONE);
+                        mNext.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        });
+    }
 
     @Override
     public void addCourseButton(Course course) {
@@ -84,7 +123,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         } catch (CouchbaseLiteException e) {
             Utils.alertDialogFactory(this, R.string.error, getString(R.string.save_error)).show();
         } finally {
-            removeFragment();
+            removeFragment(course.getModelId());
         }
     }
 
@@ -97,7 +136,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         } catch (CouchbaseLiteException e) {
             Utils.alertDialogFactory(this, R.string.error, getString(R.string.delete_course_error)).show();
         } finally {
-            removeFragment();
+            removeFragment(course.getModelId());
         }
     }
 
@@ -132,7 +171,12 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
             public void onBoomDidHide() {
                 mSearchCourse.getText().clear();
                 mSearchCourse.setError(null);
-                showCourseCard();
+                if (queryResult != null && !queryResult.isEmpty()) {
+                    showCourseCard(queryResult.get(0), false);
+                    if (queryResult.size() > 1) {
+                        mNext.setVisibility(View.VISIBLE);
+                    }
+                }
             }
 
             @Override
@@ -140,7 +184,6 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                 // Setup View inside of boom
                 initTermSpinner();
                 initSearchCourseEditText();
-
             }
 
             @Override
@@ -154,54 +197,49 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                     image.startAnimation(swinging);
                     mSearchCourse.setError("Search field cannot be empty");
                 } else {
-                    if (query.matches(courseRegex)) {
-                        // Start animation
-                        image.startAnimation(rotateAnimation);
-                        // Start call
-                        networkManager.queryCourses(query, selectedTerm.getTermCode(), new ResponseListener<List<Course>>() {
+                    // Start animation
+                    image.startAnimation(rotateAnimation);
+                    // Start call
+                    networkManager.queryCourses(query, selectedTerm.getTermCode(), new ResponseListener<List<Course>>() {
 
-                            @Override
-                            public void getResult(List<Course> courses, int errorCode, VolleyError error) {
-                                if (errorCode == 200) {
+                        @Override
+                        public void getResult(List<Course> courses, int errorCode, VolleyError error) {
+                            if (errorCode == 200) {
 
-                                    // Display error if size is not 1
-                                    if (courses.size() != 1) {
-                                        AlertDialog.Builder dialog = Utils.alertDialogFactory(Home.this, R.string.error, null);
-
-                                        if (courses.size() > 1) {
-                                            dialog.setMessage(R.string.course_term_ambigious_error_msg);
-                                        } else {
-                                            dialog.setMessage(R.string.no_results_error);
-                                        }
-
-                                        dialog.show();
-
-                                    } else {
-                                        courseCardFragment = CourseCardFragment.newInstance(Home.this, courses.get(0), false);
-                                        courseCardFragment.setButtonsListeners(Home.this);
-                                        isFragmentInflated = true;
-                                        mBoomMenuButton.reboom();
-                                    }
-                                } else {
+                                // Display error if size is not 1
+                                if (courses.size() > 5 || courses.isEmpty()) {
                                     AlertDialog.Builder dialog = Utils.alertDialogFactory(Home.this, R.string.error, null);
 
-                                    if (error != null) {
-                                        dialog.setMessage(error.getMessage()).show();
+                                    if (courses.size() > 5) {
+                                        dialog.setMessage(R.string.course_term_ambigious_error_msg);
                                     } else {
-                                        dialog.setMessage(R.string.generic_error).show();
+                                        dialog.setMessage(R.string.no_results_error);
                                     }
+
+                                    dialog.show();
+
+                                } else {
+                                    queryResult = courses;
+                                    currentCoursePosition = 0;
+                                    isFragmentInflated = true;
+                                    mBoomMenuButton.reboom();
+                                }
+                            } else {
+                                AlertDialog.Builder dialog = Utils.alertDialogFactory(Home.this, R.string.error, null);
+
+                                if (error != null) {
+                                    dialog.setMessage(error.getMessage()).show();
+                                } else {
+                                    dialog.setMessage(R.string.generic_error).show();
                                 }
                             }
+                        }
 
-                            @Override
-                            public void onRequestFinished() {
-                                image.clearAnimation();
-                            }
-                        });
-                    } else {
-                        image.startAnimation(swinging);
-                        mSearchCourse.setError("Must match format \"CSCI 250-01\"");
-                    }
+                        @Override
+                        public void onRequestFinished() {
+                            image.clearAnimation();
+                        }
+                    });
                 }
             }
         });
@@ -244,10 +282,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
             public void onEventClick(WeekViewEvent event, RectF eventRect) {
                 for (Course course : courses) {
                     if (course.getCourseId().equals(event.getIdentifier())) {
-                        courseCardFragment = CourseCardFragment.newInstance(Home.this, course, true);
-                        courseCardFragment.setButtonsListeners(Home.this);
-                        isFragmentInflated = true;
-                        showCourseCard();
+                        showCourseCard(course, true);
                     }
                 }
             }
@@ -284,8 +319,8 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         }
 
         this.mWeekView.setNumberOfVisibleDays(settings.getNumberOfVisibleDays());
-        this.mWeekView.setAutoLimitTime(settings.isAutoLimitTime());
         this.mWeekView.setLimitTime(settings.getMinHour(), settings.getMaxHour() + 1); // Let max hour be visible
+        this.mWeekView.setAutoLimitTime(settings.isAutoLimitTime());
 
     }
 
@@ -329,12 +364,15 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         this.courses = new HashSet<>();
         this.networkManager = NetworkManager.getInstance(this);
         this.dataManager = DataManager.getInstance(this);
+        this.mPrev = findViewById(R.id.previous);
+        this.mNext = findViewById(R.id.next);
+        this.mFragmentOuterContainer = findViewById(R.id.fragment_outer_container);
         this.mHomeMainContainer = findViewById(R.id.home_main_container);
-        this.mFragmentContainer = findViewById(R.id.course_fragment_container);
         this.settingsFragment = new SettingsFragment();
 
         initBoomButton();
         initCalendar();
+        initNextPrevButtons();
     }
 
     @Override
@@ -345,12 +383,13 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
             if (isFragmentInflated) {
                 Rect rect = new Rect(0, 0, 0, 0);
 
-                mFragmentContainer.getHitRect(rect);
+                this.mFragmentOuterContainer.getHitRect(rect);
 
                 boolean intersects = rect.contains((int) event.getX(), (int) event.getY());
 
                 if (!intersects) {
-                    removeFragment();
+                    Fragment fragment = getFragmentManager().findFragmentById(R.id.course_fragment_container);
+                    removeFragment(fragment.getTag());
                     return true;
                 }
             }
@@ -359,32 +398,41 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         return super.onTouchEvent(event);
     }
 
-    private void removeFragment() {
+    private void removeFragment(String fragmentTag) {
         if (isFragmentInflated) {
+            FragmentManager fm = getFragmentManager();
+            Fragment fragment = fm.findFragmentByTag(fragmentTag);
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-            if (courseCardFragment == null) {
+            if (fragmentTag.equals(SettingsFragment.TAG)) {
                 initCalendarSettings();
                 ft.remove(settingsFragment);
             } else {
-                ft.remove(courseCardFragment);
-                courseCardFragment = null;
+                if (fragment != null) {
+                    ft.remove(fragment);
+                    mNext.setVisibility(View.GONE);
+                    mPrev.setVisibility(View.GONE);
+                }
             }
             ft.commit();
             enableBackground();
             isFragmentInflated = false;
+            isDimmed = false;
         }
     }
 
-    private void showCourseCard() {
-        if (isFragmentInflated && courseCardFragment != null) {
-            disableBackground();
+    private void showCourseCard(Course course, boolean isSavedCourse) {
+            CourseCardFragment courseFrag = CourseCardFragment.newInstance(this, course, isSavedCourse);
+            courseFrag.setButtonsListeners(this);
+            if (!isDimmed) {
+                disableBackground();
+                isDimmed = true;
+            }
             final FragmentManager fm = getFragmentManager();
             final FragmentTransaction ft = fm.beginTransaction();
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-            ft.replace(R.id.course_fragment_container, courseCardFragment,
-                    COURSE_FRAG_TAG).commit();
-        }
+            ft.replace(R.id.course_fragment_container, courseFrag, course.getModelId()).commit();
+            isFragmentInflated = true;
     }
 
     private void showSettings() {
@@ -393,8 +441,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
             final FragmentManager fm = getFragmentManager();
             final FragmentTransaction ft = fm.beginTransaction();
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-            ft.replace(R.id.course_fragment_container, settingsFragment,
-                    SettingsFragment.TAG).commit();
+            ft.replace(R.id.course_fragment_container, settingsFragment, SettingsFragment.TAG).commit();
         }
     }
 
@@ -408,7 +455,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         } catch (CouchbaseLiteException e) {
             Utils.alertDialogFactory(this, R.string.error, getString(R.string.update_course_error)).show();
         } finally {
-            removeFragment();
+            removeFragment(course.getModelId());
         }
     }
 }
