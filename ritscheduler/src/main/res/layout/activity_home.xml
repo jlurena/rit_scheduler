@@ -15,16 +15,16 @@
             android:id="@+id/weekView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:dayBackgroundColor="#05000000"
+            app:dayBackgroundColor="@color/calendar_day_background_color"
             app:eventTextColor="@android:color/white"
-            app:headerColumnBackground="#ffefefef"
-            app:headerColumnPadding="8dp"
-            app:headerColumnTextColor="#8f000000"
+            app:headerColumnBackground="@color/calendar_column_background"
+            app:headerColumnPadding="@dimen/calendar_column_padding"
+            app:headerColumnTextColor="@color/calendar_column_text_color"
             app:headerRowBackgroundColor="@color/color_accent"
-            app:headerRowPadding="12dp"
-            app:hourHeight="60dp"
+            app:headerRowPadding="@dimen/header_row_padding"
+            app:hourHeight="@dimen/default_calendar_hour_height"
             app:noOfVisibleDays="3"
-            app:todayBackgroundColor="#1848adff" />
+            app:todayBackgroundColor="@color/calendar_today_background_color" />
 
         <com.nightonke.boommenu.BoomMenuButton
             android:id="@+id/boom_menu_button"

@@ -7,4 +7,8 @@
     <color name="dark_gray">#4E4E4E</color>
     <color name="medium_gray">#919191</color>
     <color name="boom_menu_button_bg">#4e4e4e</color>
+    <color name="calendar_day_background_color">#05000000</color>
+    <color name="calendar_column_background">#ffefefef</color>
+    <color name="calendar_column_text_color">#8f000000</color>
+    <color name="calendar_today_background_color">#1848adff</color>
 </resources>

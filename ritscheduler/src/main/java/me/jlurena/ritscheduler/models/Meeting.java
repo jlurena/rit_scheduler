@@ -23,7 +23,6 @@ import me.jlurena.ritscheduler.utils.Utils;
 @SuppressWarnings("ConstantConditions")
 public class Meeting {
 
-
     private String[] days;
     /**
      * Days of meeting in an Array represented as full humanized day names.
@@ -140,6 +139,15 @@ public class Meeting {
     @JsonIgnore
     public boolean isSameInstructor() {
         return Collections.frequency(Arrays.asList(instructors), instructors[0]) == instructors.length;
+    }
+
+    /**
+     * Whether this class is an online class.
+     * @return true if online else false.
+     */
+    @JsonIgnore
+    public boolean isOnline() {
+        return this.locations.length == 0 || this.locations[0].equals("Online Class");
     }
 
     /**

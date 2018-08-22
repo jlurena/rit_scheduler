@@ -13,8 +13,10 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroupOverlay;
+import android.view.ViewTreeObserver;
 
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
@@ -72,6 +74,18 @@ public class Utils {
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
         emailIntent.setType("plain/text");
         return emailIntent;
+    }
+
+    public static void runJustBeforeBeingDrawn(final View view, final Runnable runnable) {
+        final ViewTreeObserver.OnPreDrawListener preDrawListener = new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                view.getViewTreeObserver().removeOnPreDrawListener(this);
+                runnable.run();
+                return true;
+            }
+        };
+        view.getViewTreeObserver().addOnPreDrawListener(preDrawListener);
     }
 
 }

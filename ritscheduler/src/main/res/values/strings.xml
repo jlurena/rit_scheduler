@@ -42,4 +42,8 @@
     <string name="calendar_hours_title">Calendar Hours</string>
     <string name="time_range_error">Start Time must be before End Time</string>
     <string name="search_for_a_course">Search for a Course</string>
+    <string name="refresh">refresh</string>
+    <string name="widget_calendar">widget calendar</string>
+    <string name="next">next</string>
+    <string name="previous">previous</string>
 </resources>

@@ -317,8 +317,8 @@ public class CourseCardFragment extends Fragment {
             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_course_card, container, false);
         try {
-            if (savedInstanceState != null) {
-                this.course = mapper.readValue(savedInstanceState.getString(ARG_PARAM1), Course.class);
+            if (getArguments() != null) {
+                this.course = mapper.readValue(getArguments().getString(ARG_PARAM1), Course.class);
                 this.isSavedCourse = getArguments().getBoolean(ARG_PARAM2);
             }
         } catch (IOException e) {

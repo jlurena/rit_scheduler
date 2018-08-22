@@ -17,7 +17,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
@@ -31,16 +30,10 @@ import com.nightonke.boommenu.OnBoomListenerAdapter;
 import com.nightonke.boommenu.Util;
 import com.qhutch.elevationimageview.ElevationImageView;
 
-import org.threeten.bp.DayOfWeek;
-import org.threeten.bp.LocalTime;
-import org.threeten.bp.format.TextStyle;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 
-import me.jlurena.revolvingweekview.DateTimeInterpreter;
 import me.jlurena.revolvingweekview.DayTime;
 import me.jlurena.revolvingweekview.WeekView;
 import me.jlurena.revolvingweekview.WeekViewEvent;
@@ -74,40 +67,6 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
     private ElevationImageView mPrev;
     private int currentCoursePosition;
     private boolean isDimmed = false;
-
-    private void initNextPrevButtons() {
-        this.mNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isFragmentInflated && queryResult != null && !queryResult.isEmpty()) {
-                    if (queryResult.size() -1 > currentCoursePosition) {
-                        showCourseCard(queryResult.get(++currentCoursePosition), false);
-                        mPrev.setVisibility(View.VISIBLE);
-                    }
-                    if (currentCoursePosition >= queryResult.size() -1) {
-                        mNext.setVisibility(View.GONE);
-                        mPrev.setVisibility(View.VISIBLE);
-                    }
-                }
-            }
-        });
-
-        this.mPrev.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isFragmentInflated && queryResult != null && !queryResult.isEmpty()) {
-                    if (currentCoursePosition > 0) {
-                        showCourseCard(queryResult.get(--currentCoursePosition), false);
-                        mNext.setVisibility(View.VISIBLE);
-                    }
-                    if (currentCoursePosition == 0) {
-                        mPrev.setVisibility(View.GONE);
-                        mNext.setVisibility(View.VISIBLE);
-                    }
-                }
-            }
-        });
-    }
 
     @Override
     public void addCourseButton(Course course) {
@@ -295,19 +254,6 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                 showSettings();
             }
         });
-
-        this.mWeekView.setDateTimeInterpreter(new DateTimeInterpreter() {
-            @Override
-            public String interpretDate(DayOfWeek day) {
-                return mWeekView.getNumberOfVisibleDays() > 3 ? day.getDisplayName(TextStyle.SHORT, Locale.getDefault()) : day.getDisplayName
-                        (TextStyle.FULL, Locale.getDefault());
-            }
-
-            @Override
-            public String interpretTime(int hour, int minutes) {
-                return LocalTime.of(hour, minutes).format(Utils.STANDARD_TIME_FORMAT);
-            }
-        });
     }
 
     private void initCalendarSettings() {
@@ -322,6 +268,40 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         this.mWeekView.setLimitTime(settings.getMinHour(), settings.getMaxHour() + 1); // Let max hour be visible
         this.mWeekView.setAutoLimitTime(settings.isAutoLimitTime());
 
+    }
+
+    private void initNextPrevButtons() {
+        this.mNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isFragmentInflated && queryResult != null && !queryResult.isEmpty()) {
+                    if (queryResult.size() - 1 > currentCoursePosition) {
+                        showCourseCard(queryResult.get(++currentCoursePosition), false);
+                        mPrev.setVisibility(View.VISIBLE);
+                    }
+                    if (currentCoursePosition >= queryResult.size() - 1) {
+                        mNext.setVisibility(View.GONE);
+                        mPrev.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        });
+
+        this.mPrev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isFragmentInflated && queryResult != null && !queryResult.isEmpty()) {
+                    if (currentCoursePosition > 0) {
+                        showCourseCard(queryResult.get(--currentCoursePosition), false);
+                        mNext.setVisibility(View.VISIBLE);
+                    }
+                    if (currentCoursePosition == 0) {
+                        mPrev.setVisibility(View.GONE);
+                        mNext.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        });
     }
 
     private void initSearchCourseEditText() {
@@ -422,17 +402,17 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
     }
 
     private void showCourseCard(Course course, boolean isSavedCourse) {
-            CourseCardFragment courseFrag = CourseCardFragment.newInstance(this, course, isSavedCourse);
-            courseFrag.setButtonsListeners(this);
-            if (!isDimmed) {
-                disableBackground();
-                isDimmed = true;
-            }
-            final FragmentManager fm = getFragmentManager();
-            final FragmentTransaction ft = fm.beginTransaction();
-            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-            ft.replace(R.id.course_fragment_container, courseFrag, course.getModelId()).commit();
-            isFragmentInflated = true;
+        CourseCardFragment courseFrag = CourseCardFragment.newInstance(this, course, isSavedCourse);
+        courseFrag.setButtonsListeners(this);
+        if (!isDimmed) {
+            disableBackground();
+            isDimmed = true;
+        }
+        final FragmentManager fm = getFragmentManager();
+        final FragmentTransaction ft = fm.beginTransaction();
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.replace(R.id.course_fragment_container, courseFrag, course.getModelId()).commit();
+        isFragmentInflated = true;
     }
 
     private void showSettings() {
