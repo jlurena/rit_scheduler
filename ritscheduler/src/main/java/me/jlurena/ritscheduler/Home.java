@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.text.InputType;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -407,6 +408,16 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.replace(R.id.course_fragment_container, courseFrag, course.getModelId()).commit();
         isFragmentInflated = true;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && isFragmentInflated) {
+            Fragment fragment = getFragmentManager().findFragmentById(R.id.course_fragment_container);
+            removeFragment(fragment.getTag());
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     private void showSettings() {

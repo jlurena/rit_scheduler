@@ -114,7 +114,7 @@ public class CourseCardFragment extends Fragment {
 
         // Fade in animation of the check mark.
         // Fade check in, then call clickListener with a delay so user can see it.
-        final Animation fadeIn = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_in);
+        final Animation fadeIn = AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_in);
         fadeIn.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationEnd(Animation animation) {
