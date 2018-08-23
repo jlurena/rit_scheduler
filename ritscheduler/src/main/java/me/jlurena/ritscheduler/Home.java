@@ -11,6 +11,7 @@ import android.support.constraint.ConstraintLayout;
 import android.text.InputType;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -89,6 +90,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
             Utils.alertDialogFactory(this, R.string.error, getString(R.string.save_error)).show();
         } finally {
             enableBackground();
+            queryResult.clear();
         }
     }
 
@@ -348,8 +350,9 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
-        if (event.getAction() == MotionEvent.ACTION_UP) {
+        // Distinguish between long press for Setting Preference Screen that appears on LongPress
+        long eventDuration = event.getEventTime() - event.getDownTime();
+        if (event.getAction() == MotionEvent.ACTION_UP && eventDuration < ViewConfiguration.getLongPressTimeout()) {
 
             if (isFragmentInflated) {
                 Rect rect = new Rect(0, 0, 0, 0);
