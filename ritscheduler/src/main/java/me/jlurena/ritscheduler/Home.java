@@ -8,16 +8,20 @@ import android.app.FragmentTransaction;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.text.InputType;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 import com.couchbase.lite.CouchbaseLiteException;
@@ -293,7 +297,17 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
 
     private void initSearchCourseEditText() {
         this.mSearchCourse = findViewById(R.id.search_course);
-        mSearchCourse.setOnClickListener(view -> mSearchCourse.setError(null));
+        this.mSearchCourse.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        this.mSearchCourse.setRawInputType(InputType.TYPE_CLASS_TEXT);
+        this.mSearchCourse.setOnClickListener(view -> mSearchCourse.setError(null));
+        this.mSearchCourse.setOnEditorActionListener((v, id, e) -> {
+            if (id == EditorInfo.IME_ACTION_DONE) {
+                mBoomMenuButton.onButtonClick(0, mBoomMenuButton.getBoomButton(0));
+                return true;
+            } else {
+                return false;
+            }
+        });
     }
 
     private void initTermSpinner() {

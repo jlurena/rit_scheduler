@@ -16,6 +16,7 @@
         android:textColor="@android:color/white"
         android:textColorHint="@color/medium_gray"
         android:textSize="16sp"
+        android:imeOptions="actionDone"
         android:maxLines="3"/>
 
     <Spinner
