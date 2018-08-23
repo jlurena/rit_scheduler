@@ -141,7 +141,7 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
                     }
                 }
             });
-
+            weekView.setNumberOfVisibleDays(1);
             weekView.setNumberOfVisibleDays(1);
             weekView.goToToday();
             weekView.setDayBackgroundColor(resources.getColor(R.color.calendar_day_background_color));
@@ -151,15 +151,9 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
             weekView.setTodayBackgroundColor(resources.getColor(R.color.calendar_today_background_color));
             weekView.setDrawingCacheEnabled(true);
         }
-        int cols = (WidgetProvider.width % 100) / 10;
-        if (cols > 3) {
-            weekView.setNumberOfVisibleDays(2);
-        } else {
-            weekView.setNumberOfVisibleDays(1);
-        }
         Settings settings = Settings.getInstance();
         weekView.setLimitTime(settings.getMinHour(), settings.getMaxHour());
-        weekView.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        weekView.layout(0, 0, WidgetProvider.width + 30, (weekView.getmMaxTime() - weekView.getmMinTime()) * Util.dp2px(50));
+        weekView.measure(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        weekView.layout(0, 0, WidgetProvider.width, (weekView.getmMaxTime() - weekView.getmMinTime()) * Util.dp2px(50));
     }
 }

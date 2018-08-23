@@ -30,37 +30,13 @@ public class WidgetProvider extends AppWidgetProvider {
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_calendar_container);
     }
 
-    private void handleTouchWiz(Context context, Intent intent) {
-
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-
-        int appWidgetId = intent.getIntExtra("widgetId", 0);
-        int widgetSpanX = intent.getIntExtra("widgetspanx", 0);
-        int widgetSpanY = intent.getIntExtra("widgetspany", 0);
-
-        if (appWidgetId > 0 && widgetSpanX > 0 && widgetSpanY > 0) {
-            Bundle newOptions = new Bundle();
-            newOptions.putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, widgetSpanX * 75);
-
-            onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
-        }
-    }
-
     @Override
     public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
-        WidgetProvider.width = newOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH);
+        WidgetProvider.width = Util.dp2px(newOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH));
         updateAppWidget(context, appWidgetManager, appWidgetId);
         super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
     }
 
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        // Handle TouchWiz
-        if (intent.getAction() != null && intent.getAction().contentEquals("com.sec.android.widgetapp.APPWIDGET_RESIZE")) {
-            handleTouchWiz(context, intent);
-        }
-        super.onReceive(context, intent);
-    }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
