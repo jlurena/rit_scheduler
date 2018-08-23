@@ -6,7 +6,6 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.view.MotionEvent;
@@ -34,7 +33,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import me.jlurena.revolvingweekview.DayTime;
 import me.jlurena.revolvingweekview.WeekView;
 import me.jlurena.revolvingweekview.WeekViewEvent;
 import me.jlurena.ritscheduler.database.DataManager;
@@ -71,6 +69,16 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
     @Override
     public void addCourseButton(Course course) {
         try {
+
+            if (course.getMeetings().isOnline()) {
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.action_not_supported)
+                        .setMessage("Currently Online Classes can not be added to the calendar")
+                        .setNeutralButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
+                        .show();
+                removeFragment(course.getModelId());
+                return;
+            }
             dataManager.addModel(course);
             courses.add(course);
             mWeekView.notifyDatasetChanged();
@@ -82,7 +90,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         } catch (CouchbaseLiteException e) {
             Utils.alertDialogFactory(this, R.string.error, getString(R.string.save_error)).show();
         } finally {
-            removeFragment(course.getModelId());
+            enableBackground();
         }
     }
 
@@ -95,7 +103,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         } catch (CouchbaseLiteException e) {
             Utils.alertDialogFactory(this, R.string.error, getString(R.string.delete_course_error)).show();
         } finally {
-            removeFragment(course.getModelId());
+            enableBackground();
         }
     }
 
@@ -164,7 +172,6 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                         @Override
                         public void getResult(List<Course> courses, int errorCode, VolleyError error) {
                             if (errorCode == 200) {
-
                                 // Display error if size is not 1
                                 if (courses.size() > 5 || courses.isEmpty()) {
                                     AlertDialog.Builder dialog = Utils.alertDialogFactory(Home.this, R.string.error, null);
@@ -176,6 +183,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                                     }
 
                                     dialog.show();
+                                    image.clearAnimation();
 
                                 } else {
                                     queryResult = courses;
@@ -209,50 +217,35 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         initCalendarSettings();
 
         try {
-            dataManager.getModels(Course.TYPE, Course.class, new DataManager.DocumentParser<List<Course>>() {
-                @Override
-                public void toModelCallback(List<Course> model) {
-                    courses.addAll(model);
-                }
-            });
+            dataManager.getModels(Course.TYPE, Course.class, (DataManager.DocumentParser<List<Course>>) model -> courses.addAll(model));
 
         } catch (CouchbaseLiteException e) {
             Utils.alertDialogFactory(this, R.string.error, getString(R.string.error_retrieving_saved_courses));
         }
 
-        this.mWeekView.setWeekViewLoader(new WeekView.WeekViewLoader() {
+        this.mWeekView.setWeekViewLoader(() -> {
+            List<WeekViewEvent> events = new ArrayList<>();
 
-            @Override
-            public List<? extends WeekViewEvent> onWeekViewLoad() {
-                List<WeekViewEvent> events = new ArrayList<>();
-
-                if (courses != null && !courses.isEmpty()) {
-                    for (Course course : courses) {
-                        events.addAll(course.toWeekViewEvents());
-                    }
-                }
-
-                return events;
-            }
-        });
-
-        this.mWeekView.setOnEventClickListener(new WeekView.EventClickListener() {
-            @Override
-            public void onEventClick(WeekViewEvent event, RectF eventRect) {
+            if (courses != null && !courses.isEmpty()) {
                 for (Course course : courses) {
-                    if (course.getCourseId().equals(event.getIdentifier())) {
-                        showCourseCard(course, true);
-                    }
+                    events.addAll(course.toWeekViewEvents());
+                }
+            }
+
+            return events;
+        });
+
+        this.mWeekView.setOnEventClickListener((event, eventRect) -> {
+            for (Course course : courses) {
+                if (course.getCourseId().equals(event.getIdentifier())) {
+                    showCourseCard(course, true);
                 }
             }
         });
 
-        this.mWeekView.setEmptyViewLongPressListener(new WeekView.EmptyViewLongPressListener() {
-            @Override
-            public void onEmptyViewLongPress(DayTime time) {
-                isFragmentInflated = true;
-                showSettings();
-            }
+        this.mWeekView.setEmptyViewLongPressListener(time -> {
+            isFragmentInflated = true;
+            showSettings();
         });
     }
 
@@ -271,34 +264,28 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
     }
 
     private void initNextPrevButtons() {
-        this.mNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isFragmentInflated && queryResult != null && !queryResult.isEmpty()) {
-                    if (queryResult.size() - 1 > currentCoursePosition) {
-                        showCourseCard(queryResult.get(++currentCoursePosition), false);
-                        mPrev.setVisibility(View.VISIBLE);
-                    }
-                    if (currentCoursePosition >= queryResult.size() - 1) {
-                        mNext.setVisibility(View.GONE);
-                        mPrev.setVisibility(View.VISIBLE);
-                    }
+        this.mNext.setOnClickListener(v -> {
+            if (isFragmentInflated && queryResult != null && !queryResult.isEmpty()) {
+                if (queryResult.size() - 1 > currentCoursePosition) {
+                    showCourseCard(queryResult.get(++currentCoursePosition), false);
+                    mPrev.setVisibility(View.VISIBLE);
+                }
+                if (currentCoursePosition >= queryResult.size() - 1) {
+                    mNext.setVisibility(View.GONE);
+                    mPrev.setVisibility(View.VISIBLE);
                 }
             }
         });
 
-        this.mPrev.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isFragmentInflated && queryResult != null && !queryResult.isEmpty()) {
-                    if (currentCoursePosition > 0) {
-                        showCourseCard(queryResult.get(--currentCoursePosition), false);
-                        mNext.setVisibility(View.VISIBLE);
-                    }
-                    if (currentCoursePosition == 0) {
-                        mPrev.setVisibility(View.GONE);
-                        mNext.setVisibility(View.VISIBLE);
-                    }
+        this.mPrev.setOnClickListener(v -> {
+            if (isFragmentInflated && queryResult != null && !queryResult.isEmpty()) {
+                if (currentCoursePosition > 0) {
+                    showCourseCard(queryResult.get(--currentCoursePosition), false);
+                    mNext.setVisibility(View.VISIBLE);
+                }
+                if (currentCoursePosition == 0) {
+                    mPrev.setVisibility(View.GONE);
+                    mNext.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -306,12 +293,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
 
     private void initSearchCourseEditText() {
         this.mSearchCourse = findViewById(R.id.search_course);
-        mSearchCourse.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mSearchCourse.setError(null);
-            }
-        });
+        mSearchCourse.setOnClickListener(view -> mSearchCourse.setError(null));
     }
 
     private void initTermSpinner() {

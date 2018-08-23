@@ -7,7 +7,6 @@ import android.support.v14.preference.PreferenceDialogFragment;
 import android.support.v7.preference.DialogPreference;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.NumberPicker;
 
 import com.github.stephenvinouze.materialnumberpickercore.MaterialNumberPicker;
 
@@ -75,12 +74,7 @@ public class NumberPreference extends DialogPreference {
             super.onBindDialogView(view);
 
             numberPicker = view.findViewById(R.id.number_picker);
-            numberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-                @Override
-                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                    number = newVal;
-                }
-            });
+            numberPicker.setOnValueChangedListener((picker, oldVal, newVal) -> number = newVal);
 
             DialogPreference preference = getPreference();
             if (preference instanceof NumberPreference) {

@@ -1,9 +1,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">RITScheduler</string>
+    <string name="app_name">RIT Scheduler</string>
     <string name="add">Add</string>
     <string name="professor">Professor</string>
 
     <string name="search_hint">CSCI 250–01</string>
+    <string name="refresh">refresh</string>
+    <string name="widget_calendar">widget calendar</string>
+    <string name="next">next</string>
+    <string name="previous">previous</string>
 
     <!--Errors-->
     <string name="error">Error</string>
@@ -15,6 +19,7 @@
     <string name="confirm">Confirm</string>
     <string name="delete_course_error">Unable to delete this course. Please try again later.</string>
     <string name="update_course_error">Unable to update this course. Please try again later.</string>
+    <string name="action_not_supported">Action Not Supported</string>
 
     <!--Settings-->
 
@@ -33,7 +38,6 @@
     <string name="technical_support_summary">Email me for some technical support</string>
     <string name="technical_support_title">Technical Support</string>
     <string name="set_first_visible_day_flag_key">set_first_visible_day_flag</string>
-
     <string name="start">Start</string>
     <string name="end">End</string>
     <string name="hour_range_key">hour_range_key</string>
@@ -42,8 +46,4 @@
     <string name="calendar_hours_title">Calendar Hours</string>
     <string name="time_range_error">Start Time must be before End Time</string>
     <string name="search_for_a_course">Search for a Course</string>
-    <string name="refresh">refresh</string>
-    <string name="widget_calendar">widget calendar</string>
-    <string name="next">next</string>
-    <string name="previous">previous</string>
 </resources>

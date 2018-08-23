@@ -132,6 +132,21 @@ public class Meeting {
     }
 
     /**
+     * Whether this class is an online class.
+     *
+     * @return true if online else false.
+     */
+    @JsonIgnore
+    public boolean isOnline() {
+        for (String location : locations) {
+            if (location.equals("Online Class")) {
+                return true;
+            }
+        }
+        return locations.length == 0;
+    }
+
+    /**
      * Check if the same instructor is used.
      *
      * @return true if same instructor is used.
@@ -139,15 +154,6 @@ public class Meeting {
     @JsonIgnore
     public boolean isSameInstructor() {
         return Collections.frequency(Arrays.asList(instructors), instructors[0]) == instructors.length;
-    }
-
-    /**
-     * Whether this class is an online class.
-     * @return true if online else false.
-     */
-    @JsonIgnore
-    public boolean isOnline() {
-        return this.locations.length == 0 || this.locations[0].equals("Online Class");
     }
 
     /**

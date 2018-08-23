@@ -44,6 +44,7 @@ public class TimePreference extends DialogPreference {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
+    @SuppressWarnings("SameReturnValue")
     @Override
     public int getDialogLayoutResource() {
         return R.layout.preference_hour_range_dialog;
@@ -175,16 +176,13 @@ public class TimePreference extends DialogPreference {
             super.onBindDialogView(view);
 
             this.mTimePicker = view.findViewById(R.id.timepicker);
-            this.mTimePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
-                @Override
-                public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                    if (isStartTimePickerSelected) {
-                        startHour = hourOfDay;
-                        startMinute = minute;
-                    } else {
-                        endHour = hourOfDay;
-                        endMinute = minute;
-                    }
+            this.mTimePicker.setOnTimeChangedListener((view1, hourOfDay, minute) -> {
+                if (isStartTimePickerSelected) {
+                    startHour = hourOfDay;
+                    startMinute = minute;
+                } else {
+                    endHour = hourOfDay;
+                    endMinute = minute;
                 }
             });
 

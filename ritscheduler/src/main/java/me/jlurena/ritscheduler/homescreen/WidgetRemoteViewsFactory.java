@@ -1,7 +1,6 @@
 package me.jlurena.ritscheduler.homescreen;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Binder;
@@ -14,7 +13,6 @@ import com.couchbase.lite.CouchbaseLiteException;
 import com.nightonke.boommenu.Util;
 
 import org.threeten.bp.DayOfWeek;
-import org.threeten.bp.LocalTime;
 import org.threeten.bp.format.TextStyle;
 
 import java.util.ArrayList;
@@ -28,7 +26,6 @@ import me.jlurena.ritscheduler.R;
 import me.jlurena.ritscheduler.database.DataManager;
 import me.jlurena.ritscheduler.models.Course;
 import me.jlurena.ritscheduler.models.Settings;
-import me.jlurena.ritscheduler.utils.Utils;
 
 public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
@@ -36,9 +33,9 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     private final Context context;
     private final DataManager dataManager;
     private WeekView weekView;
-    private HashSet<Course> courses;
+    private final HashSet<Course> courses;
 
-    WidgetRemoteViewsFactory(Context context, Intent intent) {
+    WidgetRemoteViewsFactory(Context context) {
         this.context = context;
         this.dataManager = DataManager.getInstance(context);
         this.courses = new HashSet<>();
@@ -86,7 +83,8 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     }
 
     @Override
-    public void onCreate() {}
+    public void onCreate() {
+    }
 
     @Override
     public void onDataSetChanged() {
@@ -102,12 +100,7 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
 
     private void updateCourseList() {
         try {
-            dataManager.getModels(Course.TYPE, Course.class, new DataManager.DocumentParser<List<Course>>() {
-                @Override
-                public void toModelCallback(List<Course> model) {
-                    courses.addAll(model);
-                }
-            });
+            dataManager.getModels(Course.TYPE, Course.class, (DataManager.DocumentParser<List<Course>>) courses::addAll);
 
         } catch (CouchbaseLiteException e) {
             // Can't really do anything but crash gracefully
@@ -116,19 +109,16 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
         if (this.weekView == null) {
             this.weekView = new WeekView(context);
 
-            weekView.setWeekViewLoader(new WeekView.WeekViewLoader() {
-                @Override
-                public List<? extends WeekViewEvent> onWeekViewLoad() {
-                    List<WeekViewEvent> events = new ArrayList<>();
+            weekView.setWeekViewLoader(() -> {
+                List<WeekViewEvent> events = new ArrayList<>();
 
-                    if (courses != null && !courses.isEmpty()) {
-                        for (Course course : courses) {
-                            events.addAll(course.toWeekViewEvents());
-                        }
+                if (!courses.isEmpty()) {
+                    for (Course course : courses) {
+                        events.addAll(course.toWeekViewEvents());
                     }
-
-                    return events;
                 }
+
+                return events;
             });
             Resources resources = context.getResources();
             weekView.setDateTimeInterpreter(new WeekView.DateTimeInterpreter() {

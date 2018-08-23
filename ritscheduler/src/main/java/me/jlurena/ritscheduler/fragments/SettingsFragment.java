@@ -30,7 +30,6 @@ import me.jlurena.ritscheduler.widgets.TimePreference;
  */
 public class SettingsFragment extends PreferenceFragment {
     public static final String TAG = "PREFERENCE_FRAGMENT";
-    public static final String ARG_1 = "context";
 
     public static Settings updateSettings(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -52,12 +51,7 @@ public class SettingsFragment extends PreferenceFragment {
         setPreferencesFromResource(R.xml.settings_preference, rootKey);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         updateSettings(getActivity());
-        prefs.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
-            @Override
-            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                updateSettings(getActivity());
-            }
-        });
+        prefs.registerOnSharedPreferenceChangeListener((sharedPreferences, key) -> updateSettings(getActivity()));
 
     }
 

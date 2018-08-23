@@ -2,7 +2,6 @@ package me.jlurena.ritscheduler.utils;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -52,12 +51,7 @@ public class Utils {
         return new AlertDialog.Builder(context)
                 .setTitle(title)
                 .setMessage(errorMsg)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss());
     }
 
     public static RippleDrawable getPressedColorRippleDrawable(@ColorInt int pressedColor) {

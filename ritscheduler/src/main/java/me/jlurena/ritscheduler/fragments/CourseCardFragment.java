@@ -3,7 +3,6 @@ package me.jlurena.ritscheduler.fragments;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -105,14 +104,11 @@ public class CourseCardFragment extends Fragment {
         rotateAnimation.setDuration(500);
         rotateAnimation.setInterpolator(new LinearInterpolator());
         final Handler clickHandler = new Handler();
-        final Runnable clickRunnable = new Runnable() {
-            @Override
-            public void run() {
-                if (isSavedCourse) {
-                    buttonsListeners.updateCourseButton(course);
-                } else {
-                    buttonsListeners.addCourseButton(course);
-                }
+        final Runnable clickRunnable = () -> {
+            if (isSavedCourse) {
+                buttonsListeners.updateCourseButton(course);
+            } else {
+                buttonsListeners.addCourseButton(course);
             }
         };
 
@@ -151,13 +147,10 @@ public class CourseCardFragment extends Fragment {
         });
 
 
-        this.mAddCourseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (buttonsListeners != null) {
-                    // The animations are handling the click
-                    mAddCourseButton.startAnimation(rotateAnimation);
-                }
+        this.mAddCourseButton.setOnClickListener(view -> {
+            if (buttonsListeners != null) {
+                // The animations are handling the click
+                mAddCourseButton.startAnimation(rotateAnimation);
             }
         });
     }
@@ -174,45 +167,39 @@ public class CourseCardFragment extends Fragment {
         final Drawable deleteButtonDrawable =
                 getResources().getDrawable(R.drawable.ripple_round_button, null).getConstantState().newDrawable().mutate();
 
-        this.mColorSlider.setOnColorChangeListener(new ColorSeekBar.OnColorChangeListener() {
-            @Override
-            public void onColorChangeListener(int colorBarPosition, int alphaBarPosition, int color) {
-                if (firstLaunch) {
-                    firstLaunch = false;
-                    return;
-                }
-                currentColor = color;
-                headerDrawable.setTint(color);
-                mCourseHeader.setBackground(headerDrawable);
-
-                addButtonDrawable.setTint(color);
-                addButtonOverlayDrawable.setTint(color);
-                mAddCourseButton.setBackground(Utils.getPressedColorRippleDrawable(ColorUtils.blendARGB(color, Color.BLACK, 0.2F),
-                        addButtonDrawable));
-                mAddCourseButtonUnderlay.setBackground(addButtonOverlayDrawable);
-
-                deleteButtonDrawable.setTint(color);
-                mDeleteCourseButton.setBackground(Utils.getPressedColorRippleDrawable(ColorUtils.blendARGB(color, Color.BLACK, 0.2F),
-                        deleteButtonDrawable));
-
-                course.setColor(currentColor);
+        this.mColorSlider.setOnColorChangeListener((colorBarPosition, alphaBarPosition, color) -> {
+            if (firstLaunch) {
+                firstLaunch = false;
+                return;
             }
+            currentColor = color;
+            headerDrawable.setTint(color);
+            mCourseHeader.setBackground(headerDrawable);
+
+            addButtonDrawable.setTint(color);
+            addButtonOverlayDrawable.setTint(color);
+            mAddCourseButton.setBackground(Utils.getPressedColorRippleDrawable(ColorUtils.blendARGB(color, Color.BLACK, 0.2F),
+                    addButtonDrawable));
+            mAddCourseButtonUnderlay.setBackground(addButtonOverlayDrawable);
+
+            deleteButtonDrawable.setTint(color);
+            mDeleteCourseButton.setBackground(Utils.getPressedColorRippleDrawable(ColorUtils.blendARGB(color, Color.BLACK, 0.2F),
+                    deleteButtonDrawable));
+
+            course.setColor(currentColor);
         });
 
-        this.mColorSlider.setOnInitDoneListener(new ColorSeekBar.OnInitDoneListener() {
-            @Override
-            public void done() {
-                currentColor = course.getColor() != 0 ? course.getColor() : getResources().getColor(R.color.color_primary);
-                headerDrawable.setTint(currentColor);
-                mCourseHeader.setBackground(headerDrawable);
+        this.mColorSlider.setOnInitDoneListener(() -> {
+            currentColor = course.getColor() != 0 ? course.getColor() : getResources().getColor(R.color.color_primary);
+            headerDrawable.setTint(currentColor);
+            mCourseHeader.setBackground(headerDrawable);
 
-                addButtonDrawable.setTint(currentColor);
-                mAddCourseButton.setBackground(Utils.getPressedColorRippleDrawable(ColorUtils.blendARGB(currentColor, Color.BLACK,
-                        0.2F), addButtonDrawable));
-                mDeleteCourseButton.setBackground(Utils.getPressedColorRippleDrawable(ColorUtils.blendARGB(currentColor, Color.BLACK,
-                        0.2F), addButtonDrawable));
-                mColorSlider.setColorBarPosition(mColorSlider.getColorIndexPosition(currentColor));
-            }
+            addButtonDrawable.setTint(currentColor);
+            mAddCourseButton.setBackground(Utils.getPressedColorRippleDrawable(ColorUtils.blendARGB(currentColor, Color.BLACK,
+                    0.2F), addButtonDrawable));
+            mDeleteCourseButton.setBackground(Utils.getPressedColorRippleDrawable(ColorUtils.blendARGB(currentColor, Color.BLACK,
+                    0.2F), addButtonDrawable));
+            mColorSlider.setColorBarPosition(mColorSlider.getColorIndexPosition(currentColor));
         });
 
     }
@@ -272,26 +259,11 @@ public class CourseCardFragment extends Fragment {
             this.mAddCourseButton.setImageResource(R.drawable.check);
 
             this.mDeleteCourseButton.setVisibility(View.VISIBLE);
-            this.mDeleteCourseButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.confirm)
-                            .setMessage("Are you sure you want to delete " + course.getQualifiedName() + "?")
-                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    buttonsListeners.deleteCourseButton(course);
-                                }
-                            })
-                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            }).show();
-                }
-            });
+            this.mDeleteCourseButton.setOnClickListener(v -> new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.confirm)
+                    .setMessage("Are you sure you want to delete " + course.getQualifiedName() + "?")
+                    .setPositiveButton(android.R.string.yes, (dialog, which) -> buttonsListeners.deleteCourseButton(course))
+                    .setNegativeButton(android.R.string.no, (dialog, which) -> dialog.dismiss()).show());
 
         }
     }

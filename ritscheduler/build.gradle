@@ -19,15 +19,19 @@ android {
         }
     }
     buildToolsVersion "27.0.3"
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     // Widgets
     implementation 'me.jlurena:revolvingweekview:1.0.2'
-    implementation 'com.github.rtugeek:colorseekbar:1.7.2' // Future use: implementation 'com.xw.repo:bubbleseekbar:3.19'
+    implementation 'com.github.rtugeek:colorseekbar:1.7.2'
+    // Future use: implementation 'com.xw.repo:bubbleseekbar:3.19'
     implementation 'com.qhutch.elevationimageview:elevationimageview:2.0'
-
     // Couchbase NoSQL DB
     implementation 'com.couchbase.lite:couchbase-lite-android:2.0.2'
     // Networking
@@ -47,7 +51,6 @@ dependencies {
     implementation 'com.github.StephenVinouze:MaterialNumberPicker:1.0.5'
     // Modules
     implementation project(':boommenu')
-
     // Test Libraries
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-core:1.10.19'

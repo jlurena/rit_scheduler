@@ -5,8 +5,6 @@ import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -104,31 +102,21 @@ public class NetworkManager {
 
         String url = buildUrl(CourseSerializer.QUERY_URL, CourseSerializer.buildCourseQueryParameter(query, term));
         requestCounter.incrementAndGet();
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    responseListener.getResult(CourseSerializer.toCourseResults(response), 200, null);
-                } catch (JSONException | IOException e) {
-                    Log.e(TAG, "Error parsing response", e);
-                }
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, response -> {
+            try {
+                responseListener.getResult(CourseSerializer.toCourseResults(response), 200, null);
+            } catch (JSONException | IOException e) {
+                Log.e(TAG, "Error parsing response", e);
             }
-        }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, error.getMessage());
-                responseListener.getResult(null, error.networkResponse.statusCode, error);
-            }
+        }, error -> {
+            Log.d(TAG, error.getMessage());
+            responseListener.getResult(null, error.networkResponse.statusCode, error);
         });
         requestQueue.add(request);
-        requestQueue.addRequestFinishedListener(new RequestQueue.RequestFinishedListener<Object>() {
-            @Override
-            public void onRequestFinished(Request<Object> request) {
-                requestCounter.decrementAndGet();
-                if (requestCounter.get() == 0) {
-                    responseListener.onRequestFinished();
-                }
+        requestQueue.addRequestFinishedListener(request1 -> {
+            requestCounter.decrementAndGet();
+            if (requestCounter.get() == 0) {
+                responseListener.onRequestFinished();
             }
         });
     }
