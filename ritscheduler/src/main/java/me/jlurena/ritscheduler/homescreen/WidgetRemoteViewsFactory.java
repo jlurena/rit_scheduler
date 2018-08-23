@@ -32,8 +32,8 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
 
     private final Context context;
     private final DataManager dataManager;
-    private WeekView weekView;
     private final HashSet<Course> courses;
+    private WeekView weekView;
 
     WidgetRemoteViewsFactory(Context context) {
         this.context = context;

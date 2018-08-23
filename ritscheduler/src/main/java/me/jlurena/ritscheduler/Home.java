@@ -9,7 +9,6 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.text.InputType;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +20,6 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 import com.couchbase.lite.CouchbaseLiteException;
@@ -86,11 +84,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
             dataManager.addModel(course);
             courses.add(course);
             mWeekView.notifyDatasetChanged();
-            if (course.getMeetings().getDays().length > 0 && course.getMeetings().getDayTimes().length > 0) {
-                WeekViewEvent firstEvent = course.toWeekViewEvents().get(0);
-                mWeekView.goToDate(firstEvent.getStartTime().getDay());
-                mWeekView.goToHour(firstEvent.getStartTime().getHour());
-            }
+            removeFragment(course.getModelId());
         } catch (CouchbaseLiteException e) {
             Utils.alertDialogFactory(this, R.string.error, getString(R.string.save_error)).show();
         } finally {
@@ -104,6 +98,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
             dataManager.deleteModel(course);
             courses.remove(course);
             mWeekView.notifyDatasetChanged();
+            removeFragment(course.getModelId());
         } catch (CouchbaseLiteException e) {
             Utils.alertDialogFactory(this, R.string.error, getString(R.string.delete_course_error)).show();
         } finally {
