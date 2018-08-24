@@ -25,6 +25,7 @@ import android.widget.Spinner;
 
 import com.android.volley.VolleyError;
 import com.couchbase.lite.CouchbaseLiteException;
+import com.kobakei.ratethisapp.RateThisApp;
 import com.nightonke.boommenu.BoomButtons.BoomButton;
 import com.nightonke.boommenu.BoomButtons.HamButton;
 import com.nightonke.boommenu.BoomMenuButton;
@@ -32,6 +33,8 @@ import com.nightonke.boommenu.ButtonEnum;
 import com.nightonke.boommenu.OnBoomListenerAdapter;
 import com.nightonke.boommenu.Util;
 import com.qhutch.elevationimageview.ElevationImageView;
+
+import org.threeten.bp.DayOfWeek;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -253,10 +256,12 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
 
     private void initCalendarSettings() {
         Settings settings = SettingsFragment.updateSettings(this);
-        if (settings.firstVisibleDayFlag()) {
-            this.mWeekView.setFirstDayOfWeek(settings.getFirstVisibleDay());
-        } else {
+        int firstVisibleDay = settings.getFirstVisibleDay();
+        if (firstVisibleDay == 0) {
             this.mWeekView.goToToday();
+        } else {
+            this.mWeekView.setFirstDayOfWeek(firstVisibleDay);
+            this.mWeekView.goToDate(DayOfWeek.of(firstVisibleDay));
         }
 
         this.mWeekView.setNumberOfVisibleDays(settings.getNumberOfVisibleDays());
@@ -335,6 +340,14 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        RateThisApp.Config rateConfig = new RateThisApp.Config();
+        rateConfig.setTitle(R.string.rate_app_title);
+        rateConfig.setMessage(R.string.rate_app_message);
+        RateThisApp.init(rateConfig);
+        RateThisApp.onCreate(this);
+        RateThisApp.showRateDialogIfNeeded(this);
+
         this.courses = new HashSet<>();
         this.networkManager = NetworkManager.getInstance(this);
         this.dataManager = DataManager.getInstance(this);
@@ -347,6 +360,16 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         initBoomButton();
         initCalendar();
         initNextPrevButtons();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && isFragmentInflated) {
+            Fragment fragment = getFragmentManager().findFragmentById(R.id.course_fragment_container);
+            removeFragment(fragment.getTag());
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -408,16 +431,6 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.replace(R.id.course_fragment_container, courseFrag, course.getModelId()).commit();
         isFragmentInflated = true;
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && isFragmentInflated) {
-            Fragment fragment = getFragmentManager().findFragmentById(R.id.course_fragment_container);
-            removeFragment(fragment.getTag());
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
     }
 
     private void showSettings() {

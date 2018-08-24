@@ -32,6 +32,7 @@ dependencies {
     implementation 'com.github.rtugeek:colorseekbar:1.7.2'
     // Future use: implementation 'com.xw.repo:bubbleseekbar:3.19'
     implementation 'com.qhutch.elevationimageview:elevationimageview:2.0'
+    implementation 'io.github.kobakei:ratethisapp:1.2.0'
     // Couchbase NoSQL DB
     implementation 'com.couchbase.lite:couchbase-lite-android:2.0.2'
     // Networking

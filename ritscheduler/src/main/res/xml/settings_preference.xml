@@ -6,6 +6,16 @@
             android:summary="@string/auto_limit_summary"
             android:title="@string/auto_limit_time" />
 
+        <ListPreference
+            android:defaultValue="0"
+            android:dialogTitle="@string/first_visible_day_title"
+            android:entries="@array/first_visible_day_items"
+            android:entryValues="@array/first_visible_day_values"
+            android:key="@string/first_visible_day_key"
+            android:summary="@string/first_visible_day_summary"
+            android:title="@string/first_visible_day_title" />
+
+
         <me.jlurena.ritscheduler.widgets.NumberPreference
             style="@style/AppPreference.DialogPreference"
             android:dialogTitle="@string/num_of_visible_days_title"
@@ -22,14 +32,11 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/support_feedback">
+    <PreferenceCategory android:title="@string/about_title">
+
         <Preference
-            android:key="@string/rate_RITScheduler_key"
-            android:summary="@string/feedback_request_summary"
-            android:title="@string/rate_RITScheduler" />
-        <Preference
-            android:key="@string/technical_support_key"
-            android:summary="@string/technical_support_summary"
-            android:title="@string/technical_support_title" />
+            android:key="@string/about_key"
+            android:summary="@string/about_summary"
+            android:title="@string/about_title" />
     </PreferenceCategory>
 </android.support.v7.preference.PreferenceScreen>

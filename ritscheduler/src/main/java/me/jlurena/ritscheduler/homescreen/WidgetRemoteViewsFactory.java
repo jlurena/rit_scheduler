@@ -142,7 +142,6 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
                 }
             });
             weekView.setNumberOfVisibleDays(1);
-            weekView.setNumberOfVisibleDays(1);
             weekView.goToToday();
             weekView.setDayBackgroundColor(resources.getColor(R.color.calendar_day_background_color));
             weekView.setEventTextColor(resources.getColor(android.R.color.white));
@@ -152,7 +151,7 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
             weekView.setDrawingCacheEnabled(true);
         }
         Settings settings = Settings.getInstance();
-        weekView.setLimitTime(settings.getMinHour(), settings.getMaxHour());
+        weekView.setLimitTime(settings.getMinHour(), settings.getMaxHour() + 1); // View lasthour
         weekView.measure(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         weekView.layout(0, 0, WidgetProvider.width, (weekView.getmMaxTime() - weekView.getmMinTime()) * Util.dp2px(50));
     }

@@ -10,7 +10,6 @@ public class Settings {
     private int numberOfVisibleDays = 3;
     private int minTime = 0;
     private int maxTime = 1380;
-    private boolean firstVisibleDayFlag = false;
     private int firstVisibleDay = 0;
 
     /**
@@ -24,10 +23,6 @@ public class Settings {
             settings = new Settings();
         }
         return settings;
-    }
-
-    public boolean firstVisibleDayFlag() {
-        return firstVisibleDayFlag;
     }
 
     public int getFirstVisibleDay() {
@@ -110,11 +105,6 @@ public class Settings {
 
     public Settings setAutoLimitTime(boolean autoLimitTime) {
         this.autoLimitTime = autoLimitTime;
-        return this;
-    }
-
-    public Settings setFirstVisibleDayFlag(boolean hasFirstVisibleDayFlag) {
-        this.firstVisibleDayFlag = hasFirstVisibleDayFlag;
         return this;
     }
 

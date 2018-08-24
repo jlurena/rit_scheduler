@@ -2,6 +2,7 @@
     <string name="app_name">RIT Scheduler</string>
     <string name="add">Add</string>
     <string name="professor">Professor</string>
+    <string name="search_for_a_course">Search for a Course</string>
 
     <string name="search_hint">CSCI 250–01</string>
     <string name="refresh">refresh</string>
@@ -22,22 +23,45 @@
     <string name="action_not_supported">Action Not Supported</string>
 
     <!--Settings-->
+    <string name="calendar_settings_title">Calendar Settings</string>
 
-    <string name="auto_limit_time">Auto Limit Time</string>
-    <string name="auto_limit_time_key">auto_limit_time_key</string>
+    <!--First Visible Day-->
+    <string name="first_visible_day_key">first_visible_day_key</string>
+    <string name="first_visible_day_title">First Visible Day</string>
+    <string name="first_visible_day_summary">First day to display on start up.</string>
+    <string name="first_visible_day_default_val">Current Day</string>
+    <string-array name="first_visible_day_items">
+        <item>@string/first_visible_day_default_val</item>
+        <item>Sunday</item>
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+    </string-array>
+
+    <string-array name="first_visible_day_values">
+        <item>0</item>
+        <item>7</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </string-array>
+
+    <!--Number of Visible Days-->
     <string name="num_visible_days_key">num_of_visible_days</string>
     <string name="num_of_visible_days_title">Number of Visible Days</string>
+
+    <!--Auto Limit Time-->
+    <string name="auto_limit_time">Auto Limit Time</string>
+    <string name="auto_limit_time_key">auto_limit_time_key</string>
     <string name="auto_limit_summary">Set calendar hours to fit around events.</string>
-    <string name="first_visible_day_key">first_visible_day_key</string>
-    <string name="calendar_settings_title">Calendar Settings</string>
-    <string name="support_feedback">Support/Feedback</string>
-    <string name="rate_RITScheduler_key">rate_rit_scheduler</string>
-    <string name="rate_RITScheduler">Rate RIT Scheduler</string>
-    <string name="technical_support_key">technical_support_key</string>
-    <string name="feedback_request_summary">Let me know if you like the app! :)</string>
-    <string name="technical_support_summary">Email me for some technical support</string>
-    <string name="technical_support_title">Technical Support</string>
-    <string name="set_first_visible_day_flag_key">set_first_visible_day_flag</string>
+
+    <!--Visible Hours-->
     <string name="start">Start</string>
     <string name="end">End</string>
     <string name="hour_range_key">hour_range_key</string>
@@ -45,5 +69,20 @@
     <string name="calendar_hours_summary">Hours to display on Calendar</string>
     <string name="calendar_hours_title">Calendar Hours</string>
     <string name="time_range_error">Start Time must be before End Time</string>
-    <string name="search_for_a_course">Search for a Course</string>
+
+    <!--About-->
+    <string name="about_key">about_key</string>
+    <string name="about_title">About</string>
+    <string name="about_summary">Application Information</string>
+    <string name="rate_app_title">Did you like the app?</string>
+    <string name="rate_app_message">Let me know what you think :)</string>
+    <string name="rit_scheduler_version">RIT Scheduler Version</string>
+    <string name="app_summary">Easily look up and keep track of your courses. Exclusively for RIT students ;)</string>
+    <string name="developer">Developer</string>
+    <string name="developer_name"><a href="https://jlurena.me">Jean Luis Urena</a></string>
+    <string name="github_repo"><a href="https://github.com/jlurena/rit_scheduler">GitHub</a></string>
+    <string name="open_sourced_at">Open Sourced At</string>
+    <string name="report_bugs_features">Report bugs and new features:\n<a href="eljean@live.com">eljean@live.com</a></string>
+    <string name="close">Close</string>
+
 </resources>
