@@ -72,7 +72,8 @@ class Serializers {
     static List<String> toAutoCompleteList(JSONObject json) throws JSONException {
         JSONArray jsonArray = json.getJSONArray("autoResults");
         ArrayList<String> list = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        int length = Math.min(10, jsonArray.length());
+        for (int i = 0; i < length; i++) {
             // Only get top 10
             // For some reason the response has an extra space which causes issues.
             list.add(jsonArray.getString(i).trim().replaceAll(" +", " "));
