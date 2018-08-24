@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
@@ -19,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -146,6 +148,13 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
             public void onBoomDidHide() {
                 mSearchCourse.getText().clear();
                 mSearchCourse.setError(null);
+
+                // Hide keyboard
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.hideSoftInputFromWindow(mSearchCourse.getWindowToken(), 0);
+                }
+
                 if (queryResult != null && !queryResult.isEmpty()) {
                     showCourseCard(queryResult.get(0), false);
                     if (queryResult.size() > 1) {
