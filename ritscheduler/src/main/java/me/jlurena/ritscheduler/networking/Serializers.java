@@ -17,12 +17,13 @@ import me.jlurena.ritscheduler.models.Course;
 /**
  * Serializer for Course.
  */
-class CourseSerializer {
+class Serializers {
 
     /**
      * URL to query a GET request for Course lookup with TigerCenter API.
      */
-    static final String QUERY_URL = "https://tigercenter.rit.edu/tigerCenterSearch/api/search?map=";
+    static final String COURSE_QUERY_URL = "https://tigercenter.rit.edu/tigerCenterSearch/api/search?map=";
+    static final String AUTO_COMPLETE_URL = "https://tigercenter.rit.edu/tigerCenterSearch/api/auto?terms=";
     /**
      * Key value of JSON Array containing the query results coming from TigerCenter API.
      */
@@ -63,8 +64,19 @@ class CourseSerializer {
             json.put("term", term);
             json.put("career", career);
         } catch (JSONException e) {
-            Log.e("CourseSerializer", "Error creating JSON", e);
+            Log.e("Serializers", "Error creating JSON", e);
         }
         return json;
+    }
+
+    static List<String> toAutoCompleteList(JSONObject json) throws JSONException {
+        JSONArray jsonArray = json.getJSONArray("autoResults");
+        ArrayList<String> list = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            // Only get top 10
+            // For some reason the response has an extra space which causes issues.
+            list.add(jsonArray.getString(i).trim().replaceAll(" +", " "));
+        }
+        return list;
     }
 }

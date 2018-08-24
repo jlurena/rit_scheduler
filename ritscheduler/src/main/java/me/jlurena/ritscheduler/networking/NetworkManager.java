@@ -9,7 +9,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -71,10 +70,10 @@ public class NetworkManager {
      * @param parameters Parameters of URL.
      * @return An encoded URL.
      */
-    private String buildUrl(String queryUrl, JSONObject parameters) {
+    private String buildUrl(String queryUrl, String parameters) {
         String url = null;
         try {
-            url = queryUrl + URLEncoder.encode(parameters.toString(), "utf-8");
+            url = queryUrl + URLEncoder.encode(parameters, "utf-8");
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "Error building URL", e);
         }
@@ -91,6 +90,30 @@ public class NetworkManager {
         return requestQueue;
     }
 
+    public void queryAutoComplete(String query, final ResponseListener<List<String>> responseListener) {
+        String url = buildUrl(Serializers.AUTO_COMPLETE_URL, query);
+        requestCounter.incrementAndGet();
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, response -> {
+            try {
+                responseListener.getResult(Serializers.toAutoCompleteList(response), 200, null);
+            } catch (JSONException e) {
+                Log.e(TAG, "Error parsing response", e);
+            }
+        }, error -> {
+            Log.e(TAG, error.getMessage());
+            int status = error.networkResponse == null ? 500 : error.networkResponse.statusCode;
+            responseListener.getResult(null, status, error);
+        });
+
+        requestQueue.add(request);
+        requestQueue.addRequestFinishedListener(r -> {
+            requestCounter.decrementAndGet();
+            if (requestCounter.get() == 0) {
+                responseListener.onRequestFinished();
+            }
+        });
+    }
+
     /**
      * Sends GET request query call to TigerCenter API to search for a Course.
      *
@@ -100,20 +123,22 @@ public class NetworkManager {
      */
     public void queryCourses(String query, String term, final ResponseListener<List<Course>> responseListener) {
 
-        String url = buildUrl(CourseSerializer.QUERY_URL, CourseSerializer.buildCourseQueryParameter(query, term));
+        String url = buildUrl(Serializers.COURSE_QUERY_URL, Serializers.buildCourseQueryParameter(query, term).toString());
         requestCounter.incrementAndGet();
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, response -> {
             try {
-                responseListener.getResult(CourseSerializer.toCourseResults(response), 200, null);
+                responseListener.getResult(Serializers.toCourseResults(response), 200, null);
             } catch (JSONException | IOException e) {
                 Log.e(TAG, "Error parsing response", e);
             }
         }, error -> {
-            Log.d(TAG, error.getMessage());
-            responseListener.getResult(null, error.networkResponse.statusCode, error);
+            Log.e(TAG, error.getMessage());
+            int status = error.networkResponse == null ? 500 : error.networkResponse.statusCode;
+            responseListener.getResult(null, status, error);
         });
+
         requestQueue.add(request);
-        requestQueue.addRequestFinishedListener(request1 -> {
+        requestQueue.addRequestFinishedListener(r -> {
             requestCounter.decrementAndGet();
             if (requestCounter.get() == 0) {
                 responseListener.onRequestFinished();

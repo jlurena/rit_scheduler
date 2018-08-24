@@ -8,7 +8,9 @@ import android.app.FragmentTransaction;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,7 +21,7 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
@@ -59,7 +61,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
     private WeekView mWeekView;
     private ViewGroup mHomeMainContainer;
     private Spinner mTermSpinner;
-    private EditText mSearchCourse;
+    private AutoCompleteTextView mSearchCourse;
     private Term selectedTerm;
     private NetworkManager networkManager;
     private boolean isFragmentInflated = false;
@@ -72,6 +74,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
     private ElevationImageView mPrev;
     private int currentCoursePosition;
     private boolean isDimmed = false;
+    private ArrayAdapter<String> autoCompleteAdapter;
 
     @Override
     public void addCourseButton(Course course) {
@@ -204,6 +207,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                                 } else {
                                     dialog.setMessage(R.string.generic_error).show();
                                 }
+                                image.clearAnimation();
                             }
                         }
 
@@ -302,6 +306,8 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         this.mSearchCourse = findViewById(R.id.search_course);
         this.mSearchCourse.setImeOptions(EditorInfo.IME_ACTION_DONE);
         this.mSearchCourse.setRawInputType(InputType.TYPE_CLASS_TEXT);
+        this.mSearchCourse.setAdapter(autoCompleteAdapter);
+        this.mSearchCourse.setDropDownVerticalOffset(Util.dp2px(150));
         this.mSearchCourse.setOnClickListener(view -> mSearchCourse.setError(null));
         this.mSearchCourse.setOnEditorActionListener((v, id, e) -> {
             if (id == EditorInfo.IME_ACTION_DONE) {
@@ -309,6 +315,34 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                 return true;
             } else {
                 return false;
+            }
+        });
+        this.mSearchCourse.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() >= 4) {
+                    networkManager.queryAutoComplete(s.toString(), new ResponseListener<List<String>>() {
+                        @Override
+                        public void getResult(List<String> terms, int errorCode, VolleyError error) {
+                            autoCompleteAdapter.clear();
+                            autoCompleteAdapter.addAll(terms);
+                            mSearchCourse.setThreshold(4);
+                            autoCompleteAdapter.getFilter().filter(s.toString(), null);
+                        }
+
+                        @Override
+                        public void onRequestFinished() {
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
             }
         });
     }
@@ -351,6 +385,8 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         this.courses = new HashSet<>();
         this.networkManager = NetworkManager.getInstance(this);
         this.dataManager = DataManager.getInstance(this);
+        this.autoCompleteAdapter = new ArrayAdapter<>(this, R.layout.auto_complete_dropdown_item);
+
         this.mPrev = findViewById(R.id.previous);
         this.mNext = findViewById(R.id.next);
         this.mFragmentOuterContainer = findViewById(R.id.fragment_outer_container);
