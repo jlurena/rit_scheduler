@@ -1,9 +1,15 @@
 package me.jlurena.ritscheduler.homescreen;
 
+import android.appwidget.AppWidgetManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Binder;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.RemoteViews;
@@ -26,20 +32,32 @@ import me.jlurena.ritscheduler.R;
 import me.jlurena.ritscheduler.database.DataManager;
 import me.jlurena.ritscheduler.models.Course;
 import me.jlurena.ritscheduler.models.Settings;
+import me.jlurena.ritscheduler.utils.Utils;
 
-public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
+public class WidgetRemoteViewsFactory extends BroadcastReceiver implements RemoteViewsService.RemoteViewsFactory {
 
 
     private final Context context;
     private final DataManager dataManager;
     private final HashSet<Course> courses;
     private WeekView weekView;
+    private DayOfWeek currentDay;
+    private int width;
 
     WidgetRemoteViewsFactory(Context context) {
         this.context = context;
         this.dataManager = DataManager.getInstance(context);
+        this.currentDay = Utils.now.getDayOfWeek();
         this.courses = new HashSet<>();
-        updateCourseList();
+        this.width = Util.dp2px(110);
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(WidgetProvider.ACTION_PREVIOUS);
+        filter.addAction(WidgetProvider.ACTION_NEXT);
+        filter.addAction(WidgetProvider.ACTION_REFRESH);
+        context.registerReceiver(this, filter);
+
+        updateCourseList(null);
 
     }
 
@@ -89,16 +107,25 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
     @Override
     public void onDataSetChanged() {
         final long identityToken = Binder.clearCallingIdentity();
-        updateCourseList();
+        updateCourseList(null);
         Binder.restoreCallingIdentity(identityToken);
     }
 
     @Override
     public void onDestroy() {
-        WidgetProvider.width = Util.dp2px(110);
+        context.unregisterReceiver(this);
     }
 
-    private void updateCourseList() {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        Bundle extras = intent.getExtras();
+        if (extras != null && extras.containsKey(WidgetProvider.KEY_SIZE_CHANGE)) {
+            this.width = extras.getInt(WidgetProvider.KEY_SIZE_CHANGE);
+        }
+        updateCourseList(intent.getAction());
+    }
+
+    private void updateCourseList(@Nullable String action) {
         try {
             dataManager.getModels(Course.TYPE, Course.class, (DataManager.DocumentParser<List<Course>>) courses::addAll);
 
@@ -150,9 +177,37 @@ public class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
             weekView.setTodayBackgroundColor(resources.getColor(R.color.calendar_today_background_color));
             weekView.setDrawingCacheEnabled(true);
         }
+
+        if (action != null) {
+            switch (action) {
+                case WidgetProvider.ACTION_NEXT:
+                    this.currentDay = currentDay.plus(1);
+                    break;
+                case WidgetProvider.ACTION_PREVIOUS:
+                    this.currentDay = currentDay.minus(1);
+                    break;
+                case WidgetProvider.ACTION_REFRESH:
+                default:
+                    this.currentDay = Utils.now.getDayOfWeek();
+                    break;
+            }
+        }
+
+        int height = (weekView.getmMaxTime() - weekView.getmMinTime()) * Util.dp2px(50);
+
+        weekView.goToDate(currentDay);
+        weekView.notifyDatasetChanged();
         Settings settings = Settings.getInstance();
         weekView.setLimitTime(settings.getMinHour(), settings.getMaxHour() + 1); // View lasthour
-        weekView.measure(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        weekView.layout(0, 0, WidgetProvider.width, (weekView.getmMaxTime() - weekView.getmMinTime()) * Util.dp2px(50));
+
+        if (width <= 500) {
+            weekView.setNumberOfVisibleDays(1);
+        } else if (width <= 800 ) {
+            weekView.setNumberOfVisibleDays(2);
+        } else {
+            weekView.setNumberOfVisibleDays(3);
+        }
+        weekView.measure(this.width, height);
+        weekView.layout(0, 0, this.width, height);
     }
 }

@@ -26,6 +26,9 @@
         <receiver android:name=".homescreen.WidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="me.jlurena.ritscheduler.action.ACTION_REFRESH" />
+                <action android:name="me.jlurena.ritscheduler.action.ACTION_NEXT" />
+                <action android:name="me.jlurena.ritscheduler.action.ACTION_PREVIOUS" />
             </intent-filter>
 
             <meta-data
