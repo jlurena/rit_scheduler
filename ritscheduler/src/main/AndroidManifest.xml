@@ -5,7 +5,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!--TODO backup and link to website, remove ignore for more details-->
+    <!-- TODO backup and link to website, remove ignore for more details -->
     <application
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -16,6 +16,7 @@
         <activity android:name=".Home">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -23,6 +24,7 @@
         <service
             android:name=".homescreen.WidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
+
         <receiver android:name=".homescreen.WidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -35,6 +37,8 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info" />
         </receiver>
+
+        <activity android:name=".IntroActivity"></activity>
     </application>
 
 </manifest>

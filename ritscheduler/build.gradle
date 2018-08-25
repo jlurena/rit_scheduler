@@ -31,6 +31,7 @@ dependencies {
     implementation 'me.jlurena:revolvingweekview:1.0.2'
     implementation 'com.github.rtugeek:colorseekbar:1.7.2'
     // Future use: implementation 'com.xw.repo:bubbleseekbar:3.19'
+    implementation 'com.github.apl-devs:appintro:v4.2.3'
     implementation 'com.qhutch.elevationimageview:elevationimageview:2.0'
     implementation 'io.github.kobakei:ratethisapp:1.2.0'
     // Couchbase NoSQL DB
