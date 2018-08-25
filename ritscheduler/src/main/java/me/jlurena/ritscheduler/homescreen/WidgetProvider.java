@@ -21,7 +21,7 @@ public class WidgetProvider extends AppWidgetProvider {
     static final String ACTION_NEXT = "me.jlurena.ritscheduler.action.ACTION_NEXT";
     static final String ACTION_PREVIOUS = "me.jlurena.ritscheduler.action.ACTION_PREVIOUS";
     static final String KEY_SIZE_CHANGE = "size_change";
-    static final String KEY_APP_WIDGET_ID = "app_widget_id";
+    private static final String KEY_APP_WIDGET_ID = "app_widget_id";
 
     private static PendingIntent getPendingSelfIntent(Context context, String action, int appWidgetId) {
         Intent intent = new Intent(context, WidgetProvider.class);
