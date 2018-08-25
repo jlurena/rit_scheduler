@@ -28,6 +28,7 @@ class Serializers {
      * Key value of JSON Array containing the query results coming from TigerCenter API.
      */
     private static final String SEARCH_RESULTS_KEY = "searchResults";
+    private static final int MAX_RESULTS = 10;
 
     /**
      * Convert JSON object received from TigerCenter API into a List of Courses.
@@ -41,7 +42,10 @@ class Serializers {
         ArrayList<Course> courses = new ArrayList<>();
         ObjectMapper objectMapper = new ObjectMapper();
         JSONArray coursesJsonResults = json.getJSONArray(SEARCH_RESULTS_KEY);
-        for (int i = 0; i < coursesJsonResults.length(); i++) {
+        int length = Math.min(MAX_RESULTS, coursesJsonResults.length());
+
+        // Only get top 10 results
+        for (int i = 0; i < length; i++) {
             courses.add(objectMapper.readValue(coursesJsonResults.get(i).toString(), Course.class));
         }
         return courses;
@@ -55,12 +59,11 @@ class Serializers {
      * @return JSONObject representing the parameter required for Get request.
      */
     static JSONObject buildCourseQueryParameter(String query, String term) {
-        final int rows = 500;
         final String career = "";
         JSONObject json = new JSONObject();
         try {
             json.put("query", query);
-            json.put("rows", rows);
+            json.put("rows", MAX_RESULTS);
             json.put("term", term);
             json.put("career", career);
         } catch (JSONException e) {
@@ -72,7 +75,7 @@ class Serializers {
     static List<String> toAutoCompleteList(JSONObject json) throws JSONException {
         JSONArray jsonArray = json.getJSONArray("autoResults");
         ArrayList<String> list = new ArrayList<>();
-        int length = Math.min(10, jsonArray.length());
+        int length = Math.min(MAX_RESULTS, jsonArray.length());
         for (int i = 0; i < length; i++) {
             // Only get top 10
             // For some reason the response has an extra space which causes issues.

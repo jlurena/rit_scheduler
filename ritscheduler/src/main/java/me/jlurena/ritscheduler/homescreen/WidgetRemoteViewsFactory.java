@@ -1,6 +1,5 @@
 package me.jlurena.ritscheduler.homescreen;
 
-import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +9,6 @@ import android.graphics.Bitmap;
 import android.os.Binder;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -202,7 +200,7 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
 
         if (width <= 500) {
             weekView.setNumberOfVisibleDays(1);
-        } else if (width <= 800 ) {
+        } else if (width <= 800) {
             weekView.setNumberOfVisibleDays(2);
         } else {
             weekView.setNumberOfVisibleDays(3);

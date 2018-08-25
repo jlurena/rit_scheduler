@@ -190,18 +190,9 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                         public void getResult(List<Course> courses, int errorCode, VolleyError error) {
                             if (errorCode == 200) {
                                 // Display error if size is not 1
-                                if (courses.size() > 5 || courses.isEmpty()) {
-                                    AlertDialog.Builder dialog = Utils.alertDialogFactory(Home.this, R.string.error, null);
-
-                                    if (courses.size() > 5) {
-                                        dialog.setMessage(R.string.course_term_ambigious_error_msg);
-                                    } else {
-                                        dialog.setMessage(R.string.no_results_error);
-                                    }
-
-                                    dialog.show();
-                                    image.clearAnimation();
-
+                                if (courses.isEmpty()) {
+                                    Utils.alertDialogFactory(Home.this, R.string.error, null).setMessage(R.string.no_results_error).show();
+                                    queryResult.clear();
                                 } else {
                                     queryResult = courses;
                                     currentCoursePosition = 0;
@@ -216,8 +207,9 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                                 } else {
                                     dialog.setMessage(R.string.generic_error).show();
                                 }
-                                image.clearAnimation();
+                                queryResult.clear();
                             }
+                            image.clearAnimation();
                         }
 
                         @Override

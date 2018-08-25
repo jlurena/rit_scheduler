@@ -62,14 +62,6 @@ public class Utils {
         return new RippleDrawable(new ColorStateList(new int[][]{new int[]{}}, new int[]{pressedColor}), drawable, null);
     }
 
-    public static Intent emailIntent(String[] recipients, String subject) {
-        Intent emailIntent = new Intent(Intent.ACTION_SEND);
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, recipients);
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
-        emailIntent.setType("plain/text");
-        return emailIntent;
-    }
-
     public static void runJustBeforeBeingDrawn(final View view, final Runnable runnable) {
         final ViewTreeObserver.OnPreDrawListener preDrawListener = new ViewTreeObserver.OnPreDrawListener() {
             @Override
