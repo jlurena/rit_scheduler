@@ -391,7 +391,6 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         this.mSearchCourse.setImeOptions(EditorInfo.IME_ACTION_DONE);
         this.mSearchCourse.setRawInputType(InputType.TYPE_CLASS_TEXT);
         this.mSearchCourse.setAdapter(autoCompleteAdapter);
-        this.mSearchCourse.setDropDownVerticalOffset(Util.dp2px(150));
         this.mSearchCourse.setOnClickListener(view -> mSearchCourse.setError(null));
         this.mSearchCourse.setOnEditorActionListener((v, id, e) -> {
             if (id == EditorInfo.IME_ACTION_DONE) {
