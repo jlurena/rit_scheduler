@@ -8,6 +8,7 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.text.Editable;
 import android.text.InputType;
@@ -44,6 +45,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import co.mobiwise.materialintro.shape.Focus;
+import co.mobiwise.materialintro.shape.ShapeType;
+import co.mobiwise.materialintro.view.MaterialIntroView;
 import me.jlurena.revolvingweekview.WeekView;
 import me.jlurena.revolvingweekview.WeekViewEvent;
 import me.jlurena.ritscheduler.database.DataManager;
@@ -82,10 +86,10 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
     public void addCourseButton(Course course) {
         try {
 
-            if (course.getMeetings().isOnline()) {
+            if (course.getMeetings().isOnline() || course.getMeetings().isTimeTBA()) {
                 new AlertDialog.Builder(this)
                         .setTitle(R.string.action_not_supported)
-                        .setMessage("Currently Online Classes can not be added to the calendar")
+                        .setMessage("Only in person lectures and classes with determined meeting times are supported.")
                         .setNeutralButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
                         .show();
                 removeFragment(course.getModelId());
@@ -303,6 +307,85 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         });
     }
 
+    private void initOnFirstLaunch() {
+
+        // Last
+        final MaterialIntroView.Builder searchButtonIntro = new MaterialIntroView.Builder(this)
+                .setFocusType(Focus.ALL)
+                .setDelayMillis(100)
+                .setInfoText("Finally, click here to search!")
+                .setShape(ShapeType.CIRCLE)
+                .setUsageId("search_button")
+                .enableFadeAnimation(true)
+                .setListener(s -> mBoomMenuButton.reboom());
+
+        // Fourth
+        final MaterialIntroView.Builder termDropdownIntro = new MaterialIntroView.Builder(this)
+                .setFocusType(Focus.ALL)
+                .setDelayMillis(100)
+                .setInfoText("Select the semester related to the search here.")
+                .enableIcon(false)
+                .setShape(ShapeType.RECTANGLE)
+                .enableFadeAnimation(true)
+                .setUsageId("term_dropdown")
+                .setListener(s -> searchButtonIntro.show());
+
+        // Third
+        final MaterialIntroView.Builder searchIntro = new MaterialIntroView.Builder(this)
+                .setFocusType(Focus.ALL)
+                .setDelayMillis(100)
+                .setInfoText("Enter a search term here. Please note, you'll only see the top 10 results, so be as precise as possible.")
+                .enableIcon(false)
+                .setShape(ShapeType.RECTANGLE)
+                .enableFadeAnimation(true)
+                .setUsageId("search_input")
+                .setListener(s -> termDropdownIntro.show());
+
+        // Second
+        final MaterialIntroView.Builder bmbIntro = new MaterialIntroView.Builder(this)
+                .setFocusType(Focus.ALL)
+                .setDelayMillis(100)
+                .setInfoText("Click here to open the Search box.")
+                .setTarget(this.mBoomMenuButton)
+                .enableIcon(false)
+                .setShape(ShapeType.CIRCLE)
+                .enableFadeAnimation(true)
+                .setUsageId("bmb")
+                .setListener(s -> {
+                    mBoomMenuButton.boom();
+                    final Handler handler = new Handler();
+                    final Runnable runnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mBoomMenuButton.isBoomed()) {
+                                // Set targets after boom
+                                searchIntro.setTarget(mSearchCourse);
+                                termDropdownIntro.setTarget(mTermSpinner);
+                                searchButtonIntro.setTarget(mBoomMenuButton.getBoomButton(0).getImageView());
+                                searchIntro.show();
+                            } else {
+                                handler.postDelayed(this, 500);
+                            }
+                        }
+                    };
+                    handler.postDelayed(runnable, 500);
+                });
+
+        // First
+        new MaterialIntroView.Builder(this)
+                .setFocusType(Focus.MINIMUM)
+                .setDelayMillis(500)
+                .setInfoText("Long press on any empty area to open up the Settings menu.")
+                .setTarget(this.mWeekView)
+                .enableIcon(false)
+                .enableFadeAnimation(true)
+                .setShape(ShapeType.CIRCLE)
+                .setUsageId("settings")
+                .setListener(s -> bmbIntro.show())
+                .show();
+
+    }
+
     private void initSearchCourseEditText() {
         this.mSearchCourse = findViewById(R.id.search_course);
         this.mSearchCourse.setImeOptions(EditorInfo.IME_ACTION_DONE);
@@ -397,6 +480,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         initBoomButton();
         initCalendar();
         initNextPrevButtons();
+        initOnFirstLaunch();
     }
 
     @Override

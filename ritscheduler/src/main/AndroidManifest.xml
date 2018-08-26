@@ -38,7 +38,7 @@
                 android:resource="@xml/widget_info" />
         </receiver>
 
-        <activity android:name=".IntroActivity"></activity>
+        <activity android:name=".IntroActivity" android:label="@string/app_intro"/>
     </application>
 
 </manifest>

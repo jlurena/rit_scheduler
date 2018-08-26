@@ -74,7 +74,7 @@
     <string name="about_title">About</string>
     <string name="about_summary">Application Information</string>
     <string name="rate_app_title">Did you like the app?</string>
-    <string name="rate_app_message">Let me know what you think :)</string>
+    <string name="rate_app_message">Let me know what you think</string>
     <string name="rit_scheduler_version">RIT Scheduler Version</string>
     <string name="app_summary">Easily look up and keep track of your courses. Exclusively for RIT students ;)</string>
     <string name="developer">Developer</string>
@@ -83,5 +83,8 @@
     <string name="open_sourced_at">Open Sourced At</string>
     <string name="report_bugs_features">Report bugs and new features:\n<a href="eljean@live.com">eljean@live.com</a></string>
     <string name="close">Close</string>
+    <string name="app_intro">Introduction</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
 
 </resources>

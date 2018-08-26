@@ -157,6 +157,21 @@ public class Meeting {
     }
 
     /**
+     * Whether meeting time is to be announced.
+     *
+     * @return true if it is to be announced.
+     */
+    @JsonIgnore
+    public boolean isTimeTBA() {
+        for (String day : this.daysFull) {
+            if (day.equals("To Be Announced")) {
+                return true;
+            }
+        }
+        return this.daysFull.length == 0;
+    }
+
+    /**
      * Creates a List of WeekViewEvents with start time and end times pertaining to this Meeting.
      *
      * @return A list of WeekViewEvents <b>ONLY</b> with locations, start time and end times properties.
