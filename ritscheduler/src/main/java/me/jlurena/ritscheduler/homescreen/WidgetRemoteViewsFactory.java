@@ -1,6 +1,7 @@
 package me.jlurena.ritscheduler.homescreen;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -26,6 +27,7 @@ import java.util.Locale;
 
 import me.jlurena.revolvingweekview.WeekView;
 import me.jlurena.revolvingweekview.WeekViewEvent;
+import me.jlurena.ritscheduler.Home;
 import me.jlurena.ritscheduler.R;
 import me.jlurena.ritscheduler.database.DataManager;
 import me.jlurena.ritscheduler.models.Course;
@@ -84,6 +86,8 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.calendar_imageview);
         views.setImageViewBitmap(R.id.widget_calendar, bitmap);
+
+        views.setOnClickFillInIntent(R.id.widget_calendar, new Intent());
 
         return views;
     }

@@ -3,6 +3,7 @@ package me.jlurena.ritscheduler.homescreen;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.widget.RemoteViews;
 
 import com.nightonke.boommenu.Util;
 
+import me.jlurena.ritscheduler.Home;
 import me.jlurena.ritscheduler.R;
 
 /**
@@ -38,9 +40,19 @@ public class WidgetProvider extends AppWidgetProvider {
         Intent intent = new Intent(context, WidgetService.class);
         views.setRemoteAdapter(R.id.widget_calendar_container, intent);
 
+        // Buttons on widget click handlers
         views.setOnClickPendingIntent(R.id.widget_refresh, getPendingSelfIntent(context, ACTION_REFRESH, appWidgetId));
         views.setOnClickPendingIntent(R.id.widget_next, getPendingSelfIntent(context, ACTION_NEXT, appWidgetId));
         views.setOnClickPendingIntent(R.id.widget_previous, getPendingSelfIntent(context, ACTION_PREVIOUS, appWidgetId));
+
+        // Widget Container click handler
+        Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+        homeIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        homeIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        homeIntent.setComponent(new ComponentName(context.getPackageName(), Home.class.getName()));
+        PendingIntent homePendingIntent = PendingIntent.getActivity(context, 0, homeIntent, 0);
+        views.setPendingIntentTemplate(R.id.widget_calendar_container, homePendingIntent);
+
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);

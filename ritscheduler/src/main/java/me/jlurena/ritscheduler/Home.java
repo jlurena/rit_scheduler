@@ -313,10 +313,12 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         final MaterialIntroView.Builder searchButtonIntro = new MaterialIntroView.Builder(this)
                 .setFocusType(Focus.ALL)
                 .setDelayMillis(100)
+                .enableIcon(false)
                 .setInfoText("Finally, click here to search!")
                 .setShape(ShapeType.CIRCLE)
                 .setUsageId("search_button")
                 .enableFadeAnimation(true)
+                .setIdempotent(true)
                 .setListener(s -> mBoomMenuButton.reboom());
 
         // Fourth
@@ -328,6 +330,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                 .setShape(ShapeType.RECTANGLE)
                 .enableFadeAnimation(true)
                 .setUsageId("term_dropdown")
+                .setIdempotent(true)
                 .setListener(s -> searchButtonIntro.show());
 
         // Third
@@ -339,6 +342,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                 .setShape(ShapeType.RECTANGLE)
                 .enableFadeAnimation(true)
                 .setUsageId("search_input")
+                .setIdempotent(true)
                 .setListener(s -> termDropdownIntro.show());
 
         // Second
@@ -351,6 +355,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                 .setShape(ShapeType.CIRCLE)
                 .enableFadeAnimation(true)
                 .setUsageId("bmb")
+                .setIdempotent(true)
                 .setListener(s -> {
                     mBoomMenuButton.boom();
                     final Handler handler = new Handler();
@@ -381,6 +386,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                 .enableFadeAnimation(true)
                 .setShape(ShapeType.CIRCLE)
                 .setUsageId("settings")
+                .setIdempotent(true)
                 .setListener(s -> bmbIntro.show())
                 .show();
 
