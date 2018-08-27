@@ -2,7 +2,6 @@ package me.jlurena.ritscheduler.fragments;
 
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -22,6 +21,7 @@ import com.nightonke.boommenu.Util;
 
 import me.jlurena.ritscheduler.R;
 import me.jlurena.ritscheduler.models.Settings;
+import me.jlurena.ritscheduler.utils.SettingsManager;
 import me.jlurena.ritscheduler.widgets.NumberPreference;
 import me.jlurena.ritscheduler.widgets.TimePreference;
 
@@ -31,27 +31,11 @@ import me.jlurena.ritscheduler.widgets.TimePreference;
 public class SettingsFragment extends PreferenceFragment {
     public static final String TAG = "PREFERENCE_FRAGMENT";
 
-    public static Settings updateSettings(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean autoLimitTime = prefs.getBoolean(context.getString(R.string.auto_limit_time_key), false);
-        int numVisibleDays = prefs.getInt(context.getString(R.string.num_visible_days_key), 3);
-        String timeRange = prefs.getString(context.getString(R.string.hour_range_key), "0-1380");
-        int firstVisibleDay = Integer.parseInt(prefs.getString(context.getString(R.string.first_visible_day_key), "0"));
-
-        return Settings.getInstance()
-                .setAutoLimitTime(autoLimitTime)
-                .setNumberOfVisibleDays(numVisibleDays)
-                .setTimeRange(timeRange)
-                .setFirstVisibleDay(firstVisibleDay);
-    }
-
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.settings_preference, rootKey);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        updateSettings(getActivity());
-        prefs.registerOnSharedPreferenceChangeListener((sharedPreferences, key) -> updateSettings(getActivity()));
-
+        prefs.registerOnSharedPreferenceChangeListener((sharedPreferences, key) -> SettingsManager.getInstance(getActivity()).updateSettings(getActivity()));
     }
 
     @Override

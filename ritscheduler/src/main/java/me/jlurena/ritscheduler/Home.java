@@ -39,8 +39,6 @@ import com.nightonke.boommenu.OnBoomListenerAdapter;
 import com.nightonke.boommenu.Util;
 import com.qhutch.elevationimageview.ElevationImageView;
 
-import org.threeten.bp.DayOfWeek;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -58,6 +56,7 @@ import me.jlurena.ritscheduler.models.Settings;
 import me.jlurena.ritscheduler.models.Term;
 import me.jlurena.ritscheduler.networking.NetworkManager;
 import me.jlurena.ritscheduler.networking.ResponseListener;
+import me.jlurena.ritscheduler.utils.SettingsManager;
 import me.jlurena.ritscheduler.utils.Utils;
 
 
@@ -264,7 +263,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
     }
 
     private void initCalendarSettings() {
-        Settings settings = SettingsFragment.updateSettings(this);
+        Settings settings = SettingsManager.getInstance(this).getSettings();
         int firstVisibleDay = settings.getFirstVisibleDay();
         if (firstVisibleDay == 0) {
             this.mWeekView.goToToday();

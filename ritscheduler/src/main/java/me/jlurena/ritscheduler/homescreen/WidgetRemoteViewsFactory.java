@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Binder;
@@ -29,8 +30,10 @@ import me.jlurena.revolvingweekview.WeekView;
 import me.jlurena.revolvingweekview.WeekViewEvent;
 import me.jlurena.ritscheduler.R;
 import me.jlurena.ritscheduler.database.DataManager;
+import me.jlurena.ritscheduler.fragments.SettingsFragment;
 import me.jlurena.ritscheduler.models.Course;
 import me.jlurena.ritscheduler.models.Settings;
+import me.jlurena.ritscheduler.utils.SettingsManager;
 
 public class WidgetRemoteViewsFactory extends BroadcastReceiver implements RemoteViewsService.RemoteViewsFactory {
 
@@ -41,6 +44,7 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
     private WeekView weekView;
     private Calendar currentDay;
     private int width;
+    private Settings settings;
 
     WidgetRemoteViewsFactory(Context context) {
         this.context = context;
@@ -54,10 +58,10 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
         filter.addAction(WidgetProvider.ACTION_NEXT);
         filter.addAction(WidgetProvider.ACTION_REFRESH);
         context.registerReceiver(this, filter);
-
+        this.settings = SettingsManager.getInstance(context).getSettings();
         updateCourseList(null);
-
     }
+
 
     @Override
     public int getCount() {
@@ -123,8 +127,7 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
         if (extras != null && extras.containsKey(WidgetProvider.KEY_SIZE_CHANGE)) {
             this.width = extras.getInt(WidgetProvider.KEY_SIZE_CHANGE);
             updateCourseList(null);
-        }
-        if (action != null &&
+        } else if (action != null &&
                 (action.equals(WidgetProvider.ACTION_REFRESH)
                         || action.equals(WidgetProvider.ACTION_NEXT)
                         || action.equals(WidgetProvider.ACTION_PREVIOUS)
@@ -205,7 +208,6 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
         day = day == 1 ? 7 : day - 1;
         weekView.goToDay(day);
         weekView.notifyDatasetChanged();
-        Settings settings = Settings.getInstance();
         weekView.setLimitTime(settings.getMinHour(), settings.getMaxHour() + 1); // View lasthour
 
         if (width <= 500) {

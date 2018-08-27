@@ -1,29 +1,15 @@
 package me.jlurena.ritscheduler.models;
 
 /**
- * A singleton class depicting the Settings of this application.
+ * Settings model. Please use the manager {@link me.jlurena.ritscheduler.utils.SettingsManager} to manage the Settings.
  */
 public class Settings {
 
-    private static Settings settings;
     private boolean autoLimitTime = false;
     private int numberOfVisibleDays = 3;
     private int minTime = 0;
     private int maxTime = 1380;
     private int firstVisibleDay = 0;
-
-    /**
-     * Get Settings instance.
-     *
-     * @return Settings instance.
-     * @throws IllegalStateException if Settings instance has not yet been instantiated.
-     */
-    public static Settings getInstance() {
-        if (settings == null) {
-            settings = new Settings();
-        }
-        return settings;
-    }
 
     public int getFirstVisibleDay() {
         return firstVisibleDay;
