@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Binder;
@@ -30,7 +29,6 @@ import me.jlurena.revolvingweekview.WeekView;
 import me.jlurena.revolvingweekview.WeekViewEvent;
 import me.jlurena.ritscheduler.R;
 import me.jlurena.ritscheduler.database.DataManager;
-import me.jlurena.ritscheduler.fragments.SettingsFragment;
 import me.jlurena.ritscheduler.models.Course;
 import me.jlurena.ritscheduler.models.Settings;
 import me.jlurena.ritscheduler.utils.SettingsManager;
@@ -60,80 +58,6 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
         context.registerReceiver(this, filter);
         this.settings = SettingsManager.getInstance(context).getSettings();
         updateCourseList(null);
-    }
-
-
-    @Override
-    public int getCount() {
-        return 1;
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return 0;
-    }
-
-    @Override
-    public RemoteViews getLoadingView() {
-        return null;
-    }
-
-    @Override
-    public RemoteViews getViewAt(int position) {
-        if (position == AdapterView.INVALID_POSITION) {
-            return null;
-        }
-
-        Bitmap bitmap = this.weekView.getDrawingCache();
-        // Construct the RemoteViews object
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.calendar_imageview);
-        views.setImageViewBitmap(R.id.widget_calendar, bitmap);
-
-        views.setOnClickFillInIntent(R.id.widget_calendar, new Intent());
-
-        return views;
-    }
-
-    @Override
-    public int getViewTypeCount() {
-        return 1;
-    }
-
-    @Override
-    public boolean hasStableIds() {
-        return true;
-    }
-
-    @Override
-    public void onCreate() {
-    }
-
-    @Override
-    public void onDataSetChanged() {
-        final long identityToken = Binder.clearCallingIdentity();
-        updateCourseList(null);
-        Binder.restoreCallingIdentity(identityToken);
-    }
-
-    @Override
-    public void onDestroy() {
-        context.unregisterReceiver(this);
-    }
-
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        Bundle extras = intent.getExtras();
-        String action = intent.getAction();
-        if (extras != null && extras.containsKey(WidgetProvider.KEY_SIZE_CHANGE)) {
-            this.width = extras.getInt(WidgetProvider.KEY_SIZE_CHANGE);
-            updateCourseList(null);
-        } else if (action != null &&
-                (action.equals(WidgetProvider.ACTION_REFRESH)
-                        || action.equals(WidgetProvider.ACTION_NEXT)
-                        || action.equals(WidgetProvider.ACTION_PREVIOUS)
-                )) {
-            updateCourseList(action);
-        }
     }
 
     private void updateCourseList(@Nullable String action) {
@@ -219,5 +143,78 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
         }
         weekView.measure(this.width, height);
         weekView.layout(0, 0, this.width, height);
+    }
+
+    @Override
+    public int getCount() {
+        return 1;
+    }
+
+    @Override
+    public RemoteViews getLoadingView() {
+        return null;
+    }
+
+    @Override
+    public int getViewTypeCount() {
+        return 1;
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return 0;
+    }
+
+    @Override
+    public RemoteViews getViewAt(int position) {
+        if (position == AdapterView.INVALID_POSITION) {
+            return null;
+        }
+
+        Bitmap bitmap = this.weekView.getDrawingCache();
+        // Construct the RemoteViews object
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.calendar_imageview);
+        views.setImageViewBitmap(R.id.widget_calendar, bitmap);
+
+        views.setOnClickFillInIntent(R.id.widget_calendar, new Intent());
+
+        return views;
+    }
+
+    @Override
+    public boolean hasStableIds() {
+        return true;
+    }
+
+    @Override
+    public void onCreate() {
+    }
+
+    @Override
+    public void onDataSetChanged() {
+        final long identityToken = Binder.clearCallingIdentity();
+        updateCourseList(null);
+        Binder.restoreCallingIdentity(identityToken);
+    }
+
+    @Override
+    public void onDestroy() {
+        context.unregisterReceiver(this);
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        Bundle extras = intent.getExtras();
+        String action = intent.getAction();
+        if (extras != null && extras.containsKey(WidgetProvider.KEY_SIZE_CHANGE)) {
+            this.width = extras.getInt(WidgetProvider.KEY_SIZE_CHANGE);
+            updateCourseList(null);
+        } else if (action != null &&
+                (action.equals(WidgetProvider.ACTION_REFRESH)
+                        || action.equals(WidgetProvider.ACTION_NEXT)
+                        || action.equals(WidgetProvider.ACTION_PREVIOUS)
+                )) {
+            updateCourseList(action);
+        }
     }
 }

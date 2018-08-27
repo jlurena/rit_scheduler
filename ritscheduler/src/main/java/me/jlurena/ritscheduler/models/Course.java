@@ -41,20 +41,6 @@ public class Course extends Model {
         super(TYPE);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Course course = (Course) o;
-
-        return this.getModelId().equals(course.getModelId());
-    }
-
     public String getCatalogNumber() {
         return catalogNumber;
     }
@@ -128,6 +114,20 @@ public class Course extends Model {
 
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Course course = (Course) o;
+
+        return this.getModelId().equals(course.getModelId());
     }
 
     @Override

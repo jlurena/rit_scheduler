@@ -44,6 +44,16 @@ public class TimePreference extends DialogPreference {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
+    @Override
+    protected Object onGetDefaultValue(TypedArray a, int index) {
+        return a.getString(index);
+    }
+
+    @Override
+    protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
+        setTimeRange(restorePersistedValue ? getPersistedString(timeRange) : (String) defaultValue);
+    }
+
     @SuppressWarnings("SameReturnValue")
     @Override
     public int getDialogLayoutResource() {
@@ -98,16 +108,6 @@ public class TimePreference extends DialogPreference {
         persistString(timeRange);
     }
 
-    @Override
-    protected Object onGetDefaultValue(TypedArray a, int index) {
-        return a.getString(index);
-    }
-
-    @Override
-    protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
-        setTimeRange(restorePersistedValue ? getPersistedString(timeRange) : (String) defaultValue);
-    }
-
     public void setTimeRange(int timeStart, int timeEnd) {
         this.timeStart = timeStart;
         this.timeEnd = timeEnd;
@@ -125,16 +125,6 @@ public class TimePreference extends DialogPreference {
         private int endHour = 23;
         private int endMinute = 0;
         private TimePreference timePreference;
-
-        public static TimePreferenceDialogFragment newInstance(String key) {
-            final TimePreferenceDialogFragment
-                    fragment = new TimePreferenceDialogFragment();
-            final Bundle b = new Bundle(1);
-            b.putString(ARG_KEY, key);
-            fragment.setArguments(b);
-
-            return fragment;
-        }
 
         private void initTabLayout() {
             this.mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -207,6 +197,16 @@ public class TimePreference extends DialogPreference {
                     mTimePicker.setCurrentMinute(endMinute);
                 }
             }
+        }
+
+        public static TimePreferenceDialogFragment newInstance(String key) {
+            final TimePreferenceDialogFragment
+                    fragment = new TimePreferenceDialogFragment();
+            final Bundle b = new Bundle(1);
+            b.putString(ARG_KEY, key);
+            fragment.setArguments(b);
+
+            return fragment;
         }
 
         @Override

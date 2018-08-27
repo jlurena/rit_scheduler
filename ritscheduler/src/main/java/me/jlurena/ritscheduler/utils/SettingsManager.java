@@ -12,8 +12,8 @@ import me.jlurena.ritscheduler.models.Settings;
  */
 public class SettingsManager {
 
-    private Settings settings;
     private static SettingsManager settingsManager;
+    private Settings settings;
 
     public static SettingsManager getInstance(Context context) {
         if (settingsManager == null) {
@@ -35,9 +35,9 @@ public class SettingsManager {
         String timeRange = prefs.getString(context.getString(R.string.hour_range_key), "0-1380");
         int firstVisibleDay = Integer.parseInt(prefs.getString(context.getString(R.string.first_visible_day_key), "0"));
         this.settings.setAutoLimitTime(autoLimitTime)
-                     .setNumberOfVisibleDays(numVisibleDays)
-                     .setTimeRange(timeRange)
-                     .setFirstVisibleDay(firstVisibleDay);
+                .setNumberOfVisibleDays(numVisibleDays)
+                .setTimeRange(timeRange)
+                .setFirstVisibleDay(firstVisibleDay);
     }
 
 }

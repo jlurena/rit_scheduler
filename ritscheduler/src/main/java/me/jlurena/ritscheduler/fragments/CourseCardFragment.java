@@ -5,12 +5,14 @@ import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.graphics.ColorUtils;
-import android.text.TextUtils;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,27 +60,6 @@ public class CourseCardFragment extends Fragment {
     private boolean firstLaunch = true;
     private boolean isSavedCourse;
     private ImageButton mDeleteCourseButton;
-
-    /**
-     * Factory method to create an instance of CardFragment.
-     *
-     * @param context Application context.
-     * @param course The course object.
-     * @param isSavedCourse Flag indicating if its a saved course.
-     * @return A new instance of fragment CourseCardFragment.
-     */
-    public static CourseCardFragment newInstance(Context context, Course course, boolean isSavedCourse) {
-        CourseCardFragment fragment = new CourseCardFragment();
-        Bundle args = new Bundle();
-        try {
-            args.putString(ARG_PARAM1, mapper.writeValueAsString(course));
-            args.putBoolean(ARG_PARAM2, isSavedCourse);
-            fragment.setArguments(args);
-        } catch (JsonProcessingException e) {
-            Utils.alertDialogFactory(context, R.string.error, context.getString(R.string.generic_error)).show();
-        }
-        return fragment;
-    }
 
     private TextView createTextView(String text, int row, int col) {
         TextView textView = new TextView(getActivity());
@@ -224,12 +205,24 @@ public class CourseCardFragment extends Fragment {
         // Sometimes locations < meetings, in this case duplicate this list
         String[] locations = meetings.getLocationsShortForEachDayTime();
         // Set professor name, set icon position
-        String professors = meetings.isSameInstructor() ? meetings.getInstructors()[0].trim() : TextUtils.join(", ", meetings.getInstructors());
+        String professors = meetings.getInstructorsNameWithEmail();
         GridLayout.LayoutParams glParams = (GridLayout.LayoutParams) this.mProfessorIcon.getLayoutParams();
         glParams.rowSpec = GridLayout.spec(dayTimesLength + 1);
         this.mProfessorIcon.setLayoutParams(glParams);
 
         TextView tv = createTextView(professors, dayTimesLength + 1, 1);
+        if (Build.VERSION.SDK_INT < 24) {
+            tv.setText(Html.fromHtml(professors));
+        } else {
+            tv.setText(Html.fromHtml(professors, Html.FROM_HTML_MODE_COMPACT));
+        }
+        if (Build.VERSION.SDK_INT > 22) {
+            tv.setLinkTextColor(getResources().getColor(android.R.color.holo_blue_dark, null));
+        } else {
+            tv.setLinkTextColor(getResources().getColor(android.R.color.holo_blue_dark));
+        }
+
+        tv.setMovementMethod(LinkMovementMethod.getInstance());
         this.mCourseDetailsLayout.addView(tv);
 
         // Set icon span of course meetings icons
@@ -266,6 +259,36 @@ public class CourseCardFragment extends Fragment {
                     .setNegativeButton(android.R.string.no, (dialog, which) -> dialog.dismiss()).show());
 
         }
+    }
+
+    /**
+     * Factory method to create an instance of CardFragment.
+     *
+     * @param context Application context.
+     * @param course The course object.
+     * @param isSavedCourse Flag indicating if its a saved course.
+     * @return A new instance of fragment CourseCardFragment.
+     */
+    public static CourseCardFragment newInstance(Context context, Course course, boolean isSavedCourse) {
+        CourseCardFragment fragment = new CourseCardFragment();
+        Bundle args = new Bundle();
+        try {
+            args.putString(ARG_PARAM1, mapper.writeValueAsString(course));
+            args.putBoolean(ARG_PARAM2, isSavedCourse);
+            fragment.setArguments(args);
+        } catch (JsonProcessingException e) {
+            Utils.alertDialogFactory(context, R.string.error, context.getString(R.string.generic_error)).show();
+        }
+        return fragment;
+    }
+
+    /**
+     * Sets buttonsListeners for Add button.
+     *
+     * @param buttonsListeners The Add click listener.
+     */
+    public void setButtonsListeners(ButtonsListeners buttonsListeners) {
+        this.buttonsListeners = buttonsListeners;
     }
 
     @Override
@@ -316,15 +339,6 @@ public class CourseCardFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         initCourseCard();
-    }
-
-    /**
-     * Sets buttonsListeners for Add button.
-     *
-     * @param buttonsListeners The Add click listener.
-     */
-    public void setButtonsListeners(ButtonsListeners buttonsListeners) {
-        this.buttonsListeners = buttonsListeners;
     }
 
     public interface ButtonsListeners {

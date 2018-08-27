@@ -32,6 +32,16 @@ public class NumberPreference extends DialogPreference {
         this.number = 3;
     }
 
+    @Override
+    protected Object onGetDefaultValue(TypedArray a, int index) {
+        return a.getString(index);
+    }
+
+    @Override
+    protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
+        setNumber(restorePersistedValue ? getPersistedInt(number) : (int) defaultValue);
+    }
+
     @Override public int getDialogLayoutResource() {
         return R.layout.preference_number_picker;
     }
@@ -45,30 +55,10 @@ public class NumberPreference extends DialogPreference {
         persistInt(number);
     }
 
-    @Override
-    protected Object onGetDefaultValue(TypedArray a, int index) {
-        return a.getString(index);
-    }
-
-    @Override
-    protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
-        setNumber(restorePersistedValue ? getPersistedInt(number) : (int) defaultValue);
-    }
-
     public static class NumberPreferenceDialogFragment extends PreferenceDialogFragment {
         private MaterialNumberPicker numberPicker;
         private NumberPreference numberPreference;
         private int number;
-
-        public static NumberPreference.NumberPreferenceDialogFragment newInstance(String key) {
-            final NumberPreference.NumberPreferenceDialogFragment
-                    fragment = new NumberPreference.NumberPreferenceDialogFragment();
-            final Bundle b = new Bundle(1);
-            b.putString(ARG_KEY, key);
-            fragment.setArguments(b);
-
-            return fragment;
-        }
 
         protected void onBindDialogView(View view) {
             super.onBindDialogView(view);
@@ -81,6 +71,16 @@ public class NumberPreference extends DialogPreference {
                 this.numberPreference = (NumberPreference) preference;
                 numberPicker.setValue(numberPreference.getNumber());
             }
+        }
+
+        public static NumberPreference.NumberPreferenceDialogFragment newInstance(String key) {
+            final NumberPreference.NumberPreferenceDialogFragment
+                    fragment = new NumberPreference.NumberPreferenceDialogFragment();
+            final Bundle b = new Bundle(1);
+            b.putString(ARG_KEY, key);
+            fragment.setArguments(b);
+
+            return fragment;
         }
 
         @Override

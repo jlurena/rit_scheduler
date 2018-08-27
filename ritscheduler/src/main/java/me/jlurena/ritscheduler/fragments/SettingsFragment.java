@@ -20,7 +20,6 @@ import android.widget.TextView;
 import com.nightonke.boommenu.Util;
 
 import me.jlurena.ritscheduler.R;
-import me.jlurena.ritscheduler.models.Settings;
 import me.jlurena.ritscheduler.utils.SettingsManager;
 import me.jlurena.ritscheduler.widgets.NumberPreference;
 import me.jlurena.ritscheduler.widgets.TimePreference;
@@ -35,7 +34,8 @@ public class SettingsFragment extends PreferenceFragment {
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.settings_preference, rootKey);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        prefs.registerOnSharedPreferenceChangeListener((sharedPreferences, key) -> SettingsManager.getInstance(getActivity()).updateSettings(getActivity()));
+        prefs.registerOnSharedPreferenceChangeListener((sharedPreferences, key) -> SettingsManager.getInstance(getActivity()).updateSettings
+                (getActivity()));
     }
 
     @Override

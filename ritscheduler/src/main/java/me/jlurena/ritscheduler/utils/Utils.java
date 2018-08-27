@@ -11,10 +11,8 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroupOverlay;
-import android.view.ViewTreeObserver;
 
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
@@ -23,20 +21,6 @@ public class Utils {
 
     public static final LocalDateTime now = LocalDateTime.now();
     public static final DateTimeFormatter STANDARD_TIME_FORMAT = DateTimeFormatter.ofPattern("h:mma");
-
-    public static void applyDim(@NonNull ViewGroup parent, float dimAmount) {
-        Drawable dim = new ColorDrawable(Color.BLACK);
-        dim.setBounds(0, 0, parent.getWidth(), parent.getHeight());
-        dim.setAlpha((int) (255 * dimAmount));
-
-        ViewGroupOverlay overlay = parent.getOverlay();
-        overlay.add(dim);
-    }
-
-    public static void clearDim(@NonNull ViewGroup parent) {
-        ViewGroupOverlay overlay = parent.getOverlay();
-        overlay.clear();
-    }
 
     /**
      * Creates an AlertDialog.Builder with generic "Error" title and dismissable "OK" button.
@@ -51,6 +35,20 @@ public class Utils {
                 .setTitle(title)
                 .setMessage(errorMsg)
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss());
+    }
+
+    public static void applyDim(@NonNull ViewGroup parent, float dimAmount) {
+        Drawable dim = new ColorDrawable(Color.BLACK);
+        dim.setBounds(0, 0, parent.getWidth(), parent.getHeight());
+        dim.setAlpha((int) (255 * dimAmount));
+
+        ViewGroupOverlay overlay = parent.getOverlay();
+        overlay.add(dim);
+    }
+
+    public static void clearDim(@NonNull ViewGroup parent) {
+        ViewGroupOverlay overlay = parent.getOverlay();
+        overlay.clear();
     }
 
     public static RippleDrawable getPressedColorRippleDrawable(@ColorInt int pressedColor) {

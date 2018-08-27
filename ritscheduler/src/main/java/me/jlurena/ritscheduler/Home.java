@@ -81,45 +81,6 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
     private boolean isDimmed = false;
     private ArrayAdapter<String> autoCompleteAdapter;
 
-    @Override
-    public void addCourseButton(Course course) {
-        try {
-
-            if (course.getMeetings().isOnline() || course.getMeetings().isTimeTBA()) {
-                new AlertDialog.Builder(this)
-                        .setTitle(R.string.action_not_supported)
-                        .setMessage("Only in person lectures and classes with determined meeting times are supported.")
-                        .setNeutralButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
-                        .show();
-                removeFragment(course.getModelId());
-                return;
-            }
-            dataManager.addModel(course);
-            courses.add(course);
-            mWeekView.notifyDatasetChanged();
-            removeFragment(course.getModelId());
-        } catch (CouchbaseLiteException e) {
-            Utils.alertDialogFactory(this, R.string.error, getString(R.string.save_error)).show();
-        } finally {
-            enableBackground();
-            queryResult.clear();
-        }
-    }
-
-    @Override
-    public void deleteCourseButton(Course course) {
-        try {
-            dataManager.deleteModel(course);
-            courses.remove(course);
-            mWeekView.notifyDatasetChanged();
-            removeFragment(course.getModelId());
-        } catch (CouchbaseLiteException e) {
-            Utils.alertDialogFactory(this, R.string.error, getString(R.string.delete_course_error)).show();
-        } finally {
-            enableBackground();
-        }
-    }
-
     private void disableBackground() {
         // Dim and remove listeners from background
         mBoomMenuButton.setDraggable(false);
@@ -458,69 +419,6 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         });
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
-
-        RateThisApp.Config rateConfig = new RateThisApp.Config();
-        rateConfig.setTitle(R.string.rate_app_title);
-        rateConfig.setMessage(R.string.rate_app_message);
-        RateThisApp.init(rateConfig);
-        RateThisApp.onCreate(this);
-        RateThisApp.showRateDialogIfNeeded(this);
-
-        this.courses = new HashSet<>();
-        this.networkManager = NetworkManager.getInstance(this);
-        this.dataManager = DataManager.getInstance(this);
-        this.autoCompleteAdapter = new ArrayAdapter<>(this, R.layout.auto_complete_dropdown_item);
-
-        this.mPrev = findViewById(R.id.previous);
-        this.mNext = findViewById(R.id.next);
-        this.mFragmentOuterContainer = findViewById(R.id.fragment_outer_container);
-        this.mHomeMainContainer = findViewById(R.id.home_main_container);
-        this.settingsFragment = new SettingsFragment();
-
-        initBoomButton();
-        initCalendar();
-        initNextPrevButtons();
-        initOnFirstLaunch();
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && isFragmentInflated) {
-            Fragment fragment = getFragmentManager().findFragmentById(R.id.course_fragment_container);
-            removeFragment(fragment.getTag());
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        // Distinguish between long press for Setting Preference Screen that appears on LongPress
-        long eventDuration = event.getEventTime() - event.getDownTime();
-        if (event.getAction() == MotionEvent.ACTION_UP && eventDuration < ViewConfiguration.getLongPressTimeout()) {
-
-            if (isFragmentInflated) {
-                Rect rect = new Rect(0, 0, 0, 0);
-
-                this.mFragmentOuterContainer.getHitRect(rect);
-
-                boolean intersects = rect.contains((int) event.getX(), (int) event.getY());
-
-                if (!intersects) {
-                    Fragment fragment = getFragmentManager().findFragmentById(R.id.course_fragment_container);
-                    removeFragment(fragment.getTag());
-                    return true;
-                }
-            }
-        }
-
-        return super.onTouchEvent(event);
-    }
-
     private void removeFragment(String fragmentTag) {
         if (isFragmentInflated) {
             FragmentManager fm = getFragmentManager();
@@ -566,6 +464,108 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             ft.replace(R.id.course_fragment_container, settingsFragment, SettingsFragment.TAG).commit();
         }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_home);
+
+        RateThisApp.Config rateConfig = new RateThisApp.Config();
+        rateConfig.setTitle(R.string.rate_app_title);
+        rateConfig.setMessage(R.string.rate_app_message);
+        RateThisApp.init(rateConfig);
+        RateThisApp.onCreate(this);
+        RateThisApp.showRateDialogIfNeeded(this);
+
+        this.courses = new HashSet<>();
+        this.networkManager = NetworkManager.getInstance(this);
+        this.dataManager = DataManager.getInstance(this);
+        this.autoCompleteAdapter = new ArrayAdapter<>(this, R.layout.auto_complete_dropdown_item);
+
+        this.mPrev = findViewById(R.id.previous);
+        this.mNext = findViewById(R.id.next);
+        this.mFragmentOuterContainer = findViewById(R.id.fragment_outer_container);
+        this.mHomeMainContainer = findViewById(R.id.home_main_container);
+        this.settingsFragment = new SettingsFragment();
+
+        initBoomButton();
+        initCalendar();
+        initNextPrevButtons();
+        initOnFirstLaunch();
+    }
+
+    @Override
+    public void addCourseButton(Course course) {
+        try {
+
+            if (course.getMeetings().isOnline() || course.getMeetings().isTimeTBA()) {
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.action_not_supported)
+                        .setMessage("Only in person lectures and classes with determined meeting times are supported.")
+                        .setNeutralButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
+                        .show();
+                removeFragment(course.getModelId());
+                return;
+            }
+            dataManager.addModel(course);
+            courses.add(course);
+            mWeekView.notifyDatasetChanged();
+            removeFragment(course.getModelId());
+        } catch (CouchbaseLiteException e) {
+            Utils.alertDialogFactory(this, R.string.error, getString(R.string.save_error)).show();
+        } finally {
+            enableBackground();
+            queryResult.clear();
+        }
+    }
+
+    @Override
+    public void deleteCourseButton(Course course) {
+        try {
+            dataManager.deleteModel(course);
+            courses.remove(course);
+            mWeekView.notifyDatasetChanged();
+            removeFragment(course.getModelId());
+        } catch (CouchbaseLiteException e) {
+            Utils.alertDialogFactory(this, R.string.error, getString(R.string.delete_course_error)).show();
+        } finally {
+            enableBackground();
+        }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && isFragmentInflated) {
+            Fragment fragment = getFragmentManager().findFragmentById(R.id.course_fragment_container);
+            removeFragment(fragment.getTag());
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        // Distinguish between long press for Setting Preference Screen that appears on LongPress
+        long eventDuration = event.getEventTime() - event.getDownTime();
+        if (event.getAction() == MotionEvent.ACTION_UP && eventDuration < ViewConfiguration.getLongPressTimeout()) {
+
+            if (isFragmentInflated) {
+                Rect rect = new Rect(0, 0, 0, 0);
+
+                this.mFragmentOuterContainer.getHitRect(rect);
+
+                boolean intersects = rect.contains((int) event.getX(), (int) event.getY());
+
+                if (!intersects) {
+                    Fragment fragment = getFragmentManager().findFragmentById(R.id.course_fragment_container);
+                    removeFragment(fragment.getTag());
+                    return true;
+                }
+            }
+        }
+
+        return super.onTouchEvent(event);
     }
 
     @Override

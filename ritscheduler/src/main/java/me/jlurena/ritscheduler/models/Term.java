@@ -59,48 +59,6 @@ public class Term {
     }
 
     /**
-     * Get an instance of a Term.
-     *
-     * @param year Year of term.
-     * @param month Month of term.
-     * @param day Day of term.
-     * @return A Term.
-     */
-    public static Term of(int year, int month, int day) {
-        return Term.of(LocalDate.of(year, month, day));
-    }
-
-    /**
-     * Get instance of current term.
-     *
-     * @return The current term.
-     */
-    public static Term currentTerm() {
-        return new Term(Utils.now.toLocalDate());
-    }
-
-    /**
-     * Create a Term with a given LocalDate.
-     *
-     * @param date Date.
-     * @return A Term object.
-     */
-    public static Term of(LocalDate date) {
-        return new Term(date);
-    }
-
-    /**
-     * Get an instance of a term.
-     *
-     * @param termCode Term code.
-     * @return A term based on term code.
-     */
-    public static Term of(String termCode) {
-        return new Term(termCode);
-    }
-
-
-    /**
      * Cyphers a date into a Term code.
      *
      * @param date Date to cypher into a term code.
@@ -125,6 +83,47 @@ public class Term {
         }
 
         return String.format(Locale.getDefault(), "%d%d%d", millenia, decade, semester.getSemesterValue());
+    }
+
+    /**
+     * Get instance of current term.
+     *
+     * @return The current term.
+     */
+    public static Term currentTerm() {
+        return new Term(Utils.now.toLocalDate());
+    }
+
+    /**
+     * Get an instance of a Term.
+     *
+     * @param year Year of term.
+     * @param month Month of term.
+     * @param day Day of term.
+     * @return A Term.
+     */
+    public static Term of(int year, int month, int day) {
+        return Term.of(LocalDate.of(year, month, day));
+    }
+
+    /**
+     * Create a Term with a given LocalDate.
+     *
+     * @param date Date.
+     * @return A Term object.
+     */
+    public static Term of(LocalDate date) {
+        return new Term(date);
+    }
+
+    /**
+     * Get an instance of a term.
+     *
+     * @param termCode Term code.
+     * @return A term based on term code.
+     */
+    public static Term of(String termCode) {
+        return new Term(termCode);
     }
 
     public Semester getSemester() {
@@ -206,22 +205,6 @@ public class Term {
         }
 
         /**
-         * Get Semester of a date.
-         *
-         * @param date The date.
-         * @return The Semester corresponding to the date.
-         */
-        public static Semester of(LocalDate date) {
-            if (isFall(date)) {
-                return Semester.Fall;
-            } else if (isSpring(date)) {
-                return Semester.Spring;
-            } else {
-                return Semester.Summer;
-            }
-        }
-
-        /**
          * If date falls in the Fall term.
          *
          * @param date Date to check.
@@ -254,6 +237,22 @@ public class Term {
          */
         public static boolean isSummer(LocalDate date) {
             return !(isFall(date) || isSpring(date));
+        }
+
+        /**
+         * Get Semester of a date.
+         *
+         * @param date The date.
+         * @return The Semester corresponding to the date.
+         */
+        public static Semester of(LocalDate date) {
+            if (isFall(date)) {
+                return Semester.Fall;
+            } else if (isSpring(date)) {
+                return Semester.Spring;
+            } else {
+                return Semester.Summer;
+            }
         }
 
         /**

@@ -38,6 +38,24 @@ public class NetworkManager {
     }
 
     /**
+     * Builds and encodes a URL.
+     *
+     * @param queryUrl URL path.
+     * @param parameters Parameters of URL.
+     * @return An encoded URL.
+     */
+    private String buildUrl(String queryUrl, String parameters) {
+        String url = null;
+        try {
+            url = queryUrl + URLEncoder.encode(parameters, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            Log.e(TAG, "Error building URL", e);
+        }
+
+        return url;
+    }
+
+    /**
      * Get instance of NetworkManager.
      *
      * @param context Application's context.
@@ -61,24 +79,6 @@ public class NetworkManager {
             throw new IllegalStateException(NetworkManager.class.getSimpleName() + " is not initialized");
         }
         return instance;
-    }
-
-    /**
-     * Builds and encodes a URL.
-     *
-     * @param queryUrl URL path.
-     * @param parameters Parameters of URL.
-     * @return An encoded URL.
-     */
-    private String buildUrl(String queryUrl, String parameters) {
-        String url = null;
-        try {
-            url = queryUrl + URLEncoder.encode(parameters, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            Log.e(TAG, "Error building URL", e);
-        }
-
-        return url;
     }
 
     /**

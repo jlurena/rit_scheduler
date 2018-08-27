@@ -31,27 +31,6 @@ class Serializers {
     private static final int MAX_RESULTS = 10;
 
     /**
-     * Convert JSON object received from TigerCenter API into a List of Courses.
-     *
-     * @param json A JSON object representative of the JSON received from TigerCenter API.
-     * @return A list of Courses.
-     * @throws IOException Read error.
-     * @throws JSONException Invalid JSON or invalid JSONObject method calls.
-     */
-    static List<Course> toCourseResults(JSONObject json) throws IOException, JSONException {
-        ArrayList<Course> courses = new ArrayList<>();
-        ObjectMapper objectMapper = new ObjectMapper();
-        JSONArray coursesJsonResults = json.getJSONArray(SEARCH_RESULTS_KEY);
-        int length = Math.min(MAX_RESULTS, coursesJsonResults.length());
-
-        // Only get top 10 results
-        for (int i = 0; i < length; i++) {
-            courses.add(objectMapper.readValue(coursesJsonResults.get(i).toString(), Course.class));
-        }
-        return courses;
-    }
-
-    /**
      * Builds the required parameter in JSON format for a TigerCenter query of a Course.
      *
      * @param query Query string search term.
@@ -82,5 +61,26 @@ class Serializers {
             list.add(jsonArray.getString(i).trim().replaceAll(" +", " "));
         }
         return list;
+    }
+
+    /**
+     * Convert JSON object received from TigerCenter API into a List of Courses.
+     *
+     * @param json A JSON object representative of the JSON received from TigerCenter API.
+     * @return A list of Courses.
+     * @throws IOException Read error.
+     * @throws JSONException Invalid JSON or invalid JSONObject method calls.
+     */
+    static List<Course> toCourseResults(JSONObject json) throws IOException, JSONException {
+        ArrayList<Course> courses = new ArrayList<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+        JSONArray coursesJsonResults = json.getJSONArray(SEARCH_RESULTS_KEY);
+        int length = Math.min(MAX_RESULTS, coursesJsonResults.length());
+
+        // Only get top 10 results
+        for (int i = 0; i < length; i++) {
+            courses.add(objectMapper.readValue(coursesJsonResults.get(i).toString(), Course.class));
+        }
+        return courses;
     }
 }

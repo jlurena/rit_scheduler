@@ -7,7 +7,6 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.widget.RemoteViews;
 
@@ -34,6 +33,24 @@ public class WidgetProvider extends AppWidgetProvider {
         intent.setAction(action);
         intent.putExtra(KEY_APP_WIDGET_ID, appWidgetId);
         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    private static void scheduleNextUpdate(Context context) {
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, WidgetProvider.class);
+        intent.setAction(ACTION_REFRESH);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+
+        Calendar midnight = Calendar.getInstance();
+        midnight.set(Calendar.HOUR_OF_DAY, 0);
+        midnight.set(Calendar.MINUTE, 0);
+        midnight.set(Calendar.SECOND, 1);
+        midnight.set(Calendar.MILLISECOND, 0);
+        midnight.add(Calendar.DAY_OF_YEAR, 1);
+
+        if (alarmManager != null) {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, midnight.getTimeInMillis(), pendingIntent);
+        }
     }
 
     private static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
@@ -98,25 +115,6 @@ public class WidgetProvider extends AppWidgetProvider {
         }
         scheduleNextUpdate(context);
         super.onUpdate(context, appWidgetManager, appWidgetIds);
-    }
-
-
-    private static void scheduleNextUpdate(Context context) {
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, WidgetProvider.class);
-        intent.setAction(ACTION_REFRESH);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
-
-        Calendar midnight = Calendar.getInstance();
-        midnight.set(Calendar.HOUR_OF_DAY, 0);
-        midnight.set(Calendar.MINUTE, 0);
-        midnight.set(Calendar.SECOND, 1);
-        midnight.set(Calendar.MILLISECOND, 0);
-        midnight.add(Calendar.DAY_OF_YEAR, 1);
-
-        if (alarmManager != null) {
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, midnight.getTimeInMillis(), pendingIntent);
-        }
     }
 }
 
