@@ -27,7 +27,6 @@ import java.util.Locale;
 
 import me.jlurena.revolvingweekview.WeekView;
 import me.jlurena.revolvingweekview.WeekViewEvent;
-import me.jlurena.revolvingweekview.WeekViewUtil;
 import me.jlurena.ritscheduler.R;
 import me.jlurena.ritscheduler.database.DataManager;
 import me.jlurena.ritscheduler.models.Course;
@@ -120,10 +119,18 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
     @Override
     public void onReceive(Context context, Intent intent) {
         Bundle extras = intent.getExtras();
+        String action = intent.getAction();
         if (extras != null && extras.containsKey(WidgetProvider.KEY_SIZE_CHANGE)) {
             this.width = extras.getInt(WidgetProvider.KEY_SIZE_CHANGE);
+            updateCourseList(null);
         }
-        updateCourseList(intent.getAction());
+        if (action != null &&
+                (action.equals(WidgetProvider.ACTION_REFRESH)
+                        || action.equals(WidgetProvider.ACTION_NEXT)
+                        || action.equals(WidgetProvider.ACTION_PREVIOUS)
+                )) {
+            updateCourseList(action);
+        }
     }
 
     private void updateCourseList(@Nullable String action) {
