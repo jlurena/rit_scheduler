@@ -61,16 +61,4 @@ public class Utils {
         return new RippleDrawable(new ColorStateList(new int[][]{new int[]{}}, new int[]{pressedColor}), drawable, null);
     }
 
-    public static void runJustBeforeBeingDrawn(final View view, final Runnable runnable) {
-        final ViewTreeObserver.OnPreDrawListener preDrawListener = new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                view.getViewTreeObserver().removeOnPreDrawListener(this);
-                runnable.run();
-                return true;
-            }
-        };
-        view.getViewTreeObserver().addOnPreDrawListener(preDrawListener);
-    }
-
 }

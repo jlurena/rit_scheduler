@@ -20,17 +20,18 @@ import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.format.TextStyle;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
 import me.jlurena.revolvingweekview.WeekView;
 import me.jlurena.revolvingweekview.WeekViewEvent;
+import me.jlurena.revolvingweekview.WeekViewUtil;
 import me.jlurena.ritscheduler.R;
 import me.jlurena.ritscheduler.database.DataManager;
 import me.jlurena.ritscheduler.models.Course;
 import me.jlurena.ritscheduler.models.Settings;
-import me.jlurena.ritscheduler.utils.Utils;
 
 public class WidgetRemoteViewsFactory extends BroadcastReceiver implements RemoteViewsService.RemoteViewsFactory {
 
@@ -39,13 +40,13 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
     private final DataManager dataManager;
     private final HashSet<Course> courses;
     private WeekView weekView;
-    private DayOfWeek currentDay;
+    private Calendar currentDay;
     private int width;
 
     WidgetRemoteViewsFactory(Context context) {
         this.context = context;
         this.dataManager = DataManager.getInstance(context);
-        this.currentDay = Utils.now.getDayOfWeek();
+        this.currentDay = Calendar.getInstance();
         this.courses = new HashSet<>();
         this.width = Util.dp2px(110);
 
@@ -148,7 +149,7 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
                 return events;
             });
             Resources resources = context.getResources();
-            weekView.setDateTimeInterpreter(new WeekView.DateTimeInterpreter() {
+            weekView.setDayTimeInterpreter(new WeekView.DayTimeInterpreter() {
                 @Override
                 public String interpretDay(int dayValue) {
                     DayOfWeek day = DayOfWeek.of(dayValue);
@@ -169,7 +170,6 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
                 }
             });
             weekView.setNumberOfVisibleDays(1);
-            weekView.goToToday();
             weekView.setDayBackgroundColor(resources.getColor(R.color.calendar_day_background_color));
             weekView.setEventTextColor(resources.getColor(android.R.color.white));
             weekView.setHeaderRowBackgroundColor(resources.getColor(R.color.color_accent));
@@ -181,21 +181,22 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
         if (action != null) {
             switch (action) {
                 case WidgetProvider.ACTION_NEXT:
-                    this.currentDay = currentDay.plus(1);
+                    currentDay.add(Calendar.DAY_OF_YEAR, 1);
                     break;
                 case WidgetProvider.ACTION_PREVIOUS:
-                    this.currentDay = currentDay.minus(1);
+                    currentDay.add(Calendar.DAY_OF_YEAR, -1);
                     break;
                 case WidgetProvider.ACTION_REFRESH:
                 default:
-                    this.currentDay = Utils.now.getDayOfWeek();
+                    this.currentDay = Calendar.getInstance();
                     break;
             }
         }
 
-        int height = (weekView.getmMaxTime() - weekView.getmMinTime()) * Util.dp2px(50);
-
-        weekView.goToDate(currentDay);
+        int height = (weekView.getMaxTime() - weekView.getMinTime()) * Util.dp2px(50);
+        int day = currentDay.get(Calendar.DAY_OF_WEEK);
+        day = day == 1 ? 7 : day - 1;
+        weekView.goToDay(day);
         weekView.notifyDatasetChanged();
         Settings settings = Settings.getInstance();
         weekView.setLimitTime(settings.getMinHour(), settings.getMaxHour() + 1); // View lasthour

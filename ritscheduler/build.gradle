@@ -28,7 +28,7 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     // Widgets
-    implementation 'me.jlurena:revolvingweekview:1.0.2'
+    implementation 'me.jlurena:revolvingweekview:1.1.0'
     implementation 'com.github.rtugeek:colorseekbar:1.7.2'
     implementation 'com.github.iammert:MaterialIntroView:1.6.0'
     implementation 'com.qhutch.elevationimageview:elevationimageview:2.0'

@@ -270,7 +270,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
             this.mWeekView.goToToday();
         } else {
             this.mWeekView.setFirstDayOfWeek(firstVisibleDay);
-            this.mWeekView.goToDate(DayOfWeek.of(firstVisibleDay));
+            this.mWeekView.goToDay(firstVisibleDay);
         }
 
         this.mWeekView.setNumberOfVisibleDays(settings.getNumberOfVisibleDays());
