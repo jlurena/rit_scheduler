@@ -1,15 +1,19 @@
 package me.jlurena.ritscheduler.homescreen;
 
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.RemoteViews;
 
 import com.nightonke.boommenu.Util;
+
+import java.util.Calendar;
 
 import me.jlurena.ritscheduler.Home;
 import me.jlurena.ritscheduler.R;
@@ -92,7 +96,27 @@ public class WidgetProvider extends AppWidgetProvider {
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }
+        scheduleNextUpdate(context);
         super.onUpdate(context, appWidgetManager, appWidgetIds);
+    }
+
+
+    private static void scheduleNextUpdate(Context context) {
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, WidgetProvider.class);
+        intent.setAction(ACTION_REFRESH);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+
+        Calendar midnight = Calendar.getInstance();
+        midnight.set(Calendar.HOUR_OF_DAY, 0);
+        midnight.set(Calendar.MINUTE, 0);
+        midnight.set(Calendar.SECOND, 1);
+        midnight.set(Calendar.MILLISECOND, 0);
+        midnight.add(Calendar.DAY_OF_YEAR, 1);
+
+        if (alarmManager != null) {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, midnight.getTimeInMillis(), pendingIntent);
+        }
     }
 }
 
