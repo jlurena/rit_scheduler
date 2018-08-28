@@ -83,7 +83,7 @@ public class WidgetProvider extends AppWidgetProvider {
     @Override
     public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
         int width = Util.dp2px(newOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH));
-        Intent broadcastIntent = new Intent();
+        Intent broadcastIntent = new Intent(ACTION_REFRESH);
         broadcastIntent.putExtra(KEY_SIZE_CHANGE, width);
         context.sendBroadcast(broadcastIntent);
         updateAppWidget(context, appWidgetManager, appWidgetId);
