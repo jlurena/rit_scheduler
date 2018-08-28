@@ -38,10 +38,10 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
     private final Context context;
     private final DataManager dataManager;
     private final HashSet<Course> courses;
+    private final SettingsManager settings;
     private WeekView weekView;
     private Calendar currentDay;
     private int width;
-    private final SettingsManager settings;
 
     WidgetRemoteViewsFactory(Context context) {
         this.context = context;

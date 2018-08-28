@@ -1,7 +1,6 @@
 package me.jlurena.ritscheduler.networking;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -49,7 +48,7 @@ public class NetworkManager {
         try {
             url = queryUrl + URLEncoder.encode(parameters, "utf-8");
         } catch (UnsupportedEncodingException e) {
-            Log.e(TAG, "Error building URL", e);
+            //            Log.e(TAG, "Error building URL", e);
         }
 
         return url;
@@ -97,10 +96,10 @@ public class NetworkManager {
             try {
                 responseListener.getResult(Serializers.toAutoCompleteList(response), 200, null);
             } catch (JSONException e) {
-                Log.e(TAG, "Error parsing response", e);
+                //                Log.e(TAG, "Error parsing response", e);
             }
         }, error -> {
-            Log.e(TAG, error.getMessage());
+            //            Log.e(TAG, error.getMessage());
             int status = error.networkResponse == null ? 500 : error.networkResponse.statusCode;
             responseListener.getResult(null, status, error);
         });
@@ -129,10 +128,10 @@ public class NetworkManager {
             try {
                 responseListener.getResult(Serializers.toCourseResults(response), 200, null);
             } catch (JSONException | IOException e) {
-                Log.e(TAG, "Error parsing response", e);
+                //                Log.e(TAG, "Error parsing response", e);
             }
         }, error -> {
-            Log.e(TAG, error.getMessage());
+            //            Log.e(TAG, error.getMessage());
             int status = error.networkResponse == null ? 500 : error.networkResponse.statusCode;
             responseListener.getResult(null, status, error);
         });

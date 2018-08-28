@@ -1,7 +1,5 @@
 package me.jlurena.ritscheduler.networking;
 
-import android.util.Log;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.json.JSONArray;
@@ -46,7 +44,7 @@ class Serializers {
             json.put("term", term);
             json.put("career", career);
         } catch (JSONException e) {
-            Log.e("Serializers", "Error creating JSON", e);
+            //            Log.e("Serializers", "Error creating JSON", e);
         }
         return json;
     }

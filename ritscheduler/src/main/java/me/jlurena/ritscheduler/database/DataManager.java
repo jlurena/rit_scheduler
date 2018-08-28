@@ -1,7 +1,6 @@
 package me.jlurena.ritscheduler.database;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.DataSource;
@@ -46,7 +45,7 @@ public class DataManager {
         try {
             this.database = new Database(DB_NAME, config);
         } catch (CouchbaseLiteException e) {
-            Log.e(TAG, "Could not create database", e);
+            //            Log.e(TAG, "Could not create database", e);
         }
     }
 
