@@ -216,11 +216,6 @@ public class CourseCardFragment extends Fragment {
         } else {
             tv.setText(Html.fromHtml(professors, Html.FROM_HTML_MODE_COMPACT));
         }
-        if (Build.VERSION.SDK_INT > 22) {
-            tv.setLinkTextColor(getResources().getColor(android.R.color.holo_blue_dark, null));
-        } else {
-            tv.setLinkTextColor(getResources().getColor(android.R.color.holo_blue_dark));
-        }
 
         tv.setMovementMethod(LinkMovementMethod.getInstance());
         this.mCourseDetailsLayout.addView(tv);
@@ -277,7 +272,7 @@ public class CourseCardFragment extends Fragment {
             args.putBoolean(ARG_PARAM2, isSavedCourse);
             fragment.setArguments(args);
         } catch (JsonProcessingException e) {
-            Utils.alertDialogFactory(context, R.string.error, context.getString(R.string.generic_error)).show();
+            Utils.genericAlertDialogError(context, e);
         }
         return fragment;
     }
@@ -302,7 +297,7 @@ public class CourseCardFragment extends Fragment {
                     this.currentColor = this.course.getColor();
                 }
             } catch (IOException e) {
-                Utils.alertDialogFactory(getActivity(), R.string.error, getString(R.string.generic_error)).show();
+                Utils.genericAlertDialogError(getActivity(), e);
             }
         }
     }
@@ -317,7 +312,7 @@ public class CourseCardFragment extends Fragment {
                 this.isSavedCourse = getArguments().getBoolean(ARG_PARAM2);
             }
         } catch (IOException e) {
-            Utils.alertDialogFactory(getActivity(), R.string.error, getString(R.string.generic_error)).show();
+            Utils.genericAlertDialogError(getActivity(), e);
         }
 
         this.currentColor = this.course.getColor() != 0 ? this.course.getColor() : getResources().getColor(R.color.color_primary);

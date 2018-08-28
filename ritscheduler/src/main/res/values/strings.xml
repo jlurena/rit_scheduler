@@ -13,8 +13,6 @@
     <!--Errors-->
     <string name="error">Error</string>
     <string name="no_results_error">No results found.</string>
-    <string name="generic_error">Something weird happened. Try again later.</string>
-    <string name="save_error">Unable to save this course. Please try again later.</string>
     <string name="error_retrieving_saved_courses">Error retrieving saved courses.</string>
     <string name="confirm">Confirm</string>
     <string name="delete_course_error">Unable to delete this course. Please try again later.</string>
@@ -83,6 +81,7 @@
     <string name="open_sourced_at">Open Sourced At</string>
     <string name="report_bugs_features">Report bugs and new features:\n<a href="eljean@live.com">eljean@live.com</a></string>
     <string name="close">Close</string>
+    <string name="generic_error">Something weird happened. Please try again later. If the issue persists, please submit a report</string>
 
     <!-- TODO: Remove or change this placeholder text -->
 

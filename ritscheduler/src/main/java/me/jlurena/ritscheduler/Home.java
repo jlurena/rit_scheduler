@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
@@ -51,6 +52,7 @@ import me.jlurena.revolvingweekview.WeekViewEvent;
 import me.jlurena.ritscheduler.database.DataManager;
 import me.jlurena.ritscheduler.fragments.CourseCardFragment;
 import me.jlurena.ritscheduler.fragments.SettingsFragment;
+import me.jlurena.ritscheduler.homescreen.WidgetProvider;
 import me.jlurena.ritscheduler.models.Course;
 import me.jlurena.ritscheduler.models.Term;
 import me.jlurena.ritscheduler.networking.NetworkManager;
@@ -163,13 +165,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                                     mBoomMenuButton.reboom();
                                 }
                             } else {
-                                AlertDialog.Builder dialog = Utils.alertDialogFactory(Home.this, R.string.error, null);
-
-                                if (error != null) {
-                                    dialog.setMessage(error.getMessage()).show();
-                                } else {
-                                    dialog.setMessage(R.string.generic_error).show();
-                                }
+                                Utils.genericAlertDialogError(Home.this, error);
                                 queryResult.clear();
                             }
                             image.clearAnimation();
@@ -201,7 +197,12 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
 
             if (courses != null && !courses.isEmpty()) {
                 for (Course course : courses) {
-                    events.addAll(course.toWeekViewEvents());
+                    try {
+                        events.addAll(course.toWeekViewEvents());
+                    } catch (Exception e) {
+                        AlertDialog.Builder dialogBuilder = Utils.alertDialogFactory(Home.this, R.string.error, null);
+                        Utils.genericAlertDialogError(Home.this, e);
+                    }
                 }
             }
 
@@ -509,10 +510,10 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
             dataManager.addModel(course);
             courses.add(course);
             mWeekView.notifyDatasetChanged();
+            sendBroadcast(new Intent(WidgetProvider.ACTION_REFRESH));
             removeFragment(course.getModelId());
-        } catch (CouchbaseLiteException e) {
-            Utils.alertDialogFactory(this, R.string.error, getString(R.string.save_error)).show();
-        } finally {
+        } catch (Exception e) {
+            Utils.genericAlertDialogError(this, e);
             enableBackground();
             queryResult.clear();
         }

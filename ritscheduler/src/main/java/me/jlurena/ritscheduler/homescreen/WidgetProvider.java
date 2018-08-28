@@ -22,7 +22,7 @@ import me.jlurena.ritscheduler.R;
  */
 public class WidgetProvider extends AppWidgetProvider {
 
-    static final String ACTION_REFRESH = "me.jlurena.ritscheduler.action.ACTION_REFRESH";
+    public static final String ACTION_REFRESH = "me.jlurena.ritscheduler.action.ACTION_REFRESH";
     static final String ACTION_NEXT = "me.jlurena.ritscheduler.action.ACTION_NEXT";
     static final String ACTION_PREVIOUS = "me.jlurena.ritscheduler.action.ACTION_PREVIOUS";
     static final String KEY_SIZE_CHANGE = "size_change";

@@ -5,6 +5,7 @@
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryDark">@color/color_primary_dark</item>
         <item name="colorAccent">@color/color_accent</item>
+        <item name="android:textColorLink">@android:color/holo_blue_dark</item>
         <!--Spinner Items-->
         <item name="android:spinnerItemStyle" parent="Base.Widget.AppCompat.Spinner.Underlined">
             @style/spinnerItemStyle

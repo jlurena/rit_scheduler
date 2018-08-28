@@ -1,6 +1,7 @@
 package me.jlurena.ritscheduler.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.threeten.bp.DayOfWeek;
@@ -21,6 +22,7 @@ import me.jlurena.ritscheduler.utils.Utils;
  */
 
 @SuppressWarnings("ConstantConditions")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Meeting {
 
     private String[] days;
@@ -204,7 +206,8 @@ public class Meeting {
     public List<WeekViewEvent> toWeekViewEvents() {
 
 
-        int length = this.days.length;
+        int daysLen = this.daysFull.length;
+        int timesLen = this.times.length;
         // Days length will always equal the number of times meeting takes place
         ArrayList<WeekViewEvent> events = new ArrayList<>();
 
@@ -214,11 +217,13 @@ public class Meeting {
         DayTime start, end;
         WeekViewEvent event;
         String[] locations = getLocationsShortForEachDayTime();
-        for (int i = 0; i < length; i++) {
+        for (int i = 0, j = 0; i < daysLen; i++, j++) {
             String[] days = this.daysFull[i].split(" ");
-
+            if (j >= timesLen) {
+                j--;
+            }
             // Parse hours
-            splitTime = this.times[i].split(" - ");
+            splitTime = this.times[j].split(" - ");
             startTime = LocalTime.parse(splitTime[0], Utils.STANDARD_TIME_FORMAT);
             endTime = LocalTime.parse(splitTime[1], Utils.STANDARD_TIME_FORMAT);
 

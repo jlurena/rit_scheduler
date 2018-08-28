@@ -21,7 +21,6 @@ import org.threeten.bp.format.TextStyle;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -37,8 +36,8 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
 
     private final Context context;
     private final DataManager dataManager;
-    private final HashSet<Course> courses;
     private final SettingsManager settings;
+    private List<Course> courses;
     private WeekView weekView;
     private Calendar currentDay;
     private int width;
@@ -47,7 +46,6 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
         this.context = context;
         this.dataManager = DataManager.getInstance(context);
         this.currentDay = Calendar.getInstance();
-        this.courses = new HashSet<>();
         this.width = Util.dp2px(110);
 
         IntentFilter filter = new IntentFilter();
@@ -61,7 +59,7 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
 
     private void updateCourseList(@Nullable String action) {
         try {
-            dataManager.getModels(Course.TYPE, Course.class, (DataManager.DocumentParser<List<Course>>) courses::addAll);
+            dataManager.getModels(Course.TYPE, Course.class, (DataManager.DocumentParser<List<Course>>) models -> courses = models);
 
         } catch (CouchbaseLiteException e) {
             // Can't really do anything but crash gracefully
