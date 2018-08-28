@@ -100,7 +100,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
 
         mBoomMenuButton.addBuilder(new HamButton.Builder()
                 .normalImageRes(android.R.drawable.ic_menu_search)
-                .addView(R.layout.view_search_dialogue)
+                .addView(R.layout.view_search_dialog)
                 .normalColorRes(R.color.dark_gray)
                 .highlightedColorRes(R.color.color_accent)
                 .buttonHeight(Util.dp2px(110)));
@@ -374,7 +374,6 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                         public void getResult(List<String> terms, int errorCode, VolleyError error) {
                             autoCompleteAdapter.clear();
                             autoCompleteAdapter.addAll(terms);
-                            mSearchCourse.setThreshold(4);
                             autoCompleteAdapter.getFilter().filter(s.toString(), null);
                         }
 
