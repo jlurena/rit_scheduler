@@ -36,7 +36,6 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
 
     private final Context context;
     private final DataManager dataManager;
-    private final SettingsManager settings;
     private List<Course> courses;
     private WeekView weekView;
     private Calendar currentDay;
@@ -53,7 +52,6 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
         filter.addAction(WidgetProvider.ACTION_NEXT);
         filter.addAction(WidgetProvider.ACTION_REFRESH);
         context.registerReceiver(this, filter);
-        this.settings = SettingsManager.getInstance(context);
         updateCourseList(null);
     }
 
@@ -123,7 +121,7 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
                     break;
             }
         }
-
+        SettingsManager settings = SettingsManager.getInstance(context);
         int height = (weekView.getMaxTime() - weekView.getMinTime()) * Util.dp2px(50);
         int day = currentDay.get(Calendar.DAY_OF_WEEK);
         day = day == 1 ? 7 : day - 1;
