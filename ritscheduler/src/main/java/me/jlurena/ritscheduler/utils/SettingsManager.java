@@ -24,8 +24,24 @@ public class SettingsManager {
         return settingsManager;
     }
 
-    public Settings getSettings() {
-        return settings;
+    public int getFirstVisibleDay() {
+        return settings.getFirstVisibleDay();
+    }
+
+    public int getMaxHour() {
+        return settings.getMaxHour();
+    }
+
+    public int getMinHour() {
+        return settings.getMinHour();
+    }
+
+    public int getNumberOfVisibleDays() {
+        return settings.getNumberOfVisibleDays();
+    }
+
+    public boolean isAutoLimitTime() {
+        return settings.isAutoLimitTime();
     }
 
     public void updateSettings(Context context) {

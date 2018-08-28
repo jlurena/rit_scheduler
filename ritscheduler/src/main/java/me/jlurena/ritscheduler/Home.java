@@ -52,7 +52,6 @@ import me.jlurena.ritscheduler.database.DataManager;
 import me.jlurena.ritscheduler.fragments.CourseCardFragment;
 import me.jlurena.ritscheduler.fragments.SettingsFragment;
 import me.jlurena.ritscheduler.models.Course;
-import me.jlurena.ritscheduler.models.Settings;
 import me.jlurena.ritscheduler.models.Term;
 import me.jlurena.ritscheduler.networking.NetworkManager;
 import me.jlurena.ritscheduler.networking.ResponseListener;
@@ -224,7 +223,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
     }
 
     private void initCalendarSettings() {
-        Settings settings = SettingsManager.getInstance(this).getSettings();
+        SettingsManager settings = SettingsManager.getInstance(this);
         int firstVisibleDay = settings.getFirstVisibleDay();
         if (firstVisibleDay == 0) {
             this.mWeekView.goToToday();

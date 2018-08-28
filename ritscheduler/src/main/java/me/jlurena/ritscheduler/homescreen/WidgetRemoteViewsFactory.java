@@ -30,7 +30,6 @@ import me.jlurena.revolvingweekview.WeekViewEvent;
 import me.jlurena.ritscheduler.R;
 import me.jlurena.ritscheduler.database.DataManager;
 import me.jlurena.ritscheduler.models.Course;
-import me.jlurena.ritscheduler.models.Settings;
 import me.jlurena.ritscheduler.utils.SettingsManager;
 
 public class WidgetRemoteViewsFactory extends BroadcastReceiver implements RemoteViewsService.RemoteViewsFactory {
@@ -42,7 +41,7 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
     private WeekView weekView;
     private Calendar currentDay;
     private int width;
-    private Settings settings;
+    private SettingsManager settings;
 
     WidgetRemoteViewsFactory(Context context) {
         this.context = context;
@@ -56,7 +55,7 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
         filter.addAction(WidgetProvider.ACTION_NEXT);
         filter.addAction(WidgetProvider.ACTION_REFRESH);
         context.registerReceiver(this, filter);
-        this.settings = SettingsManager.getInstance(context).getSettings();
+        this.settings = SettingsManager.getInstance(context);
         updateCourseList(null);
     }
 
