@@ -10,12 +10,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.RemoteViews;
 
-import com.nightonke.boommenu.Util;
-
 import java.util.Calendar;
 
 import me.jlurena.ritscheduler.Home;
 import me.jlurena.ritscheduler.R;
+import me.jlurena.ritscheduler.utils.Utils;
 
 /**
  * Implementation of App Widget functionality.
@@ -82,7 +81,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
-        int width = Util.dp2px(newOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH));
+        int width = Utils.dpToPixel(context, (float) newOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH));
         Intent broadcastIntent = new Intent(ACTION_REFRESH);
         broadcastIntent.putExtra(KEY_SIZE_CHANGE, width);
         context.sendBroadcast(broadcastIntent);

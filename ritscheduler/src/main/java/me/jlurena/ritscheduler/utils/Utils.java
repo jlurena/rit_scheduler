@@ -16,6 +16,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.view.ViewGroupOverlay;
 
@@ -58,6 +59,10 @@ public class Utils {
         overlay.clear();
     }
 
+    public static int dpToPixel(Context context, float dp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
+    }
+
     public static void genericAlertDialogError(Context context, Exception exc) {
         String body = "Phone: " + Build.MODEL +
                 "\nBuild Version: " + Build.VERSION.SDK_INT;
@@ -90,12 +95,12 @@ public class Utils {
                 .show();
     }
 
-    public static RippleDrawable getPressedColorRippleDrawable(@ColorInt int pressedColor, Drawable drawable) {
-        return new RippleDrawable(new ColorStateList(new int[][]{new int[]{}}, new int[]{pressedColor}), drawable, null);
-    }
-
     public static RippleDrawable getPressedColorRippleDrawable(@ColorInt int pressedColor) {
         return new RippleDrawable(new ColorStateList(new int[][]{new int[]{}}, new int[]{pressedColor}), new ColorDrawable(pressedColor), null);
+    }
+
+    public static RippleDrawable getPressedColorRippleDrawable(@ColorInt int pressedColor, Drawable drawable) {
+        return new RippleDrawable(new ColorStateList(new int[][]{new int[]{}}, new int[]{pressedColor}), drawable, null);
     }
 
 }

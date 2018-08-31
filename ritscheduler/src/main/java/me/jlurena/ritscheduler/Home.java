@@ -478,6 +478,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         RateThisApp.showRateDialogIfNeeded(this);
 
         this.courses = new HashSet<>();
+        this.queryResult = new ArrayList<>();
         this.networkManager = NetworkManager.getInstance(this);
         this.dataManager = DataManager.getInstance(this);
         this.autoCompleteAdapter = new ArrayAdapter<>(this, R.layout.auto_complete_dropdown_item);
