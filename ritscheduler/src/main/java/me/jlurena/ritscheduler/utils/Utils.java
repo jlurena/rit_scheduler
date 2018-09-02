@@ -12,6 +12,7 @@ import android.graphics.drawable.RippleDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.ColorInt;
+import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -52,6 +53,15 @@ public class Utils {
 
         ViewGroupOverlay overlay = parent.getOverlay();
         overlay.add(dim);
+    }
+
+    public static int blendARGB(@ColorInt int color1, @ColorInt int color2, @FloatRange(from = 0.0D, to = 1.0D) float ratio) {
+        float inverseRatio = 1.0F - ratio;
+        float a = (float) Color.alpha(color1) * inverseRatio + (float) Color.alpha(color2) * ratio;
+        float r = (float) Color.red(color1) * inverseRatio + (float) Color.red(color2) * ratio;
+        float g = (float) Color.green(color1) * inverseRatio + (float) Color.green(color2) * ratio;
+        float b = (float) Color.blue(color1) * inverseRatio + (float) Color.blue(color2) * ratio;
+        return Color.argb((int) a, (int) r, (int) g, (int) b);
     }
 
     public static void clearDim(@NonNull ViewGroup parent) {
@@ -95,12 +105,12 @@ public class Utils {
                 .show();
     }
 
-    public static RippleDrawable getPressedColorRippleDrawable(@ColorInt int pressedColor) {
-        return new RippleDrawable(new ColorStateList(new int[][]{new int[]{}}, new int[]{pressedColor}), new ColorDrawable(pressedColor), null);
-    }
-
     public static RippleDrawable getPressedColorRippleDrawable(@ColorInt int pressedColor, Drawable drawable) {
         return new RippleDrawable(new ColorStateList(new int[][]{new int[]{}}, new int[]{pressedColor}), drawable, null);
+    }
+
+    public static RippleDrawable getPressedColorRippleDrawable(@ColorInt int pressedColor) {
+        return new RippleDrawable(new ColorStateList(new int[][]{new int[]{}}, new int[]{pressedColor}), new ColorDrawable(pressedColor), null);
     }
 
 }

@@ -120,7 +120,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                     imm.hideSoftInputFromWindow(mSearchCourse.getWindowToken(), 0);
                 }
 
-                if (queryResult != null && !queryResult.isEmpty()) {
+                if (!queryResult.isEmpty()) {
                     showCourseCard(queryResult.get(0), false);
                     if (queryResult.size() > 1) {
                         mNext.setVisibility(View.VISIBLE);
@@ -225,23 +225,26 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
 
     private void initCalendarSettings() {
         SettingsManager settings = SettingsManager.getInstance(this);
-        int firstVisibleDay = settings.getFirstVisibleDay();
-        if (firstVisibleDay == 0) {
-            this.mWeekView.goToToday();
-        } else {
-            this.mWeekView.setFirstDayOfWeek(firstVisibleDay);
-            this.mWeekView.goToDay(firstVisibleDay);
-        }
+        if (settings.didPreferencesUpdate()) {
+            int firstVisibleDay = settings.getFirstVisibleDay();
+            if (firstVisibleDay == 0) {
+                this.mWeekView.goToToday();
+            } else {
+                this.mWeekView.setFirstDayOfWeek(firstVisibleDay);
+                this.mWeekView.goToDay(firstVisibleDay);
+            }
 
-        this.mWeekView.setNumberOfVisibleDays(settings.getNumberOfVisibleDays());
-        this.mWeekView.setLimitTime(settings.getMinHour(), settings.getMaxHour() + 1); // Let max hour be visible
-        this.mWeekView.setAutoLimitTime(settings.isAutoLimitTime());
+            this.mWeekView.setNumberOfVisibleDays(settings.getNumberOfVisibleDays());
+            this.mWeekView.setLimitTime(settings.getMinHour(), settings.getMaxHour() + 1); // Let max hour be visible
+            this.mWeekView.setAutoLimitTime(settings.isAutoLimitTime());
+
+        }
 
     }
 
     private void initNextPrevButtons() {
         this.mNext.setOnClickListener(v -> {
-            if (isFragmentInflated && queryResult != null && !queryResult.isEmpty()) {
+            if (isFragmentInflated && !queryResult.isEmpty()) {
                 if (queryResult.size() - 1 > currentCoursePosition) {
                     showCourseCard(queryResult.get(++currentCoursePosition), false);
                     mPrev.setVisibility(View.VISIBLE);
@@ -254,7 +257,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         });
 
         this.mPrev.setOnClickListener(v -> {
-            if (isFragmentInflated && queryResult != null && !queryResult.isEmpty()) {
+            if (isFragmentInflated && !queryResult.isEmpty()) {
                 if (currentCoursePosition > 0) {
                     showCourseCard(queryResult.get(--currentCoursePosition), false);
                     mNext.setVisibility(View.VISIBLE);

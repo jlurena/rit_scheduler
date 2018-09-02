@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.graphics.ColorUtils;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.Gravity;
@@ -159,12 +158,12 @@ public class CourseCardFragment extends Fragment {
 
             addButtonDrawable.setTint(color);
             addButtonOverlayDrawable.setTint(color);
-            mAddCourseButton.setBackground(Utils.getPressedColorRippleDrawable(ColorUtils.blendARGB(color, Color.BLACK, 0.2F),
+            mAddCourseButton.setBackground(Utils.getPressedColorRippleDrawable(Utils.blendARGB(color, Color.BLACK, 0.2F),
                     addButtonDrawable));
             mAddCourseButtonUnderlay.setBackground(addButtonOverlayDrawable);
 
             deleteButtonDrawable.setTint(color);
-            mDeleteCourseButton.setBackground(Utils.getPressedColorRippleDrawable(ColorUtils.blendARGB(color, Color.BLACK, 0.2F),
+            mDeleteCourseButton.setBackground(Utils.getPressedColorRippleDrawable(Utils.blendARGB(color, Color.BLACK, 0.2F),
                     deleteButtonDrawable));
 
             course.setColor(currentColor);
@@ -176,9 +175,9 @@ public class CourseCardFragment extends Fragment {
             mCourseHeader.setBackground(headerDrawable);
 
             addButtonDrawable.setTint(currentColor);
-            mAddCourseButton.setBackground(Utils.getPressedColorRippleDrawable(ColorUtils.blendARGB(currentColor, Color.BLACK,
+            mAddCourseButton.setBackground(Utils.getPressedColorRippleDrawable(Utils.blendARGB(currentColor, Color.BLACK,
                     0.2F), addButtonDrawable));
-            mDeleteCourseButton.setBackground(Utils.getPressedColorRippleDrawable(ColorUtils.blendARGB(currentColor, Color.BLACK,
+            mDeleteCourseButton.setBackground(Utils.getPressedColorRippleDrawable(Utils.blendARGB(currentColor, Color.BLACK,
                     0.2F), addButtonDrawable));
             mColorSlider.setColorBarPosition(mColorSlider.getColorIndexPosition(currentColor));
         });

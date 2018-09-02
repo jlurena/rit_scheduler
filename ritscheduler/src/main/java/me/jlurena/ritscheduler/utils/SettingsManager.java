@@ -14,12 +14,14 @@ public class SettingsManager {
 
     private static SettingsManager settingsManager;
     private Settings settings;
+    private boolean preferencesUpdated;
 
     public static SettingsManager getInstance(Context context) {
         if (settingsManager == null) {
             settingsManager = new SettingsManager();
             settingsManager.settings = new Settings();
             settingsManager.updateSettings(context);
+            settingsManager.preferencesUpdated = !settingsManager.preferencesUpdated;
         }
         return settingsManager;
     }
@@ -44,6 +46,14 @@ public class SettingsManager {
         return settings.isAutoLimitTime();
     }
 
+    public boolean didPreferencesUpdate() {
+        return preferencesUpdated;
+    }
+
+    public void resetPreferenceUpdated() {
+        preferencesUpdated = false;
+    }
+
     public void updateSettings(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean autoLimitTime = prefs.getBoolean(context.getString(R.string.auto_limit_time_key), false);
@@ -54,6 +64,7 @@ public class SettingsManager {
                 .setNumberOfVisibleDays(numVisibleDays)
                 .setTimeRange(timeRange)
                 .setFirstVisibleDay(firstVisibleDay);
+        settingsManager.preferencesUpdated = !settingsManager.preferencesUpdated;
     }
 
 }

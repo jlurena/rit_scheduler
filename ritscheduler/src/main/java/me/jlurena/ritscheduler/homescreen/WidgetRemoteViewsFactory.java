@@ -31,6 +31,10 @@ import me.jlurena.ritscheduler.database.DataManager;
 import me.jlurena.ritscheduler.models.Course;
 import me.jlurena.ritscheduler.utils.SettingsManager;
 
+import static me.jlurena.ritscheduler.homescreen.WidgetProvider.ACTION_NEXT;
+import static me.jlurena.ritscheduler.homescreen.WidgetProvider.ACTION_PREVIOUS;
+import static me.jlurena.ritscheduler.homescreen.WidgetProvider.ACTION_REFRESH;
+
 public class WidgetRemoteViewsFactory extends BroadcastReceiver implements RemoteViewsService.RemoteViewsFactory {
 
 
@@ -45,23 +49,16 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
         this.context = context;
         this.dataManager = DataManager.getInstance(context);
         this.currentDay = Calendar.getInstance();
-        this.width = Util.dp2px(110);
 
         IntentFilter filter = new IntentFilter();
-        filter.addAction(WidgetProvider.ACTION_PREVIOUS);
-        filter.addAction(WidgetProvider.ACTION_NEXT);
-        filter.addAction(WidgetProvider.ACTION_REFRESH);
+        filter.addAction(ACTION_PREVIOUS);
+        filter.addAction(ACTION_NEXT);
+        filter.addAction(ACTION_REFRESH);
         context.registerReceiver(this, filter);
         updateCourseList(null);
     }
 
     private void updateCourseList(@Nullable String action) {
-        try {
-            dataManager.getModels(Course.TYPE, Course.class, (DataManager.DocumentParser<List<Course>>) models -> courses = models);
-
-        } catch (CouchbaseLiteException e) {
-            // Can't really do anything but crash gracefully
-        }
         // Only initialize once. Gets called many times.
         if (this.weekView == null) {
             this.weekView = new WeekView(context);
@@ -109,13 +106,13 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
 
         if (action != null) {
             switch (action) {
-                case WidgetProvider.ACTION_NEXT:
+                case ACTION_NEXT:
                     currentDay.add(Calendar.DAY_OF_YEAR, 1);
                     break;
-                case WidgetProvider.ACTION_PREVIOUS:
+                case ACTION_PREVIOUS:
                     currentDay.add(Calendar.DAY_OF_YEAR, -1);
                     break;
-                case WidgetProvider.ACTION_REFRESH:
+                case ACTION_REFRESH:
                 default:
                     this.currentDay = Calendar.getInstance();
                     break;
@@ -188,8 +185,14 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
     @Override
     public void onDataSetChanged() {
         final long identityToken = Binder.clearCallingIdentity();
-        updateCourseList(null);
-        Binder.restoreCallingIdentity(identityToken);
+        try {
+            dataManager.getModels(Course.TYPE, Course.class, (DataManager.DocumentParser<List<Course>>) models -> courses = models);
+            updateCourseList(null);
+        } catch (CouchbaseLiteException e) {
+            // Can't really do anything but crash gracefully
+        } finally {
+            Binder.restoreCallingIdentity(identityToken);
+        }
     }
 
     @Override
@@ -204,11 +207,7 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
         if (extras != null && extras.containsKey(WidgetProvider.KEY_SIZE_CHANGE)) {
             this.width = extras.getInt(WidgetProvider.KEY_SIZE_CHANGE);
             updateCourseList(null);
-        } else if (action != null &&
-                (action.equals(WidgetProvider.ACTION_REFRESH)
-                        || action.equals(WidgetProvider.ACTION_NEXT)
-                        || action.equals(WidgetProvider.ACTION_PREVIOUS)
-                )) {
+        } else if (action != null && (action.equals(ACTION_REFRESH) || action.equals(ACTION_NEXT) || action.equals(ACTION_PREVIOUS))) {
             updateCourseList(action);
         }
     }

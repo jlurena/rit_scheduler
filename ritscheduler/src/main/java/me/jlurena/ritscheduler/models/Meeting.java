@@ -99,16 +99,14 @@ public class Meeting {
     public String getInstructorsNameWithEmail() {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < instructors.length; i++) {
-            try {
-                builder.append("<a href=\"mailto:");
-                builder.append(instructorEmails[i]).append("\">");
-            } catch (ArrayIndexOutOfBoundsException e) {
-                builder.append("\">");
-            } finally {
-                builder.append(instructors[i]).append("</a>");
-                if (i != instructors.length - 1) {
-                    builder.append(", ");
-                }
+            builder.append("<a href=\"mailto:");
+            if (i < instructorEmails.length) {
+                builder.append(instructorEmails[i]);
+            }
+            builder.append("\">");
+            builder.append(instructors[i]).append("</a>");
+            if (i != instructors.length - 1) {
+                builder.append(", ");
             }
         }
 
