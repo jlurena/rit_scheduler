@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
@@ -153,9 +154,8 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                     networkManager.queryCourses(query, selectedTerm.getTermCode(), new ResponseListener<List<Course>>() {
 
                         @Override
-                        public void getResult(List<Course> courses, int errorCode, VolleyError error) {
+                        public void getResult(@NonNull List<Course> courses, int errorCode, VolleyError error) {
                             if (errorCode == 200) {
-                                // Display error if size is not 1
                                 if (courses.isEmpty()) {
                                     Utils.alertDialogFactory(Home.this, R.string.error, null).setMessage(R.string.no_results_error).show();
                                     queryResult.clear();
@@ -373,7 +373,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                 if (s.length() >= 4) {
                     networkManager.queryAutoComplete(s.toString(), new ResponseListener<List<String>>() {
                         @Override
-                        public void getResult(List<String> terms, int errorCode, VolleyError error) {
+                        public void getResult(@NonNull List<String> terms, int errorCode, VolleyError error) {
                             autoCompleteAdapter.clear();
                             autoCompleteAdapter.addAll(terms);
                             autoCompleteAdapter.getFilter().filter(s.toString(), null);
