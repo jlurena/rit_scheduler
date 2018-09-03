@@ -11,6 +11,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -514,7 +515,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
             dataManager.addModel(course);
             courses.add(course);
             mWeekView.notifyDatasetChanged();
-            sendBroadcast(new Intent(WidgetProvider.ACTION_REFRESH));
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(WidgetProvider.ACTION_REFRESH));
             removeFragment(course.getModelId());
         } catch (Exception e) {
             Utils.genericAlertDialogError(this, e);

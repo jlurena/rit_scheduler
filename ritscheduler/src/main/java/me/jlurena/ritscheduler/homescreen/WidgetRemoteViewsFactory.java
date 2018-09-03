@@ -9,6 +9,8 @@ import android.graphics.Bitmap;
 import android.os.Binder;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.SparseIntArray;
 import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -34,6 +36,7 @@ import me.jlurena.ritscheduler.utils.SettingsManager;
 import static me.jlurena.ritscheduler.homescreen.WidgetProvider.ACTION_NEXT;
 import static me.jlurena.ritscheduler.homescreen.WidgetProvider.ACTION_PREVIOUS;
 import static me.jlurena.ritscheduler.homescreen.WidgetProvider.ACTION_REFRESH;
+import static me.jlurena.ritscheduler.homescreen.WidgetProvider.KEY_APP_WIDGET_ID;
 
 public class WidgetRemoteViewsFactory extends BroadcastReceiver implements RemoteViewsService.RemoteViewsFactory {
 
@@ -43,18 +46,30 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
     private List<Course> courses;
     private WeekView weekView;
     private Calendar currentDay;
+    private int id;
     private int width;
+    // k = id, v = width
+    static final SparseIntArray idMap = new SparseIntArray();
+    private LocalBroadcastManager localBroadcastManager;
 
-    WidgetRemoteViewsFactory(Context context) {
+    WidgetRemoteViewsFactory(Context context, Intent intent) {
         this.context = context;
         this.dataManager = DataManager.getInstance(context);
         this.currentDay = Calendar.getInstance();
+        try {
+            dataManager.getModels(Course.TYPE, Course.class, (DataManager.DocumentParser<List<Course>>) models -> courses = models);
+        } catch (Exception e) {
+            // Crash gracefully :)
+        }
+        this.id = intent.getIntExtra(KEY_APP_WIDGET_ID, 0);
+        idMap.put(id, 0);
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_PREVIOUS);
         filter.addAction(ACTION_NEXT);
         filter.addAction(ACTION_REFRESH);
-        context.registerReceiver(this, filter);
+        localBroadcastManager = LocalBroadcastManager.getInstance(context);
+        localBroadcastManager.registerReceiver(this, filter);
         updateCourseList(null);
     }
 
@@ -113,6 +128,13 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
                     currentDay.add(Calendar.DAY_OF_YEAR, -1);
                     break;
                 case ACTION_REFRESH:
+                    try {
+                        dataManager.getModels(Course.TYPE, Course.class, (DataManager.DocumentParser<List<Course>>) models -> courses = models);
+                        weekView.notifyDatasetChanged();
+                    } catch (Exception e) {
+                        // Crash gracefully :)
+                    }
+                    break;
                 default:
                     this.currentDay = Calendar.getInstance();
                     break;
@@ -123,7 +145,6 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
         int day = currentDay.get(Calendar.DAY_OF_WEEK);
         day = day == 1 ? 7 : day - 1;
         weekView.goToDay(day);
-        weekView.notifyDatasetChanged();
         weekView.setLimitTime(settings.getMinHour(), settings.getMaxHour() + 1); // View lasthour
 
         if (width <= 500) {
@@ -133,8 +154,8 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
         } else {
             weekView.setNumberOfVisibleDays(3);
         }
-        weekView.measure(this.width, height);
-        weekView.layout(0, 0, this.width, height);
+        weekView.measure(width, height);
+        weekView.layout(0, 0, width, height);
     }
 
     @Override
@@ -154,7 +175,7 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return id;
     }
 
     @Override
@@ -185,30 +206,30 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
     @Override
     public void onDataSetChanged() {
         final long identityToken = Binder.clearCallingIdentity();
-        try {
-            dataManager.getModels(Course.TYPE, Course.class, (DataManager.DocumentParser<List<Course>>) models -> courses = models);
-            updateCourseList(null);
-        } catch (CouchbaseLiteException e) {
-            // Can't really do anything but crash gracefully
-        } finally {
-            Binder.restoreCallingIdentity(identityToken);
-        }
+        updateCourseList(null);
+        Binder.restoreCallingIdentity(identityToken);
+
     }
 
     @Override
     public void onDestroy() {
-        context.unregisterReceiver(this);
+        localBroadcastManager.unregisterReceiver(this);
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         Bundle extras = intent.getExtras();
         String action = intent.getAction();
-        if (extras != null && extras.containsKey(WidgetProvider.KEY_SIZE_CHANGE)) {
-            this.width = extras.getInt(WidgetProvider.KEY_SIZE_CHANGE);
-            updateCourseList(null);
-        } else if (action != null && (action.equals(ACTION_REFRESH) || action.equals(ACTION_NEXT) || action.equals(ACTION_PREVIOUS))) {
-            updateCourseList(action);
+        // Ignore broadcasts not meant for this receiver
+        if (extras != null && extras.getInt(KEY_APP_WIDGET_ID, -1) == this.id) {
+
+            if (extras.containsKey(WidgetProvider.KEY_SIZE_CHANGE)) {
+                this.width = extras.getInt(WidgetProvider.KEY_SIZE_CHANGE);
+                idMap.put(this.id, this.width);
+                updateCourseList(null);
+            } else if (action != null && (action.equals(ACTION_REFRESH) || action.equals(ACTION_NEXT) || action.equals(ACTION_PREVIOUS))) {
+                updateCourseList(action);
+            }
         }
     }
 }

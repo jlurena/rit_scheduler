@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.widget.RemoteViews;
 
 import com.nightonke.boommenu.Util;
@@ -26,7 +27,7 @@ public class WidgetProvider extends AppWidgetProvider {
     static final String ACTION_NEXT = "me.jlurena.ritscheduler.action.ACTION_NEXT";
     static final String ACTION_PREVIOUS = "me.jlurena.ritscheduler.action.ACTION_PREVIOUS";
     static final String KEY_SIZE_CHANGE = "size_change";
-    private static final String KEY_APP_WIDGET_ID = "app_widget_id";
+    static final String KEY_APP_WIDGET_ID = "app_widget_id";
 
     private static PendingIntent getPendingSelfIntent(Context context, String action, int appWidgetId) {
         Intent intent = new Intent(context, WidgetProvider.class);
@@ -59,6 +60,7 @@ public class WidgetProvider extends AppWidgetProvider {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
 
         Intent intent = new Intent(context, WidgetService.class);
+        intent.putExtra(KEY_APP_WIDGET_ID, appWidgetId);
         views.setRemoteAdapter(R.id.widget_calendar_container, intent);
 
         // Buttons on widget click handlers
@@ -83,27 +85,33 @@ public class WidgetProvider extends AppWidgetProvider {
     @Override
     public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
         int width = Util.dp2px(newOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH));
-        Intent broadcastIntent = new Intent(ACTION_REFRESH);
-        broadcastIntent.putExtra(KEY_SIZE_CHANGE, width);
-        context.sendBroadcast(broadcastIntent);
-        updateAppWidget(context, appWidgetManager, appWidgetId);
-        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
+        if (width != WidgetRemoteViewsFactory.idMap.get(appWidgetId)) {
+            Intent broadcastIntent = new Intent(ACTION_REFRESH);
+            broadcastIntent.putExtra(KEY_SIZE_CHANGE, width);
+            broadcastIntent.putExtra(KEY_APP_WIDGET_ID, appWidgetId);
+            LocalBroadcastManager.getInstance(context).sendBroadcast(broadcastIntent);
+            updateAppWidget(context, appWidgetManager, appWidgetId);
+            super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
+        }
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
 
-        if (action != null) {
-            if (action.equals(ACTION_REFRESH) || action.equals(ACTION_NEXT) || action.equals(ACTION_PREVIOUS)) {
-                context.sendBroadcast(new Intent(action));
+        if (action != null && (action.equals(ACTION_REFRESH) || action.equals(ACTION_NEXT) || action.equals(ACTION_PREVIOUS))) {
+            Bundle extra = intent.getExtras();
+            // Update the widget
+            if (extra != null && extra.containsKey(KEY_APP_WIDGET_ID)) {
+                Intent actionIntent = new Intent(action);
+                int id = extra.getInt(KEY_APP_WIDGET_ID);
+                actionIntent.putExtra(KEY_APP_WIDGET_ID, id);
+                LocalBroadcastManager.getInstance(context).sendBroadcast(actionIntent);
+                AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(id, R.id.widget_calendar_container);
             }
+
         }
 
-        Bundle extra = intent.getExtras();
-        if (extra != null && extra.containsKey(KEY_APP_WIDGET_ID)) {
-            updateAppWidget(context, AppWidgetManager.getInstance(context), extra.getInt(KEY_APP_WIDGET_ID));
-        }
         super.onReceive(context, intent);
     }
 
