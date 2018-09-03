@@ -226,20 +226,17 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
 
     private void initCalendarSettings() {
         SettingsManager settings = SettingsManager.getInstance(this);
-        if (settings.didPreferencesUpdate()) {
-            int firstVisibleDay = settings.getFirstVisibleDay();
-            if (firstVisibleDay == 0) {
-                this.mWeekView.goToToday();
-            } else {
-                this.mWeekView.setFirstDayOfWeek(firstVisibleDay);
-                this.mWeekView.goToDay(firstVisibleDay);
-            }
-
-            this.mWeekView.setNumberOfVisibleDays(settings.getNumberOfVisibleDays());
-            this.mWeekView.setLimitTime(settings.getMinHour(), settings.getMaxHour() + 1); // Let max hour be visible
-            this.mWeekView.setAutoLimitTime(settings.isAutoLimitTime());
-
+        int firstVisibleDay = settings.getFirstVisibleDay();
+        if (firstVisibleDay == 0) {
+            this.mWeekView.goToToday();
+        } else {
+            this.mWeekView.setFirstDayOfWeek(firstVisibleDay);
+            this.mWeekView.goToDay(firstVisibleDay);
         }
+
+        this.mWeekView.setNumberOfVisibleDays(settings.getNumberOfVisibleDays());
+        this.mWeekView.setLimitTime(settings.getMinHour(), settings.getMaxHour() + 1); // Let max hour be visible
+        this.mWeekView.setAutoLimitTime(settings.isAutoLimitTime());
 
     }
 
