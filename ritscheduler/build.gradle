@@ -37,7 +37,7 @@ dependencies {
     implementation 'io.github.kobakei:ratethisapp:1.2.0'
     implementation 'com.github.StephenVinouze:MaterialNumberPicker:1.0.5'
     // Couchbase NoSQL DB
-    implementation 'com.couchbase.lite:couchbase-lite-android:2.0.2'
+    implementation 'com.couchbase.lite:couchbase-lite-android:2.1.2'
     // Networking
     implementation 'com.android.volley:volley:1.0.0'
     implementation 'com.fasterxml.jackson.core:jackson-core:2.9.3'
@@ -54,7 +54,7 @@ dependencies {
 
     implementation 'com.jakewharton.threetenabp:threetenabp:1.1.0'
 
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.2.61'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.2.71'
     // Modules
     implementation project(':boommenu')
     // Test Libraries

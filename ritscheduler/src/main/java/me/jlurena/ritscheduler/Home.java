@@ -158,7 +158,6 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                             if (errorCode == 200) {
                                 if (courses.isEmpty()) {
                                     Utils.alertDialogFactory(Home.this, R.string.error, null).setMessage(R.string.no_results_error).show();
-                                    queryResult.clear();
                                 } else {
                                     queryResult = courses;
                                     currentCoursePosition = 0;
@@ -237,6 +236,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         this.mWeekView.setNumberOfVisibleDays(settings.getNumberOfVisibleDays());
         this.mWeekView.setLimitTime(settings.getMinHour(), settings.getMaxHour() + 1); // Let max hour be visible
         this.mWeekView.setAutoLimitTime(settings.isAutoLimitTime());
+        this.mWeekView.notifyDatasetChanged();
 
     }
 
@@ -507,6 +507,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                         .setNeutralButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
                         .show();
                 removeFragment(course.getModelId());
+                queryResult.clear();
                 return;
             }
             dataManager.addModel(course);

@@ -85,14 +85,12 @@ public class WidgetProvider extends AppWidgetProvider {
     @Override
     public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
         int width = Util.dp2px(newOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH));
-        if (width != WidgetRemoteViewsFactory.idMap.get(appWidgetId)) {
-            Intent broadcastIntent = new Intent(ACTION_REFRESH);
-            broadcastIntent.putExtra(KEY_SIZE_CHANGE, width);
-            broadcastIntent.putExtra(KEY_APP_WIDGET_ID, appWidgetId);
-            LocalBroadcastManager.getInstance(context).sendBroadcast(broadcastIntent);
-            updateAppWidget(context, appWidgetManager, appWidgetId);
-            super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
-        }
+        Intent broadcastIntent = new Intent(ACTION_REFRESH);
+        broadcastIntent.putExtra(KEY_SIZE_CHANGE, width);
+        broadcastIntent.putExtra(KEY_APP_WIDGET_ID, appWidgetId);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(broadcastIntent);
+        updateAppWidget(context, appWidgetManager, appWidgetId);
+        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
     }
 
     @Override
@@ -107,7 +105,7 @@ public class WidgetProvider extends AppWidgetProvider {
                 int id = extra.getInt(KEY_APP_WIDGET_ID);
                 actionIntent.putExtra(KEY_APP_WIDGET_ID, id);
                 LocalBroadcastManager.getInstance(context).sendBroadcast(actionIntent);
-                AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(id, R.id.widget_calendar_container);
+                updateAppWidget(context, AppWidgetManager.getInstance(context), id);
             }
 
         }
@@ -117,7 +115,6 @@ public class WidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        // There may be multiple widgets active, so update all of them
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }

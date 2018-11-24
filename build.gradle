@@ -5,16 +5,16 @@ buildscript {
     ext {
         // Compile
         minSdkVersion = 22
-        compileSdkVersion = 27
+        compileSdkVersion = 28
         targetSdkVersion = compileSdkVersion
-        buildToolsVersion = '27.0.3'
+        buildToolsVersion = '28.0.3'
 
         // Versioning
         versionName = "3"
         versionCode = 3
 
         // Support Libraries
-        supportLibraryVersion = '27.1.1'
+        supportLibraryVersion = '28.0.0'
     }
     
     repositories {
@@ -22,7 +22,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath 'com.android.tools.build:gradle:3.2.1'
     }
 }
 

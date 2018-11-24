@@ -10,12 +10,12 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.SparseIntArray;
+import android.util.Log;
 import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
+import android.widget.Toast;
 
-import com.couchbase.lite.CouchbaseLiteException;
 import com.nightonke.boommenu.Util;
 
 import org.threeten.bp.DayOfWeek;
@@ -48,22 +48,19 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
     private Calendar currentDay;
     private int id;
     private int width;
-    // k = id, v = width
-    static final SparseIntArray idMap = new SparseIntArray();
     private LocalBroadcastManager localBroadcastManager;
 
     WidgetRemoteViewsFactory(Context context, Intent intent) {
         this.context = context;
+        this.width = Math.round(context.getResources().getDimension(R.dimen.min_width_appwidget));
         this.dataManager = DataManager.getInstance(context);
         this.currentDay = Calendar.getInstance();
         try {
             dataManager.getModels(Course.TYPE, Course.class, (DataManager.DocumentParser<List<Course>>) models -> courses = models);
         } catch (Exception e) {
-            // Crash gracefully :)
+            Toast.makeText(context, "Error loading courses.\nPlease remove widget and try again.", Toast.LENGTH_SHORT).show();
         }
         this.id = intent.getIntExtra(KEY_APP_WIDGET_ID, 0);
-        idMap.put(id, 0);
-
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_PREVIOUS);
         filter.addAction(ACTION_NEXT);
@@ -111,6 +108,7 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
                 }
             });
             weekView.setNumberOfVisibleDays(1);
+            weekView.setHeaderColumnPadding(0);
             weekView.setDayBackgroundColor(resources.getColor(R.color.calendar_day_background_color));
             weekView.setEventTextColor(resources.getColor(android.R.color.white));
             weekView.setHeaderRowBackgroundColor(resources.getColor(R.color.color_accent));
@@ -132,7 +130,7 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
                         dataManager.getModels(Course.TYPE, Course.class, (DataManager.DocumentParser<List<Course>>) models -> courses = models);
                         weekView.notifyDatasetChanged();
                     } catch (Exception e) {
-                        // Crash gracefully :)
+                        Toast.makeText(context, "Error updating widget.\nPlease remove widget and try again.", Toast.LENGTH_SHORT).show();
                     }
                     break;
                 default:
@@ -156,6 +154,7 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
         }
         weekView.measure(width, height);
         weekView.layout(0, 0, width, height);
+
     }
 
     @Override
@@ -225,7 +224,6 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
 
             if (extras.containsKey(WidgetProvider.KEY_SIZE_CHANGE)) {
                 this.width = extras.getInt(WidgetProvider.KEY_SIZE_CHANGE);
-                idMap.put(this.id, this.width);
                 updateCourseList(null);
             } else if (action != null && (action.equals(ACTION_REFRESH) || action.equals(ACTION_NEXT) || action.equals(ACTION_PREVIOUS))) {
                 updateCourseList(action);

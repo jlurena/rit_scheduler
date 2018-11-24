@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory android:title="@string/calendar_settings_title">
         <SwitchPreference
             android:key="@string/auto_limit_time_key"
             android:summary="@string/auto_limit_summary"
-            android:title="@string/auto_limit_time" />
+            android:title="@string/auto_limit_time"
+            app:iconSpaceReserved="false" />
 
         <ListPreference
             android:defaultValue="0"
@@ -13,14 +15,16 @@
             android:entryValues="@array/first_visible_day_values"
             android:key="@string/first_visible_day_key"
             android:summary="@string/first_visible_day_summary"
-            android:title="@string/first_visible_day_title" />
+            android:title="@string/first_visible_day_title"
+            app:iconSpaceReserved="false" />
 
 
         <me.jlurena.ritscheduler.widgets.NumberPreference
             style="@style/AppPreference.DialogPreference"
             android:dialogTitle="@string/num_of_visible_days_title"
             android:key="@string/num_visible_days_key"
-            android:title="@string/num_of_visible_days_title" />
+            android:title="@string/num_of_visible_days_title"
+            app:iconSpaceReserved="false" />
 
         <me.jlurena.ritscheduler.widgets.TimePreference
             style="@style/AppPreference.DialogPreference"
@@ -28,7 +32,8 @@
             android:dialogTitle="@string/calendar_hours_title"
             android:key="@string/hour_range_key"
             android:summary="@string/calendar_hours_summary"
-            android:title="@string/calendar_hours_title" />
+            android:title="@string/calendar_hours_title"
+            app:iconSpaceReserved="false" />
 
     </PreferenceCategory>
 
@@ -37,6 +42,7 @@
         <Preference
             android:key="@string/about_key"
             android:summary="@string/about_summary"
-            android:title="@string/about_title" />
+            android:title="@string/about_title"
+            app:iconSpaceReserved="false" />
     </PreferenceCategory>
 </android.support.v7.preference.PreferenceScreen>
