@@ -40,8 +40,23 @@
         <item name="android:textAlignment">center</item>
     </style>
 
+    <!-- Style for Preference Screen-->
     <style name="preferenceTheme" parent="@style/PreferenceThemeOverlay.v14.Material">
         <item name="android:background">@drawable/settings_dialog_bg</item>
+        <item name="preferenceCategoryStyle">@style/PreferenceCategory</item>
+    </style>
+
+    <!-- Style for Preference Category-->
+    <style name="PreferenceCategory" parent="@style/Preference.Category">
+        <item name="android:layout">@layout/settings_text</item>
+    </style>
+
+    <!-- Style for Preference Category title-->
+    <style name="PreferenceCategoryText" parent="@android:style/Widget.TextView">
+        <item name="android:textColor">@color/color_primary</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:padding">10dp</item>
     </style>
 
     <!-- Style for an Preference Entry -->

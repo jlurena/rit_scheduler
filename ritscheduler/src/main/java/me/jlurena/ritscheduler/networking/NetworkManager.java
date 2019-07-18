@@ -12,6 +12,7 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -101,7 +102,7 @@ public class NetworkManager {
         }, error -> {
             //            Log.e(TAG, error.getMessage());
             int status = error.networkResponse == null ? 500 : error.networkResponse.statusCode;
-            responseListener.getResult(null, status, error);
+            responseListener.getResult(new ArrayList<>(0), status, error);
         });
 
         requestQueue.add(request);
@@ -133,7 +134,7 @@ public class NetworkManager {
         }, error -> {
             //            Log.e(TAG, error.getMessage());
             int status = error.networkResponse == null ? 500 : error.networkResponse.statusCode;
-            responseListener.getResult(null, status, error);
+            responseListener.getResult(new ArrayList<>(0), status, error);
         });
 
         requestQueue.add(request);

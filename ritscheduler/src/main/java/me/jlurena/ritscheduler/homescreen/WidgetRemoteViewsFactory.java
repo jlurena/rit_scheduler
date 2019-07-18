@@ -9,11 +9,13 @@ import android.graphics.Bitmap;
 import android.os.Binder;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
+import android.widget.Toast;
 
-import com.couchbase.lite.CouchbaseLiteException;
 import com.nightonke.boommenu.Util;
 
 import org.threeten.bp.DayOfWeek;
@@ -31,6 +33,11 @@ import me.jlurena.ritscheduler.database.DataManager;
 import me.jlurena.ritscheduler.models.Course;
 import me.jlurena.ritscheduler.utils.SettingsManager;
 
+import static me.jlurena.ritscheduler.homescreen.WidgetProvider.ACTION_NEXT;
+import static me.jlurena.ritscheduler.homescreen.WidgetProvider.ACTION_PREVIOUS;
+import static me.jlurena.ritscheduler.homescreen.WidgetProvider.ACTION_REFRESH;
+import static me.jlurena.ritscheduler.homescreen.WidgetProvider.KEY_APP_WIDGET_ID;
+
 public class WidgetRemoteViewsFactory extends BroadcastReceiver implements RemoteViewsService.RemoteViewsFactory {
 
 
@@ -39,29 +46,31 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
     private List<Course> courses;
     private WeekView weekView;
     private Calendar currentDay;
+    private int id;
     private int width;
+    private LocalBroadcastManager localBroadcastManager;
 
-    WidgetRemoteViewsFactory(Context context) {
+    WidgetRemoteViewsFactory(Context context, Intent intent) {
         this.context = context;
+        this.width = Math.round(context.getResources().getDimension(R.dimen.min_width_appwidget));
         this.dataManager = DataManager.getInstance(context);
         this.currentDay = Calendar.getInstance();
-        this.width = Util.dp2px(110);
-
+        try {
+            dataManager.getModels(Course.TYPE, Course.class, (DataManager.DocumentParser<List<Course>>) models -> courses = models);
+        } catch (Exception e) {
+            Toast.makeText(context, "Error loading courses.\nPlease remove widget and try again.", Toast.LENGTH_SHORT).show();
+        }
+        this.id = intent.getIntExtra(KEY_APP_WIDGET_ID, 0);
         IntentFilter filter = new IntentFilter();
-        filter.addAction(WidgetProvider.ACTION_PREVIOUS);
-        filter.addAction(WidgetProvider.ACTION_NEXT);
-        filter.addAction(WidgetProvider.ACTION_REFRESH);
-        context.registerReceiver(this, filter);
+        filter.addAction(ACTION_PREVIOUS);
+        filter.addAction(ACTION_NEXT);
+        filter.addAction(ACTION_REFRESH);
+        localBroadcastManager = LocalBroadcastManager.getInstance(context);
+        localBroadcastManager.registerReceiver(this, filter);
         updateCourseList(null);
     }
 
     private void updateCourseList(@Nullable String action) {
-        try {
-            dataManager.getModels(Course.TYPE, Course.class, (DataManager.DocumentParser<List<Course>>) models -> courses = models);
-
-        } catch (CouchbaseLiteException e) {
-            // Can't really do anything but crash gracefully
-        }
         // Only initialize once. Gets called many times.
         if (this.weekView == null) {
             this.weekView = new WeekView(context);
@@ -99,6 +108,7 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
                 }
             });
             weekView.setNumberOfVisibleDays(1);
+            weekView.setHeaderColumnPadding(0);
             weekView.setDayBackgroundColor(resources.getColor(R.color.calendar_day_background_color));
             weekView.setEventTextColor(resources.getColor(android.R.color.white));
             weekView.setHeaderRowBackgroundColor(resources.getColor(R.color.color_accent));
@@ -109,13 +119,20 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
 
         if (action != null) {
             switch (action) {
-                case WidgetProvider.ACTION_NEXT:
+                case ACTION_NEXT:
                     currentDay.add(Calendar.DAY_OF_YEAR, 1);
                     break;
-                case WidgetProvider.ACTION_PREVIOUS:
+                case ACTION_PREVIOUS:
                     currentDay.add(Calendar.DAY_OF_YEAR, -1);
                     break;
-                case WidgetProvider.ACTION_REFRESH:
+                case ACTION_REFRESH:
+                    try {
+                        dataManager.getModels(Course.TYPE, Course.class, (DataManager.DocumentParser<List<Course>>) models -> courses = models);
+                        weekView.notifyDatasetChanged();
+                    } catch (Exception e) {
+                        Toast.makeText(context, "Error updating widget.\nPlease remove widget and try again.", Toast.LENGTH_SHORT).show();
+                    }
+                    break;
                 default:
                     this.currentDay = Calendar.getInstance();
                     break;
@@ -126,7 +143,6 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
         int day = currentDay.get(Calendar.DAY_OF_WEEK);
         day = day == 1 ? 7 : day - 1;
         weekView.goToDay(day);
-        weekView.notifyDatasetChanged();
         weekView.setLimitTime(settings.getMinHour(), settings.getMaxHour() + 1); // View lasthour
 
         if (width <= 500) {
@@ -136,8 +152,9 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
         } else {
             weekView.setNumberOfVisibleDays(3);
         }
-        weekView.measure(this.width, height);
-        weekView.layout(0, 0, this.width, height);
+        weekView.measure(width, height);
+        weekView.layout(0, 0, width, height);
+
     }
 
     @Override
@@ -157,7 +174,7 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return id;
     }
 
     @Override
@@ -190,26 +207,27 @@ public class WidgetRemoteViewsFactory extends BroadcastReceiver implements Remot
         final long identityToken = Binder.clearCallingIdentity();
         updateCourseList(null);
         Binder.restoreCallingIdentity(identityToken);
+
     }
 
     @Override
     public void onDestroy() {
-        context.unregisterReceiver(this);
+        localBroadcastManager.unregisterReceiver(this);
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         Bundle extras = intent.getExtras();
         String action = intent.getAction();
-        if (extras != null && extras.containsKey(WidgetProvider.KEY_SIZE_CHANGE)) {
-            this.width = extras.getInt(WidgetProvider.KEY_SIZE_CHANGE);
-            updateCourseList(null);
-        } else if (action != null &&
-                (action.equals(WidgetProvider.ACTION_REFRESH)
-                        || action.equals(WidgetProvider.ACTION_NEXT)
-                        || action.equals(WidgetProvider.ACTION_PREVIOUS)
-                )) {
-            updateCourseList(action);
+        // Ignore broadcasts not meant for this receiver
+        if (extras != null && extras.getInt(KEY_APP_WIDGET_ID, -1) == this.id) {
+
+            if (extras.containsKey(WidgetProvider.KEY_SIZE_CHANGE)) {
+                this.width = extras.getInt(WidgetProvider.KEY_SIZE_CHANGE);
+                updateCourseList(null);
+            } else if (action != null && (action.equals(ACTION_REFRESH) || action.equals(ACTION_NEXT) || action.equals(ACTION_PREVIOUS))) {
+                updateCourseList(action);
+            }
         }
     }
 }

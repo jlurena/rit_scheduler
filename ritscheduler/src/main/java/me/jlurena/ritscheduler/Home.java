@@ -10,7 +10,9 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -120,7 +122,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                     imm.hideSoftInputFromWindow(mSearchCourse.getWindowToken(), 0);
                 }
 
-                if (queryResult != null && !queryResult.isEmpty()) {
+                if (!queryResult.isEmpty()) {
                     showCourseCard(queryResult.get(0), false);
                     if (queryResult.size() > 1) {
                         mNext.setVisibility(View.VISIBLE);
@@ -152,12 +154,10 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                     networkManager.queryCourses(query, selectedTerm.getTermCode(), new ResponseListener<List<Course>>() {
 
                         @Override
-                        public void getResult(List<Course> courses, int errorCode, VolleyError error) {
+                        public void getResult(@NonNull List<Course> courses, int errorCode, VolleyError error) {
                             if (errorCode == 200) {
-                                // Display error if size is not 1
                                 if (courses.isEmpty()) {
                                     Utils.alertDialogFactory(Home.this, R.string.error, null).setMessage(R.string.no_results_error).show();
-                                    queryResult.clear();
                                 } else {
                                     queryResult = courses;
                                     currentCoursePosition = 0;
@@ -236,12 +236,13 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         this.mWeekView.setNumberOfVisibleDays(settings.getNumberOfVisibleDays());
         this.mWeekView.setLimitTime(settings.getMinHour(), settings.getMaxHour() + 1); // Let max hour be visible
         this.mWeekView.setAutoLimitTime(settings.isAutoLimitTime());
+        this.mWeekView.notifyDatasetChanged();
 
     }
 
     private void initNextPrevButtons() {
         this.mNext.setOnClickListener(v -> {
-            if (isFragmentInflated && queryResult != null && !queryResult.isEmpty()) {
+            if (isFragmentInflated && !queryResult.isEmpty()) {
                 if (queryResult.size() - 1 > currentCoursePosition) {
                     showCourseCard(queryResult.get(++currentCoursePosition), false);
                     mPrev.setVisibility(View.VISIBLE);
@@ -254,7 +255,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         });
 
         this.mPrev.setOnClickListener(v -> {
-            if (isFragmentInflated && queryResult != null && !queryResult.isEmpty()) {
+            if (isFragmentInflated && !queryResult.isEmpty()) {
                 if (currentCoursePosition > 0) {
                     showCourseCard(queryResult.get(--currentCoursePosition), false);
                     mNext.setVisibility(View.VISIBLE);
@@ -372,7 +373,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                 if (s.length() >= 4) {
                     networkManager.queryAutoComplete(s.toString(), new ResponseListener<List<String>>() {
                         @Override
-                        public void getResult(List<String> terms, int errorCode, VolleyError error) {
+                        public void getResult(@NonNull List<String> terms, int errorCode, VolleyError error) {
                             autoCompleteAdapter.clear();
                             autoCompleteAdapter.addAll(terms);
                             autoCompleteAdapter.getFilter().filter(s.toString(), null);
@@ -478,6 +479,7 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
         RateThisApp.showRateDialogIfNeeded(this);
 
         this.courses = new HashSet<>();
+        this.queryResult = new ArrayList<>();
         this.networkManager = NetworkManager.getInstance(this);
         this.dataManager = DataManager.getInstance(this);
         this.autoCompleteAdapter = new ArrayAdapter<>(this, R.layout.auto_complete_dropdown_item);
@@ -505,12 +507,13 @@ public class Home extends Activity implements CourseCardFragment.ButtonsListener
                         .setNeutralButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
                         .show();
                 removeFragment(course.getModelId());
+                queryResult.clear();
                 return;
             }
             dataManager.addModel(course);
             courses.add(course);
             mWeekView.notifyDatasetChanged();
-            sendBroadcast(new Intent(WidgetProvider.ACTION_REFRESH));
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(WidgetProvider.ACTION_REFRESH));
             removeFragment(course.getModelId());
         } catch (Exception e) {
             Utils.genericAlertDialogError(this, e);

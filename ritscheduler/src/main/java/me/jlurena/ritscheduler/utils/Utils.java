@@ -12,10 +12,12 @@ import android.graphics.drawable.RippleDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.ColorInt;
+import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.view.ViewGroupOverlay;
 
@@ -53,9 +55,22 @@ public class Utils {
         overlay.add(dim);
     }
 
+    public static int blendARGB(@ColorInt int color1, @ColorInt int color2, @FloatRange(from = 0.0D, to = 1.0D) float ratio) {
+        float inverseRatio = 1.0F - ratio;
+        float a = (float) Color.alpha(color1) * inverseRatio + (float) Color.alpha(color2) * ratio;
+        float r = (float) Color.red(color1) * inverseRatio + (float) Color.red(color2) * ratio;
+        float g = (float) Color.green(color1) * inverseRatio + (float) Color.green(color2) * ratio;
+        float b = (float) Color.blue(color1) * inverseRatio + (float) Color.blue(color2) * ratio;
+        return Color.argb((int) a, (int) r, (int) g, (int) b);
+    }
+
     public static void clearDim(@NonNull ViewGroup parent) {
         ViewGroupOverlay overlay = parent.getOverlay();
         overlay.clear();
+    }
+
+    public static int dpToPixel(Context context, float dp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
     }
 
     public static void genericAlertDialogError(Context context, Exception exc) {
